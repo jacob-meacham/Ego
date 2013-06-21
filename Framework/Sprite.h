@@ -1,31 +1,33 @@
 #pragma once
 
-const int TOTAL_ANIMATIONS = 64; // Max number of animation states per sprite
-
-#include <list>
 #include <string>
-#include <sstream>
-#include "PhysicsCore.h"
+#include <windows.h>
+#include "Math.h"
 
 class Tile;
 /// All rendered objects extend from the Sprite base class.
 /** The Sprite class handles all rendering of any game object.  This includes
 	animations, scale, and position.
 */
-//class PhysicalEntity;
-class Sprite : public PhysicalEntity {
-		
+class Sprite {		
 	protected:
+		static const int TOTAL_ANIMATIONS = 64; // Max number of animation states per sprite
+
+		std::string		m_Name; ///< Base name of the entity, through which it is known.
+
 		long			m_Width; ///< Width of the sprite tile.
 		long			m_Height; ///< Height of the sprite tile.
-		Vector2			m_Location;
-		bool			m_visible;
 		RECT			m_OriginalRect; ///< Original position, width and height of the sprite
+		Vector2			m_Location;
+
+		float			m_XScale; ///< X-scaling factor. 1.0f is no scaling.
+		float			m_YScale; ///< Y-scaling factor. 1.0f is no scaling
+						
 		Tile			*m_Tiles; ///< Pointer to the tile set that this sprite uses
 		char			m_TileNum; ///< Current tile number in the texture.
 		char			m_TextureNum; ///< Texture number from the Tile.
-		float			m_XScale; ///< X-scaling factor. 1.0f is no scaling.
-		float			 m_YScale; ///< Y-scaling factor. 1.0f is no scaling.
+		
+		bool			m_visible;
 		int				m_curFrame; ///< Current frame of animation.
 		int				m_curAnimation; ///< Current animation.
 		int				m_numAnimations; ///< Total number of animations.
@@ -50,9 +52,6 @@ class Sprite : public PhysicalEntity {
 		// Constructor/Destructor.
 		Sprite();
 		~Sprite();
-
-		// Frees a sprite's memory.
-		void Free();
 		
 		//Specifies which tileset to use
 		bool UseTiles(Tile *Tiles, char TextureNum); 
@@ -64,12 +63,7 @@ class Sprite : public PhysicalEntity {
 		char GetTextureNum() const;
 
 		// Creates a renderable sprite.
-		void Create(char TileNum, std::string name, float Xpos, float Ypos);
-
-		virtual void Collide(PhysicalEntity *other);
-
-		// Checks if this Sprite is an entity of type e.
-		virtual bool checkType(EntityType e) const;
+		void Create(char TileNum, const std::string & name, float Xpos, float Ypos);
 		
 		// Creates a new animation sequence.
 		bool CreateAnimationSequence(int animationNumber, u32 startFrame, u32 numFrames, AnimationOption nOption);
@@ -112,4 +106,7 @@ class Sprite : public PhysicalEntity {
 		bool GetAutoAnimate() const;
 		int GetCurAnimation() const;
 		int GetCurFrame() const;
+		
+		void SetName(const std::string & name) { m_Name = name; }
+		const std::string & GetName() const { return m_Name; }
 };

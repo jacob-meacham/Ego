@@ -10,11 +10,6 @@ Sprite::Sprite() {
 //////////////////////////////////////////////////////////////////////////////////
 /// Default destructor.
 Sprite::~Sprite() {
-	Free();
-}
-//////////////////////////////////////////////////////////////////////////////////
-/// Frees a sprite's memory.
-void Sprite::Free() {
 	
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +46,7 @@ char Sprite::GetTextureNum() const
 	\param XPos X-Coordinate of the sprite.
 	\param YPos Y-Coordinate of the sprite.
 */
-void Sprite::Create(char TileNum, std::string name, float XPos, float YPos) {
+void Sprite::Create(char TileNum, const std::string & name, float XPos, float YPos) {
 
 	RECT BoundingRect;
 	m_Width = m_Tiles->GetWidth(m_TextureNum);
@@ -60,11 +55,6 @@ void Sprite::Create(char TileNum, std::string name, float XPos, float YPos) {
 	BoundingRect.right = m_Width;
 	BoundingRect.top = 0;
 	BoundingRect.bottom = m_Height;
-
-	m_BoundingSphere.center.x = XPos;
-	m_BoundingSphere.center.y = YPos;
-
-	m_BoundingSphere.radius = m_Width/2.f;
 
 	m_Name = name;
 	m_Location.x = XPos;
@@ -75,20 +65,10 @@ void Sprite::Create(char TileNum, std::string name, float XPos, float YPos) {
 	m_TileNum = TileNum;
 	m_visible = true;
 	m_OriginalRect = BoundingRect;
-	m_Velocity.x = 0.f;
-	m_Velocity.y = 0.f;
 	m_XScale = 1.0000f;
 	m_YScale = 1.0000f;
 	m_autoAnimate = false;
 	m_defaultAnimation = 0;
-}
-//////////////////////////////////////////////////////////////////////////////////
-void Sprite::Collide(PhysicalEntity *other) {
-
-}
-//////////////////////////////////////////////////////////////////////////////////
-bool Sprite::checkType(EntityType e) const {
-	return (e == SPRITE);
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Sets the current animation of the sprite.
@@ -202,8 +182,6 @@ void Sprite::Update() {
 	if(GetAutoAnimate()) { 
 		incFrame();
 	}
-	m_BoundingSphere.center += m_Velocity;
-	m_Location += m_Velocity;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Renders the sprite.
@@ -211,23 +189,23 @@ void Sprite::Update() {
 	\return TRUE if rendering is possible, or if the sprite is dead or invisible.
 */
 bool Sprite::Render() const {
-	if(m_Tiles == NULL) { OutputDebugString("in Sprite::Render, tileset is Null!"); return false; }
+	if(m_Tiles == NULL) { TRACE("in Sprite::Render, tileset is Null!"); return false; }
 	if(!m_visible) { return true; }
 
 	// Simply uses class Tile's draw function, and draws the current frame
 	// at the current scale and x,y coordinates.
-	m_Tiles->Draw(m_TextureNum, m_curFrame, m_BoundingSphere.center.x - m_Width/2, m_BoundingSphere.center.y - m_Height/2, 0xFFFFFFFF, m_XScale, m_YScale);
+	m_Tiles->Draw(m_TextureNum, m_curFrame, m_Location.x, m_Location.y, 0xFFFFFFFF, m_XScale, m_YScale);
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the X-position of the sprite.
 float Sprite::GetXPos() const {
-	return m_BoundingSphere.center.x;
+	return m_Location.x + m_Width/2.f;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the Y-position of the sprite.
 float Sprite::GetYPos() const {
-	return m_BoundingSphere.center.y;
+	return m_Location.y + m_Height/2.f;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the width of the sprite's tiles.
@@ -244,9 +222,6 @@ long Sprite::GetHeight() const {
 void Sprite::SetXYPos(float x, float y) {
 	m_Location.x = x;
 	m_Location.y = y;
-	m_BoundingSphere.center.x = x + m_Width/2.f;
-	m_BoundingSphere.center.y = y + m_Height/2.f;
-
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the current X-Scale of this Sprite.
@@ -283,8 +258,8 @@ void Sprite::SetYScale(float Scale) {
 /** This funtion is preferred over GetBoundingRect(). */
 RECT Sprite::GetRect() const {
 	RECT dst;
-	dst.top = (long)(m_Location.y + m_Velocity.y);
-	dst.left = (long)(m_Location.x + m_Velocity.x);
+	dst.top = (long)m_Location.y;
+	dst.left = (long)m_Location.x;
 	dst.bottom = dst.top + m_Height;
 	dst.right = dst.left + m_Width;
 return dst;
@@ -306,9 +281,6 @@ void Sprite::SetVisible(bool v) {
 }
 //////////////////////////////////////////////////////////////////////////////////
 void Sprite::Translate(float x, float y) {
-	m_BoundingSphere.center.x += x;
-	m_BoundingSphere.center.y += y;
 	m_Location.x += x;
 	m_Location.y += y;
-
 }

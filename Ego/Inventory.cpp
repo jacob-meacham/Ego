@@ -1,6 +1,7 @@
 #include "Inventory.h"
 #include "Room.h"
 #include "Framework\GraphicsDevice.h"
+#include <sstream>
 
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 

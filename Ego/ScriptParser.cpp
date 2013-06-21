@@ -1,6 +1,7 @@
 #include "ScriptParser.h"
 #include "GameArea.h"
 #include "Inventory.h"
+#include <sstream>
 
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 

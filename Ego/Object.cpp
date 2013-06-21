@@ -1,5 +1,6 @@
 #include "Object.h"
 #include "ScriptParser.h"
+#include <sstream>
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.  Resets all script flags to 1 (on).

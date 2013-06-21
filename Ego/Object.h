@@ -1,6 +1,8 @@
 #ifndef _object_h_included_
 #define _object_h_included_
 #include "Framework\Sprite.h"
+#include <list>
+
 //#include <boost/spirit/iterator/file_iterator.hpp>
 //using namespace boost::spirit;
 class Parser;
