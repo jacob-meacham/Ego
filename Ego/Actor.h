@@ -4,6 +4,33 @@
 #include "Object.h"
 #include "Pathfinder.h"
 
+/// Default animations, useful for all objects, and required for all actors.
+enum DefaultAnimations {
+	DEFAULT_TALKING = 0,
+	TALKING_RIGHT_DOWN,
+	TALKING_RIGHT_UP,
+	TALKING_LEFT_DOWN,
+	TALKING_LEFT_UP,
+	TALKING_BACK,
+	TALKING_FRONT,
+	STANDING_RIGHT_DOWN,
+	STANDING_RIGHT_UP,
+	STANDING_LEFT_DOWN,
+	STANDING_LEFT_UP,	
+	STANDING_BACK,
+	STANDING_FRONT,
+	WALKING_RIGHT,
+	WALKING_LEFT,
+	WALKING_BACK,
+	WALKING_FRONT,
+	PICKING_UP_RIGHT_DOWN,
+	PICKING_UP_RIGHT_UP,
+	PICKING_UP_LEFT_DOWN,
+	PICKING_UP_LEFT_UP,
+	PICKING_UP_BACK,
+	PICKING_UP_FRONT,
+ };
+
 /// An actor is any object which may move about the screen.  
 /** An actor is any object which may move about the screen.  
   This includes the main character, and any secondary, movable characters/objects.  Note: an NPC that is stationary

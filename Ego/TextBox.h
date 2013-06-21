@@ -1,7 +1,7 @@
 #ifndef _textBox_h_included_
 #define _textBox_h_included_
 #include <string>
-#include "Graphics_Core.h"
+#include "Framework\GraphicsDevice.h"
 
 /// Encapsulates a text box, used for rendering conversation choices.
 /** The textbox is primarily used by GameArea to render the active conversation choices.

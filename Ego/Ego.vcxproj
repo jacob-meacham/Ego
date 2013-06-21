@@ -36,6 +36,10 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\sdks\spirit;..\;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\sdks\spirit;..\;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\Framework\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\Framework\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -43,7 +47,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;d3d8.lib;d3dx8.lib;WINMM.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;d3d8.lib;d3dx8.lib;WINMM.LIB;FrameworkD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -52,7 +56,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;d3d8.lib;d3dx8.lib;WINMM.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;d3d8.lib;d3dx8.lib;WINMM.LIB;Framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -62,19 +66,16 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Conversation.cpp" />
     <ClCompile Include="ConversationList.cpp" />
+    <ClCompile Include="DataPackage.cpp" />
     <ClCompile Include="Ego.cpp" />
     <ClCompile Include="Exit.cpp" />
     <ClCompile Include="GameArea.cpp" />
-    <ClCompile Include="Graphics_Core.cpp" />
-    <ClCompile Include="Input_Core.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Pathfinder.cpp" />
     <ClCompile Include="Room.cpp" />
-    <ClCompile Include="Script Parser.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="System_Core.cpp" />
+    <ClCompile Include="ScriptParser.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
@@ -82,22 +83,18 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Conversation.h" />
     <ClInclude Include="ConversationList.h" />
-    <ClInclude Include="DXUtil.h" />
+    <ClInclude Include="DataPackage.h" />
     <ClInclude Include="Ego.h" />
     <ClInclude Include="Exit.h" />
     <ClInclude Include="GameArea.h" />
-    <ClInclude Include="Graphics_Core.h" />
-    <ClInclude Include="Input_Core.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Pathfinder.h" />
     <ClInclude Include="Room.h" />
-    <ClInclude Include="roomGrammar.hpp" />
-    <ClInclude Include="Script Parser.h" />
-    <ClInclude Include="scriptGrammar.hpp" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="System_Core.h" />
+    <ClInclude Include="roomGrammar.h" />
+    <ClInclude Include="scriptGrammar.h" />
+    <ClInclude Include="ScriptParser.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="WinMain.h" />
   </ItemGroup>
