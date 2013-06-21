@@ -17,9 +17,6 @@ Input::~Input() {
 		m_InputDevice->Release();
 		m_InputDevice = NULL;
 	}
-	Clear();
-
-	m_hWnd = NULL;
 
 	// release the COM.
 	if(m_Input) {
