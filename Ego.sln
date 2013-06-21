@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ego", "Ego\Ego.vcxproj", "{F5C32295-BFFC-4F49-9A38-C0B8DC35ADAB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{05427B39-579A-46F1-88BD-E4BABF28995E} = {05427B39-579A-46F1-88BD-E4BABF28995E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Framework.vcxproj", "{05427B39-579A-46F1-88BD-E4BABF28995E}"
 EndProject
