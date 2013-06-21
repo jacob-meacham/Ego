@@ -65,20 +65,34 @@ void Font::free()
 	DT_TOP
 	\return TRUE if printing is successful.
 */
-bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color, DWORD Format)
+bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color, DWORD format)
 {
 	if(!pFont)
 		return false;
 
-	RECT Rect;
-	Rect.left   = x;
-	Rect.top    = y;
-	Rect.right  = Rect.left + width;
-	Rect.bottom = Rect.top + height;
-	if(FAILED(pFont->DrawText(pSprite, ptext, -1, &Rect, Format, color))) 
+	RECT rect;
+	rect.left   = x;
+	rect.top    = y;
+	rect.right  = rect.left + width;
+	rect.bottom = rect.top + height;
+	if(FAILED(pFont->DrawText(pSprite, ptext, -1, &rect, format, color))) 
 	{
 		return false;
 	}
 
 	return true;
+}
+//////////////////////////////////////////////////////////////////////////////////
+long Font::calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height)
+{
+	if(!pFont)
+		return 0;
+
+	RECT rect;
+	rect.left   = x;
+	rect.top    = y;
+	rect.right  = rect.left + width;
+	rect.bottom = rect.top + height;
+	long calculated_height = pFont->DrawText(pSprite, ptext, -1, &rect,  DT_CALCRECT | DT_WORDBREAK, 0xFFFFFFFF);
+	return calculated_height;
 }
