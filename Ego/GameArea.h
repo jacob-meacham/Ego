@@ -5,7 +5,7 @@
 #include "Ego.h"
 #include "Exit.h"
 #include "TextBox.h"
-#include "Script Parser.h"
+#include "ScriptParser.h"
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 

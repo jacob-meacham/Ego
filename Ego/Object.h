@@ -1,6 +1,6 @@
 #ifndef _object_h_included_
 #define _object_h_included_
-#include "Sprite.h"
+#include "Framework\Sprite.h"
 //#include <boost/spirit/iterator/file_iterator.hpp>
 //using namespace boost::spirit;
 class Parser;
@@ -53,6 +53,11 @@ class Object : public Sprite {
 		long GetXWalkCoordinate();
 		long GetYWalkCoordinate();
 		
+		// Checks if this object has collided with RECT a.
+		bool CheckCollisions(RECT a);
+
+		// Checks if the mouse is hovering over this object.
+		bool CheckMouseCollision(long MouseX, long MouseY);
 
 		// Setters
 		void SetFlag(int index, int d);

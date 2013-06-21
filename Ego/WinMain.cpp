@@ -1,74 +1,67 @@
 #include "WinMain.h"
+#define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.  Creates the window.
 EgoApp::EgoApp() {	
-	m_Style = WS_POPUPWINDOW;
-	m_XPos = 10;
-	m_YPos = 10;
-	m_Width = SCREEN_WIDTH;
-	m_Height = SCREEN_HEIGHT;
+	x = 10;
+	y = 10;
+	width = 800;
+	height = 600;
 	g_dwLastTick = 0;
 	g_dCurTime = 0;
 	g_dLastTime = 0;
 	g_fAnimationTimer = 0;
 	g_fElpasedTime = 0;
-	strcpy_s(m_WndName, "GameCore");
-	strcpy_s(m_WndCaption, "Test");
 	m_inInventory = false;
 	m_inactive = LoadCursorFromFile("white-cursor.cur");
 	m_active = LoadCursorFromFile("red-cursor.cur");
+	windowed = true;
 }
 
 /// Called before the game enters the message pump.
 /** This function initializes graphics and input devices, loads the main font,
 	and the main Ego instance, and then loads the first room.
 */
-BOOL EgoApp::Init() {
+bool EgoApp::onInit() {
 	// Create room grammar.
 	m_roomGrammar = new RoomGrammar(m_newRoom);
 
 	// Set the graphics.
-	m_Graphics.Initialize();
-	m_Graphics.SetGraphics(GetHWnd(), TRUE, SCREEN_WIDTH, SCREEN_HEIGHT);
-	
+	m_Graphics.setGraphics(getWindow().getHWnd(), TRUE, width, height);
+
 	// Begin the input devices.
-	m_Keyboard.Init(GetHWnd(), GetHInst());
-	m_Mouse.Init(GetHWnd(), GetHInst());
-	m_Keyboard.Create(KEYBOARD, TRUE);
-	m_Mouse.Create(MOUSE, TRUE);
+	m_Keyboard.Init(getWindow().getHWnd(), getWindow().getHInst(), windowed);
+	m_Mouse.Init(getWindow().getHWnd(), getWindow().getHInst(), windowed);
 
 	// Create the main font.
-	mainFont.Create(&m_Graphics, "Arial", 19, 1);
+	mainFont.create("Arial", 19, 1);
 
 	// Load the inventory texture.
-	m_Inventory.Load(&m_Graphics,  "Data\\Inventory.png");
+	m_Inventory.load("Data\\Inventory.png");
 
 	// parse the first room, to determine the number of tiles to create.
 	iterator_t first("room0.dat");
-    if (!first)
-    {
-       return FALSE;
+    if (!first) {
+       return false;
     }
+
     iterator_t last = first.make_end();
 	parse_info <iterator_t> info = parse(first, last, *(m_roomGrammar), space_p);
-	if(!info.full) { Error("Parsing Failed", TRUE); }
+	if(!info.full) { Error("Parsing Failed"); }
 
 
-	m_vars = new int[256 + 40*m_newRoom.objectList.size()];
-	// create the data buffer.
-	m_vars = (int *)m_DPVariables.Create(sizeof(int)*(256 + 40*m_newRoom.objectList.size()));	
-	// first, save the room flags.
-	for(int i = 0; i<256; i++) {
-		m_vars[i] = 0;
-	}
-	for(int i =256; i<256 + 40*m_newRoom.objectList.size(); i++) {
+	DataPackage variables(sizeof(int)*(256 + 40*m_newRoom.objectList.size()));
+	m_vars = (int *)variables.GetPtr();
+	
+	memset(m_vars, 0, sizeof(int) * 256);
+	for(int i = 256; i<256 + 40*m_newRoom.objectList.size(); i++) {
 		m_vars[i] = 1;
 	}
-	m_DPVariables.Save("Room.var");
-	m_DPVariables.Free();
+
+	variables.Save("Room.var");
 
 	// Create tiles.
-	m_Tiles.Create(&m_Graphics, (2*m_newRoom.objectList.size())+1);
+	m_Tiles.Create((2*m_newRoom.objectList.size())+1);
 	
 	// Load Ego, and his animations.
 	m_Tiles.Load(0, "Data\\Ego.png", 180, 240);
@@ -119,26 +112,29 @@ BOOL EgoApp::Init() {
 
 
 /// Shutdown function, called after the message pump has completed.
-BOOL EgoApp::Shutdown() {
-	m_Background.~Texture();
-	m_Graphics.Shutdown();
-	m_Keyboard.Shutdown();
-	m_Mouse.Shutdown();
-	return TRUE;
+void EgoApp::shutdown() {
+	System::shutdown();
+
+	delete m_DPCollision;
+	delete m_DPVariables;
 }
 
 /// Called each frame.
 /** This function renders at 60FPS.  It reads the input, updates the room/inventory,
 	then renders the room/inventory.
 */
-BOOL EgoApp::PerFrame() {
+void EgoApp::onProcess() {
 	// Update timer.
 	g_dCurTime     = timeGetTime();
 	g_fElpasedTime = (float)((g_dCurTime - g_dLastTime) * 0.001);
 	g_dLastTime    = g_dCurTime;
 	g_fAnimationTimer += g_fElpasedTime;
-	if( g_fAnimationTimer >= 0.086f ) { g_fAnimationTimer = 0.0f; } // Target of 1/60th of a second (60 FPS) reached. Render a new frame.
-	else { return TRUE; } // It's too early. Return now and render nothing.
+	if( g_fAnimationTimer >= 0.086f ) { 
+		g_fAnimationTimer = 0.0f; // Target of 1/60th of a second (60 FPS) reached. Render a new frame.
+	} else { 
+		return; // It's too early. Return now and render nothing.
+	}
+
 	// Read keyboard and mouse state.
 	m_Keyboard.Read();
 	m_Mouse.Read();
@@ -162,11 +158,6 @@ BOOL EgoApp::PerFrame() {
 		m_Keyboard.SetLock(DIK_P);
 		m_curRoom.GetEgo()->SetCurrentlyHeldItem(0);
 		SetCursor(m_inactive);
-	}
-	
-	// End the game on escape.
-	if(m_Keyboard.GetKeyState(DIK_ESCAPE) == TRUE) {
-		return FALSE;
 	}
 
 	// Toggle the inventory on I
@@ -224,8 +215,8 @@ BOOL EgoApp::PerFrame() {
 		// Update() only returns false is Ego has exited the room.  
 		if(!m_curRoom.Update()) {
 			// Not needed for engine.
-			Error("Thank you for playing this room of Ego: Adventure, and congratulations!", FALSE);
-			Error("Stay tuned to htpp://uoregon.edu/~jmeacha3/ for more Ego updates.", TRUE);
+			Error("Thank you for playing this room of Ego: Adventure, and congratulations!");
+			Error("Stay tuned to htpp://uoregon.edu/~jmeacha3/ for more Ego updates.");
 			// if this is the case, we must Load the next room.
 			std::ostringstream roomScript;
 			roomScript << "room" << m_curRoom.GetExitNum() << ".dat";
@@ -234,36 +225,35 @@ BOOL EgoApp::PerFrame() {
 	}
 
 	// Begin render state.
-	if(m_Graphics.BeginScene() == TRUE) {
-		m_Graphics.Clear();
-		m_Graphics.BeginSprite();
+	if(m_Graphics.beginScene()) {
+		m_Graphics.clear();
+		m_Graphics.beginSprite();
 		// Draw the background.
-		m_Background.Blit(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
+		m_Background.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
 
 		// Render the room.
 		m_curRoom.RenderRoom();
 		if(m_inInventory) {
 			// If the inventory is visible, draw the inventory.
-			m_Inventory.Blit(75, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
+			m_Inventory.draw(75, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
 			// And then render the inventory.
 			m_curRoom.GetEgo()->GetInventory()->RenderInventory();
 		}
-		m_Graphics.EndSprite();
-		m_Graphics.EndScene();
+		m_Graphics.endSprite();
+		m_Graphics.endScene();
 	}
 	// Display graphics.
-	m_Graphics.Display();
-	return TRUE;
+	m_Graphics.display();
 }
 
 /// Function to load a room from a room script.  Returns true if the load is successful.
 bool EgoApp::LoadRoom(std::string roomName) {
 	m_newRoom.objectList.clear();
 	m_newRoom.exitList.clear();
-	iterator_t first(roomName);
+	iterator_t first(roomName.c_str());
     if (!first)
     {
-       Error("Unable to open file!", FALSE);
+       Error("Unable to open file!");
        return false;
     }
 
@@ -272,16 +262,19 @@ bool EgoApp::LoadRoom(std::string roomName) {
 	parse_info <iterator_t> info = parse(first, last, *(m_roomGrammar), space_p);
 	
 	if(!info.full) { 
-		Error("Parsing Failed", FALSE); 
+		Error("Parsing Failed"); 
 		return false;
 	}
 	
-	m_Background.Load(&m_Graphics,  (char*)m_newRoom.bgFileName.c_str());
-	collisionData = (char*)m_DPCollision.Load((char*)(m_newRoom.colMapFileName.c_str()), &cmSize);
+	m_Background.load(m_newRoom.bgFileName.c_str());
+
+	m_DPCollision = DataPackage::Load(m_newRoom.colMapFileName.c_str(), &cmSize);
+	collisionData = (char*)m_DPCollision->GetPtr();
 	
 	int size = m_newRoom.objectList.size();
 	
-	test = (int*)m_DPVariables.Load("Room.var", &m_VariablesSize);
+	m_DPVariables = DataPackage::Load("Room.var", &m_VariablesSize);
+	test = (int*)m_DPVariables->GetPtr();
 	for(int j = 0; j<256; j++) {
 		m_curRoom.SetFlag(j, test[j]);
 	}
@@ -336,15 +329,31 @@ bool EgoApp::LoadRoom(std::string roomName) {
 	if(m_newRoom.hasOnEnterScript == 1) { m_curRoom.SetHasEnterScript(true); }
 	else { m_curRoom.SetHasEnterScript(false); }
 	m_curRoom.EnterRoom(collisionData, m_newRoom.roomName);	
-	m_DPVariables.Free();
 	return true;
 }
 
 /// Entry point for a Windows application.  Calls SystemCore::Run
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdShow)
 {
-	EgoApp App;
-	return App.Run();
+#ifdef _DEBUG
+	int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG); // Get current flag
+	flag |= _CRTDBG_LEAK_CHECK_DF; // Turn on leak-checking bit
+	_CrtSetDbgFlag(flag); // Set flag to the new value
+
+	_crtBreakAlloc = -1; // Sets a user breakpoint at the specified allocation.
+#endif 
+
+	EgoApp app;
+	app.parseCommandLine(::__argc, ::__argv);
+
+	int rval = 0;
+	if(app.onInit())
+	{
+		rval = 1;
+		app.messageLoop();
+	}
+
+	return rval;
 }
 
 

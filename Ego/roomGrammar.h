@@ -2,6 +2,7 @@
 #define _roomGrammar_hpp_included_
 #include <list>
 #include <boost/spirit.hpp>
+
 using namespace boost::spirit;
 using namespace std;
 #define ErrorT(x) MessageBox(NULL, x, "Error", MB_OK);

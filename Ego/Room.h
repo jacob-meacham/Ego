@@ -6,7 +6,7 @@
 #include "Exit.h"
 #include "TextBox.h"
 #include "GameArea.h"
-
+#include "DataPackage.h"
 
 #define MAX_CHOICES 10;
 //class Inventory;
@@ -23,8 +23,6 @@ class Room : public GameArea {
 		char*						m_collisionMap; ///< pointer to the collision map data.
 		bool						m_ActiveExit; ///< true if there is an exit that is active.
 		int							m_ActiveRoomNumber; ///< the room number of the active exit (if any).
-		DataPackage					m_DPVariables; ///< DataPackage to load/save all object and room flags.
-		int*						m_vars; ///< int* for use with m_DPVariables.
 		bool						m_hasEnterScript; ///< True if the room has an enter script.
 		float						m_zeroScale; ///< Scale that actors will be if they are at the bottom of the screen.
 		float						m_scalingFactor; ///< Factor to scale back as the actors move away from zero scale.

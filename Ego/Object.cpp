@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "Script Parser.h"
+#include "ScriptParser.h"
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.  Resets all script flags to 1 (on).
@@ -116,3 +116,23 @@ void Object::SetCurTalkingAnimation(int animationNumber) { m_curTalkAnimation = 
 /// Returns the number of the current talking animation.
 int Object::GetCurTalkingAnimation() { return m_curTalkAnimation; }
 			
+/// Checks if this Sprite's bounding rectangle collides with RECT a.
+bool Object::CheckCollisions(RECT a) {
+	RECT rcIntersect;
+	IntersectRect(&rcIntersect, &(GetRect()), &a);
+	if(IsRectEmpty(&rcIntersect) != 0) {
+		
+
+		return false; }
+	else { 
+		return true; }
+}
+
+/// Checks if the coordinates MouseX and MouseY are within the Sprite's bounding rectangle.
+bool Object::CheckMouseCollision(long MouseX, long MouseY) {
+	if(MouseX < m_Location.x) return false;
+	if(MouseX >= m_Location.x + m_Width) return false;
+	if(MouseY < m_Location.y) return false;
+	if(MouseY >= m_Location.y + m_Height) return false;
+	return true;
+}

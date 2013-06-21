@@ -3,12 +3,12 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "DXUtil.h"
-#include "Graphics_Core.h"
-#include "System_Core.h"
-#include "Input_Core.h"
+#include "Framework\DXUtil.h"
+#include "Framework\GraphicsDevice.h"
+#include "Framework\System.h"
+#include "Framework\Input.h"
 #include "Room.h"
-#include "roomGrammar.hpp"
+#include "roomGrammar.h"
 #include "Inventory.h"
 #define LEAN_AND_MEAN
 #define MAX_ITEMS 15
@@ -23,18 +23,18 @@ using namespace boost::spirit;
  */
 
 
-class EgoApp : public SystemCore
+class EgoApp : public System
 {
 	private:
-		GraphicsCore    m_Graphics; ///< The graphics device.
+		GraphicsDevice  m_Graphics; ///< The graphics device.
 		Texture			m_Background; ///< The background of the current room.
 		Texture			m_Inventory; ///< The background of the main inventory.
 		Tile			m_Tiles; ///< The tile set to use.
 		Ego				m_Ego; ///< The main Ego instance.
 		Room			m_curRoom; ///< The current room.
-		Input			m_Keyboard; ///< The keyboard input device.
-		Input			m_Mouse; ///< The mouse input device.
-		DataPackage     m_DPCollision; ///< Data package to load collision maps into rooms.
+		Keyboard		m_Keyboard; ///< The keyboard input device.
+		Mouse			m_Mouse; ///< The mouse input device.
+		DataPackage *   m_DPCollision; ///< Data package to load collision maps into rooms.
 		DWORD			cmSize; ///< DWORD to store size of the collision map data package.
 		Font			mainFont; ///< The game's main font.
 		char			*collisionData; ///< a pointer to the current collision map.
@@ -48,7 +48,7 @@ class EgoApp : public SystemCore
 		RoomGrammar		*m_roomGrammar; ///< Grammar to parse a room script.
 		string			m_curAction; ///< String representing Ego's current action.
 		bool			m_inInventory; ///< true if the game is currently in the inventory.
-		DataPackage		m_DPVariables; ///< Data package to load room/object variables.
+		DataPackage *	m_DPVariables; ///< Data package to load room/object variables.
 		int*			m_vars; ///< integer pointer for m_DPVariables.
 		int*			test; ///< integer pointer for m_DPVariables.
 		DWORD			m_VariablesSize; ///< DWORD to store the size of the variables data package.
@@ -56,13 +56,13 @@ class EgoApp : public SystemCore
 		HCURSOR			m_active; ///< Cursor when the cursor is on a hotspot.
 
 
+		virtual void onProcess();
+		virtual void shutdown();
 	public:
 		EgoApp();
-		BOOL Init();
-		BOOL PerFrame();
-		BOOL Shutdown();
+		virtual bool onInit();
+		
 		bool LoadRoom(std::string roomName);
-
 };
 
 #endif

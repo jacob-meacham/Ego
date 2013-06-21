@@ -1,10 +1,11 @@
 #ifndef _inventory_h_included_
 #define _inventory_h_included_
 #include "GameArea.h"
+#include "Framework\Texture.h"
 
 class Ego;
 class Room;
-class Tile;
+class GraphicsDevice;
 /// Encapsulates the main character's inventory.
 /** This class derives from GameArea, and, as such, is able to run scripts.  The only inventory instance
 	should be on the main ego instance of the game (see EgoApp)
@@ -26,7 +27,7 @@ private:
 		void SetParent(Ego *p);
 
 		// Sets tileset of this inventory.
-		void SetInventoryTiles(GraphicsCore *Graphics, long NumTextures);
+		void SetInventoryTiles(GraphicsDevice *Graphics, long NumTextures);
 
 		// Adds an object to the main inventory list.
 		void AddInventoryObject(Object o);

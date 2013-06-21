@@ -1,7 +1,10 @@
 #ifndef _parser_h_included_
 #define _parser_h_included_
-#include "scriptGrammar.hpp"
+#include "scriptGrammar.h"
 #include <boost/spirit/tree/ast.hpp>
+#define NOMINMAX
+#include <windows.h>
+#undef NOMINMAX
 #include <mmsystem.h> // for timeGetTime()
 using namespace std;
 

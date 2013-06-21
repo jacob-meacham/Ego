@@ -1,4 +1,4 @@
-#include "Script Parser.h"
+#include "ScriptParser.h"
 #include "GameArea.h"
 #include "Inventory.h"
 
@@ -24,14 +24,14 @@ void Parser::SetParent(GameArea *p) { parent = p; }
 /// Creates an AST of the fileName (must be a .sc file).
 void Parser::ParseFile(string fileName) {
 	// create a file iterator
-	iterator_t first(fileName);
+	iterator_t first(fileName.c_str());
 	if(!first) {
 		// if the file cannot be opened, use the generic script instead.
 		int index = fileName.find('_', 0);
 		// keep the action, but change the object name to generic.
 		fileName.replace(0, index, "generic");
 		
-		iterator_t temp(fileName);
+		iterator_t temp(fileName.c_str());
 		first = temp;
 	}
     // make an iterator to the end of the file
@@ -50,7 +50,7 @@ void Parser::ParseFile(string fileName) {
 		int index = fileName.find('_', 0);
 		// keep the action, but change the object name to generic.
 		fileName.replace(0, index, "generic");
-		iterator_t temp(fileName);
+		iterator_t temp(fileName.c_str());
 		first = temp;
 		// make an iterator to the end of the file
 		iterator_t last = first.make_end();

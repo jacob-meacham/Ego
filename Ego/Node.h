@@ -2,7 +2,9 @@
 #define _node_h_included_
 #include <iostream>
 #include <cstdio>
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 /// Class that encapsulates a node of the pathfinder.
 class Node {
 	private:

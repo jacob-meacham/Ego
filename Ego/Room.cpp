@@ -1,5 +1,5 @@
 #include "Room.h"
-#include "Script Parser.h"
+#include "ScriptParser.h"
 #include "Inventory.h" //Not needed!
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
@@ -7,7 +7,8 @@
 Room::Room() { 	
 	m_zeroScale = 1.0f;
 	m_scalingFactor = 0.0f;
-	m_parser.SetParent(this); }
+	m_parser.SetParent(this); 
+}
 
 /// Sets the font and Ego of this room instance.
 /** One room instance should be used for multiple rooms.
@@ -53,14 +54,13 @@ bool Room::GetHasEnterScript() { return m_hasEnterScript; }
 /** This function clears all data, and saves any room/object flags which were changed.
 */
 bool Room::LeaveRoom() {
-	// each room has 256 flags, and each object has 40 flags.
-	m_vars = new int[256 + 40*m_objectList.size()];
+	DataPackage	m_DPVariables(sizeof(int)*(256 + 40*m_objectList.size())); ///< DataPackage to load/save all object and room flags.
 
 	// create the data buffer.
-	m_vars = (int *)m_DPVariables.Create(sizeof(int)*(256 + 40*m_objectList.size()));	
+	int* m_vars = (int *)m_DPVariables.GetPtr();
 	
 	// first, save the room flags.
-	for(int i =0; i<256; i++) {
+	for(int i = 0; i<256; i++) {
 		m_vars[i] = GetFlag(i);
 	}
 
@@ -79,7 +79,6 @@ bool Room::LeaveRoom() {
 	m_DPVariables.Save("Room.var");
 
 	// free memory.
-	m_DPVariables.Free();
 	m_objectList.clear();
 	m_ExitList.clear();
 	delete m_collisionMap;
@@ -296,16 +295,14 @@ void Room::RenderRoom() {
 	}
 
 	m_Ego.Render();
-	
-	// Begin the font interface.
-	m_font->BeginFont();
+
 	// If we are in script, render the current conversation string, if any.
 	if(GetInScript()) {
 		int textBoxWidth = 650;
 		if(m_curConversationX + textBoxWidth > SCREEN_WIDTH - 30) { 
 			textBoxWidth = SCREEN_WIDTH - m_curConversationX;
 		}
-		m_font->Print((char*)m_curConversationString.c_str(), m_curConversationX, m_curConversationY,
+		m_font->render(m_curConversationString.c_str(), m_curConversationX, m_curConversationY,
 			textBoxWidth, SCREEN_HEIGHT, m_curConversationStringColor, DT_WORDBREAK);
 	}
 
@@ -316,7 +313,7 @@ void Room::RenderRoom() {
 
 	// If we are not in script, render the current object descriptor.
 	if(!GetInScript()) {
-	m_font->Print((char*)m_curMouseObject.c_str(), 400, 500, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF);
+	m_font->render(m_curMouseObject.c_str(), 400, 500, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF);
 
 	// render Ego's current action.
 	std::string action;
@@ -337,13 +334,12 @@ void Room::RenderRoom() {
 			action = "Null";
 			break;
 	}
-	m_font->Print((char*)action.c_str(), 10, 530, SCREEN_WIDTH, SCREEN_HEIGHT, 0xDDDDDDDD);
+	m_font->render(action.c_str(), 10, 530, SCREEN_WIDTH, SCREEN_HEIGHT, 0xDDDDDDDD);
 	}
 	if(m_Ego.GetCurrentlyHeldItem() != NULL) {
-		m_font->Print((char*)m_Ego.GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
+		m_font->render(m_Ego.GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
 					  SCREEN_HEIGHT, 0xFFFFFFFF);
 	}
-	m_font->EndFont();
 }
 
 

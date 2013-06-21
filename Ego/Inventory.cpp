@@ -1,5 +1,7 @@
 #include "Inventory.h"
 #include "Room.h"
+#include "Framework\GraphicsDevice.h"
+
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.
@@ -13,8 +15,8 @@ Inventory::Inventory() {
 void Inventory::SetParent(Ego *p) { m_parent = p; }
 
 /// Sets the tileset of this inventory, so that inventory objects can easily move from room to room.
-void Inventory::SetInventoryTiles(GraphicsCore *Graphics, long NumTextures) {
-	m_inventoryTiles.Create(Graphics, NumTextures);
+void Inventory::SetInventoryTiles(GraphicsDevice *Graphics, long NumTextures) {
+	m_inventoryTiles.Create(NumTextures);
 }
 
 /// Adds an object to the main inventory list.
@@ -112,18 +114,17 @@ void Inventory::UpdateScript(long mouseX, long mouseY, bool lClick) {
 
 /// Renders the inventory, including any objects in the inventory, and any script strings.
 void Inventory::RenderInventory() {
-	m_font->BeginFont();
 	// First, render the objects.
 	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		(*iObject).Render();
 	}
 	// If we are not in a script, render the descriptor of the current mouse object, if any 
 	if(!GetInScript()) {
-	m_font->Print((char*)m_curMouseObject.c_str(), 0, 570, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF, DT_CENTER);
+		m_font->render(m_curMouseObject.c_str(), 0, 570, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF, DT_CENTER);
 	}
 	// If we are in script, render the current conversation string, if any
 	else if(GetInScript() && !m_parser.WaitingForInput()) {
-		m_font->Print((char*)m_curConversationString.c_str(), 0, 250,
+		m_font->render(m_curConversationString.c_str(), 0, 250,
 		650, SCREEN_HEIGHT, m_curConversationStringColor, DT_WORDBREAK | DT_CENTER);
 	}
 	// if the parser is waiting for input, then render any conversation choices.
@@ -131,7 +132,7 @@ void Inventory::RenderInventory() {
 		PrintConversationChoices();
 	}
 	if(m_parent->GetCurrentlyHeldItem() != NULL) {
-		m_font->Print((char*)m_parent->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
+		m_font->render(m_parent->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
 					  SCREEN_HEIGHT, 0xFFFFFFFF);
 	}
 }

@@ -1,6 +1,8 @@
 #ifndef _exit_h_included_
 #define _exit_h_included_
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 /// Encapsulates exits from any room.
 class Exit {
 	private:

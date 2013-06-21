@@ -29,7 +29,7 @@ bool TextBox::SetText(int number, std::string text, D3DCOLOR textColor, long xPo
 	r.bottom = 1;
 
 	// Determine height, using the DirectX function DrawText().
-	m_Height = p_Font->GetFontCOM()->DrawText((char*)text.c_str(), -1, &r, DT_CALCRECT | DT_WORDBREAK, 0xFFFFFFFF) + 12;
+	m_Height = p_Font->calcHeight(text.c_str(), xPos, 0, Width-12, 1) + 12;
 	return true;
 }
 
@@ -47,7 +47,7 @@ bool TextBox::CheckMouseCollision(long mouseX, long mouseY) {
 
 /// Prints the text box.
 void TextBox::PrintTextBox() {
-	p_Font->Print((char*)m_Text.c_str(), m_XPos+6, m_YPos+6, m_Width-12, m_Height-12, m_TextColor, DT_WORDBREAK);
+	p_Font->render(m_Text.c_str(), m_XPos+6, m_YPos+6, m_Width-12, m_Height-12, m_TextColor, DT_WORDBREAK);
 }
 
 /// Returns the ID number of the text box.
