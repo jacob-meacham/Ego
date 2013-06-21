@@ -7,3 +7,6 @@ Ego/Debug/*
 Ego/Release/*
 **/obj/*
 ipch/*
+Framework/lib/*
+Debug/*
+fileeditor
