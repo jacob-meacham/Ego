@@ -1,7 +1,6 @@
 #ifndef _textBox_h_included_
 #define _textBox_h_included_
 #include <string>
-#include "Framework\GraphicsDevice.h"
 #include "Framework\Font.h"
 
 /// Encapsulates a text box, used for rendering conversation choices.

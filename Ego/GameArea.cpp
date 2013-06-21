@@ -1,6 +1,14 @@
 #include "GameArea.h"
+#include "ScriptParser.h"
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
+GameArea::GameArea() {
+	m_parser = new Parser();
+}
+
+GameArea::~GameArea() {
+	delete m_parser;
+}
 
 /// Sets the main font used for rendering all game area text (object descriptions, conversations, etc.).
 void GameArea::SetFont(Font *font) { m_font = font; }

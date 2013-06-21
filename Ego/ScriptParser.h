@@ -2,10 +2,6 @@
 #define _parser_h_included_
 #include "scriptGrammar.h"
 #include <boost/spirit/tree/ast.hpp>
-#define NOMINMAX
-#include <windows.h>
-#undef NOMINMAX
-#include <mmsystem.h> // for timeGetTime()
 using namespace std;
 
 // Typedefs for boost::spirit

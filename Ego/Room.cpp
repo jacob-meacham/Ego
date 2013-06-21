@@ -1,13 +1,14 @@
 #include "Room.h"
 #include "ScriptParser.h"
-#include "Inventory.h" //Not needed!
+#include "DataPackage.h"
+
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default Constructor.
 Room::Room() { 	
 	m_zeroScale = 1.0f;
 	m_scalingFactor = 0.0f;
-	m_parser.SetParent(this); 
+	m_parser->SetParent(this); 
 }
 
 /// Sets the font and Ego of this room instance.
@@ -34,7 +35,7 @@ void Room::EnterRoom(char *cm, std::string roomName) {
 	
 	if(GetHasEnterScript()) {
 		string s = roomName + "OnEnter.sc";
-		m_parser.ParseFile(s);
+		m_parser->ParseFile(s);
 		SetInScript(true);
 	}
 	else {
@@ -120,16 +121,16 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 	long pathY = mouseY;
 	m_curMouseObject = "";
 	if(GetInScript()) { 
-		if(m_parser.WaitingForInput()) {
+		if(m_parser->WaitingForInput()) {
 			std::list<TextBox>::iterator iText;
 			for(iText = m_activeChoices.begin(); iText != m_activeChoices.end(); iText++) {
 				if((*iText).CheckMouseCollision(mouseX, mouseY)) {
 					(*iText).SetColor(0xFF532FD4);
-					if(lClick) { m_parser.JumpToConversation((*iText).GetChoiceNumber()); }
+					if(lClick) { m_parser->JumpToConversation((*iText).GetChoiceNumber()); }
 					return;
 				} // end if((*iText...
 			} // end for(iText...
-		} // end if(m_parser...
+		} // end if(m_parser->..
 		return; // if we are in script and not waiting for input, we do not need to query the room
 	}
 	
@@ -169,7 +170,7 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 			// also, check if Ego has stepped on an object that has an onStep script.
 			if((*riObject).HasOnStep() && !(*riObject).GetEgoIn() && (*riObject).CheckMouseCollision(m_Ego.GetFootXPos(), m_Ego.GetFootYPos())) {
 				(*riObject).SetEgoIn(true);
-				(*riObject).DoAction(IS_WALK, &m_parser);
+				(*riObject).DoAction(IS_WALK, m_parser);
 				SetCurActionObject(&(*riObject));
 				SetInScript(true);
 				return;
@@ -242,10 +243,10 @@ bool Room::Update() {
 			m_Ego.SetCurAction(IS_NOACTION, NULL, -1, -1);
 			// Load script.
 			if(action != IS_USEITEM) {
-			m_curActionObject->DoAction(action, &m_parser);
+			m_curActionObject->DoAction(action, m_parser);
 			}
 			else {
-				m_curActionObject->UseItem(m_Ego.GetCurrentlyHeldItem()->GetName(), &m_parser);
+				m_curActionObject->UseItem(m_Ego.GetCurrentlyHeldItem()->GetName(), m_parser);
 			}
 			// Set script status to true.
 			SetInScript(true);
@@ -259,8 +260,8 @@ bool Room::Update() {
 	// if the room is currently executing a script, and the parser has
 	// finished executin the previously line and is not waiting for input,
 	// execute the next line.
-	if(GetInScript() && m_parser.FinishedLine() && !m_parser.WaitingForInput()) {
-			m_parser.ExecuteNextLine();
+	if(GetInScript() && m_parser->FinishedLine() && !m_parser->WaitingForInput()) {
+			m_parser->ExecuteNextLine();
 		}
 	return true;
 }
@@ -307,7 +308,7 @@ void Room::RenderRoom() {
 	}
 
 	// If the parser is waiting for input, render the current conversation choices.
-	if(m_parser.WaitingForInput()) {
+	if(m_parser->WaitingForInput()) {
 		PrintConversationChoices();
 	}
 

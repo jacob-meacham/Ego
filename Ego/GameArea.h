@@ -2,10 +2,9 @@
 #define _gameArea_h_included_
 #include <list>
 #include "ConversationList.h"
-#include "Ego.h"
-#include "Exit.h"
 #include "TextBox.h"
-#include "ScriptParser.h"
+#include "Object.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -15,6 +14,9 @@
 	the flags for script processing.  GameArea contains two pure virtual functions, which all
 	derived classes must define: GameArea::FindObject(), and GameArea::GetInventory()
 */
+class Ego;
+class Inventory;
+class Parser;
 class GameArea {
 	protected:
 		std::list<Object>			m_objectList;	///< List of all interactive objects in the game area.
@@ -28,12 +30,15 @@ class GameArea {
 		long						m_curConversationX; ///< X-Coordinate of the current conversation string.
 		long						m_curConversationY; ///< Y-Coordinate of the current conversation string.
 		bool						m_inScript; ///< Bool to determine if a script is currently being processed.
-		Parser						m_parser; ///< Parser to handle any object scripts.
+		Parser *					m_parser; ///< Parser to handle any object scripts.
 		ActionType					m_curAction; ///< The current action.
 		D3DCOLOR					m_curConversationStringColor; ///< Color of the conversation string.
 		int							m_flags[256]; ///< Game area flags, used when processing .ent scripts.
 
-	public:	
+	public:
+		GameArea();
+		virtual ~GameArea();
+
 		// Sets the main font used for rendering all game area text (object descriptions, conversations, etc.).
 		void SetFont(Font *font);
 

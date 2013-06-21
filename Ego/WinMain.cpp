@@ -1,4 +1,7 @@
 #include "WinMain.h"
+#include "DataPackage.h"
+#include "Inventory.h"
+#include <sstream>
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.  Creates the window.
@@ -23,11 +26,12 @@ EgoApp::EgoApp() {
 	and the main Ego instance, and then loads the first room.
 */
 bool EgoApp::onInit() {
+	if(!System::onInit()) {
+		return false;
+	}
+
 	// Create room grammar.
 	m_roomGrammar = new RoomGrammar(m_newRoom);
-
-	// Set the graphics.
-	m_Graphics.setGraphics(getWindow().getHWnd(), TRUE, width, height);
 
 	// Begin the input devices.
 	m_Keyboard.Init(getWindow().getHWnd(), getWindow().getHInst(), windowed);
@@ -94,7 +98,7 @@ bool EgoApp::onInit() {
 	
 	m_Ego.SetTextColor(0xFFFFFFFF);
 	m_Ego.GetInventory()->SetFont(&mainFont);
-	m_Ego.GetInventory()->SetInventoryTiles(&m_Graphics, 40);
+	m_Ego.GetInventory()->SetInventoryTiles(&gGraphics, 40);
 	m_Ego.SetName("Ego");
 	
 	// Set the main room Ego and font.
@@ -225,9 +229,9 @@ void EgoApp::onProcess() {
 	}
 
 	// Begin render state.
-	if(m_Graphics.beginScene()) {
-		m_Graphics.clear();
-		m_Graphics.beginSprite();
+	if(gGraphics.beginScene()) {
+		gGraphics.clear();
+		gGraphics.beginSprite();
 		// Draw the background.
 		m_Background.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
 
@@ -239,11 +243,11 @@ void EgoApp::onProcess() {
 			// And then render the inventory.
 			m_curRoom.GetEgo()->GetInventory()->RenderInventory();
 		}
-		m_Graphics.endSprite();
-		m_Graphics.endScene();
+		gGraphics.endSprite();
+		gGraphics.endScene();
 	}
 	// Display graphics.
-	m_Graphics.display();
+	gGraphics.display();
 }
 
 /// Function to load a room from a room script.  Returns true if the load is successful.

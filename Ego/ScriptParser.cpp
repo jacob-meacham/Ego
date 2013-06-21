@@ -1,7 +1,10 @@
+#include <windows.h>
+#include <mmsystem.h>
+#include <sstream>
 #include "ScriptParser.h"
 #include "GameArea.h"
 #include "Inventory.h"
-#include <sstream>
+#include "Ego.h"
 
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 

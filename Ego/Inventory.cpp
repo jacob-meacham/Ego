@@ -1,14 +1,16 @@
 #include "Inventory.h"
-#include "Room.h"
-#include "Framework\GraphicsDevice.h"
+#include <string>
 #include <sstream>
+#include "Framework\GraphicsDevice.h"
+#include "Room.h"
+#include "ScriptParser.h"
 
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default constructor.
 Inventory::Inventory() { 
 	SetInScript(false); 
-	m_parser.SetParent(this);
+	m_parser->SetParent(this);
 	m_nextObjectX = 120; 
 	m_nextObjectY = 30; }
 
@@ -66,7 +68,7 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 			if(lClick) {
 				SetCurActionObject(&(*iObject));
 				if(m_parent->GetCurrentlyHeldItem() != 0) {	
-					(*iObject).UseItem(m_parent->GetCurrentlyHeldItem()->GetName(), &m_parser); 
+					(*iObject).UseItem(m_parent->GetCurrentlyHeldItem()->GetName(), m_parser); 
 					SetInScript(true);
 				}
 				else if(GetGlobalAction() == IS_USE) { 
@@ -77,7 +79,7 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 				}
 				else {
 					// If the user also clicked on this object, then we need to process a script.
-					(*iObject).DoAction(GetGlobalAction(), &m_parser);
+					(*iObject).DoAction(GetGlobalAction(), m_parser);
 					// We are now in script.
 					SetInScript(true);
 				}
@@ -92,11 +94,11 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 /// Updates a current script by executing the next line and processing input.
 void Inventory::UpdateScript(long mouseX, long mouseY, bool lClick) {
 	// if the parser has finished the line and is not waiting, execute the next line
-	if(m_parser.FinishedLine() && !m_parser.WaitingForInput()) {
-			m_parser.ExecuteNextLine();
+	if(m_parser->FinishedLine() && !m_parser->WaitingForInput()) {
+			m_parser->ExecuteNextLine();
 		}
 	// if the parser is waiting, then we are in a conversation.  
-	else if(m_parser.WaitingForInput()) {
+	else if(m_parser->WaitingForInput()) {
 		std::list<TextBox>::iterator iText;
 		for(iText = m_activeChoices.begin(); iText != m_activeChoices.end(); iText++) {
 			// If the mouse is hovering, then we need to change the text color.
@@ -104,7 +106,7 @@ void Inventory::UpdateScript(long mouseX, long mouseY, bool lClick) {
 				// If the user chose a conversation choice, then we need to jump to that choice.
 				(*iText).SetColor(0xFF532FD4);
 				if(lClick) {
-					m_parser.JumpToConversation((*iText).GetChoiceNumber());
+					m_parser->JumpToConversation((*iText).GetChoiceNumber());
 					return;
 				} // end if(lClick)
 				return;
@@ -124,12 +126,12 @@ void Inventory::RenderInventory() {
 		m_font->render(m_curMouseObject.c_str(), 0, 570, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF, DT_CENTER);
 	}
 	// If we are in script, render the current conversation string, if any
-	else if(GetInScript() && !m_parser.WaitingForInput()) {
+	else if(GetInScript() && !m_parser->WaitingForInput()) {
 		m_font->render(m_curConversationString.c_str(), 0, 250,
 		650, SCREEN_HEIGHT, m_curConversationStringColor, DT_WORDBREAK | DT_CENTER);
 	}
 	// if the parser is waiting for input, then render any conversation choices.
-	else if(GetInScript() && m_parser.WaitingForInput()) {
+	else if(GetInScript() && m_parser->WaitingForInput()) {
 		PrintConversationChoices();
 	}
 	if(m_parent->GetCurrentlyHeldItem() != NULL) {

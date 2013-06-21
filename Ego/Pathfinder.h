@@ -1,10 +1,6 @@
 #ifndef _pathfinder_h_included_
 #define _pathfinder_h_included_
 #include <algorithm>  // Include algorithms
-#include <iostream>
-#include <cstdio>
-#include <string>
-#include <fstream>
 #include <list>
 #include "Node.h"
 /// implements A* pathfinding algorithm.

@@ -1,32 +1,23 @@
 #ifndef _winMain_h_included_
 #define _winMain_h_included_
-#include <iostream>
-#include <sstream>
-#include <string>
-#include "Framework\DXUtil.h"
-#include "Framework\GraphicsDevice.h"
+#include "Framework\Texture.h"
 #include "Framework\System.h"
 #include "Framework\Input.h"
 #include "Room.h"
 #include "roomGrammar.h"
-#include "Inventory.h"
 #define LEAN_AND_MEAN
 #define MAX_ITEMS 15
 using namespace boost::spirit;
-
- typedef char                    char_t;
- typedef file_iterator <char_t>  iterator_t;
 
 /// Entry point for this game.
  /** EgoApp extends from SystemCore, and, as such, handles Windows messages,
 	 input devices, rendering, and updating of the room which Ego is in.
  */
 
-
+class DataPackage;
 class EgoApp : public System
 {
 	private:
-		GraphicsDevice  m_Graphics; ///< The graphics device.
 		Texture			m_Background; ///< The background of the current room.
 		Texture			m_Inventory; ///< The background of the main inventory.
 		Tile			m_Tiles; ///< The tile set to use.

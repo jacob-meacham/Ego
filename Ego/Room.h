@@ -1,12 +1,9 @@
 #ifndef _room_h_included_
 #define _room_h_included_
 #include <list>
-#include "ConversationList.h"
 #include "Ego.h"
 #include "Exit.h"
-#include "TextBox.h"
 #include "GameArea.h"
-#include "DataPackage.h"
 
 #define MAX_CHOICES 10;
 //class Inventory;
