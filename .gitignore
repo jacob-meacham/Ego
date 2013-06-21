@@ -1,0 +1,9 @@
+*.sdf
+*.suo
+*.user
+*.ncb
+*.opensdf
+Prototype/Debug/*
+Prototype/Release/*
+**/obj/*
+ipch/*
