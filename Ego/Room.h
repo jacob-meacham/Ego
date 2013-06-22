@@ -29,7 +29,7 @@ class Room : public GameArea {
 	public:
 		// Constructor.
 		Room();
-		virtual ~Room();
+		~Room();
 
 		// Sets the rooms Ego and font.
 		void Set(Ego Dude, Font *font);

@@ -18,6 +18,7 @@ class Ego : public Actor {
 	public:
 		// Constructor.
 		Ego();
+		~Ego();
 
 		void SetParentRoom(Room* room);
 		

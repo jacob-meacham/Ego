@@ -5,7 +5,7 @@
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
 /// Default Constructor.
-Room::Room() { 	
+Room::Room() : m_dpCollision(NULL) { 	
 	m_zeroScale = 1.0f;
 	m_scalingFactor = 0.0f;
 	m_parser->SetParent(this); 

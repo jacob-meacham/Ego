@@ -30,7 +30,7 @@ class Object : public Sprite {
 		std::list<std::string> m_useItemsOn; ///< List of objects that execute a special script when used upon this object.
 		// Constructor/Destructor.
 		Object();
-		~Object();
+		virtual ~Object();
 		
 		// Executes the specified action with the parser.	
 		void DoAction(ActionType action, Parser *p);

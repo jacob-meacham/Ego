@@ -9,6 +9,10 @@ Ego::Ego() {
 	m_curPickupAnimation = PICKING_UP_RIGHT_DOWN;
 }
 
+Ego::~Ego() {
+	delete m_inventory;
+}
+
 void Ego::SetParentRoom(Room* room) {
 	m_curRoom = room;
 }

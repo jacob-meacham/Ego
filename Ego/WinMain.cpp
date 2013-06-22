@@ -5,7 +5,7 @@
 #include "roomGrammar.h"
 //////////////////////////////////////////////////////////////////////////////////
 /// Default constructor.  Creates the window.
-EgoApp::EgoApp() {	
+EgoApp::EgoApp() {
 	x = 10;
 	y = 10;
 	width = 800;
@@ -48,7 +48,7 @@ bool EgoApp::onInit() {
 	m_Tiles.Create((2*new_room.objectList.size())+1);
 	m_Inventory.load("Data\\Inventory.png");
 
-	initVars(&new_room);
+	//initVars(&new_room);
 	initEgo();
 	
 	// Set the main room Ego and font.
@@ -124,6 +124,7 @@ void EgoApp::initEgo() {
 	then renders the room/inventory.
 */
 void EgoApp::onProcess() {
+	return;
 	// Update timer.
 	g_dCurTime     = timeGetTime();
 	g_fElpasedTime = (float)((g_dCurTime - g_dLastTime) * 0.001);
@@ -255,9 +256,7 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 
 	sRoom new_room;
 	RoomGrammar room_grammar(new_room);
-
-	iterator_t last = first.make_end();
-	parse_info <iterator_t> info = parse(first, last, room_grammar, space_p);
+	parse_info <iterator_t> info = parse(first, first.make_end(), room_grammar, space_p);
 	
 	if(!info.full) { 
 		TRACE("Parsing Failed"); 
@@ -266,13 +265,15 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 	
 	m_Background.load(new_room.bgFileName.c_str());
 	
-	int size = new_room.objectList.size();
-	
+	// Setup flags
 	DataPackage * dp_variables = DataPackage::Load("Room.var", NULL);
 	int * flags = (int*)dp_variables->GetPtr();
 	for(int j = 0; j<256; j++) {
 		m_curRoom.SetFlag(j, flags[j]);
 	}
+	delete dp_variables;
+
+	int size = new_room.objectList.size();
 	for(int i = 0; i<size; i++) {
 		const sObject & o = new_room.objectList.front();
 		
@@ -295,11 +296,13 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 			newRoomObject.SetFlag(l, flags[k]);
 			l++;
 		}
+
 		if(o.useItemOnList.size() != 0) {
 			for(std::list<std::string>::const_iterator iString = o.useItemOnList.begin(); iString != o.useItemOnList.end(); iString++) {
 				newRoomObject.AddUseItem((*iString));
 			}
 		}
+
 		if(o.animList.size() != 0) {
 			for(std::list<sAnimSequence>::const_iterator iAnim = o.animList.begin(); iAnim != o.animList.end(); iAnim++) {
 				Sprite::AnimationOption animOp;
@@ -312,23 +315,21 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 				newRoomObject.SetAnimation(0);
 			}
 		}
+
 		m_curRoom.AddObject(newRoomObject);
 		new_room.objectList.pop_front();
 	}
-	int exitSize = new_room.exitList.size();
-	for(int i = 0; i<exitSize; i++) {
+
+	for(int i = 0; i<new_room.exitList.size(); i++) {
 		m_curRoom.AddExit(new_room.exitList.front().loc, new_room.exitList.front().roomNumber);
 		new_room.exitList.pop_front();
 	}
-	
-	m_Ego.SetXYPos(100, 300);
-	if(new_room.hasOnEnterScript == 1) { m_curRoom.SetHasEnterScript(true); }
-	else { m_curRoom.SetHasEnterScript(false); }
+	m_curRoom.SetHasEnterScript(new_room.hasOnEnterScript == 1); 
+
+	m_Ego.SetXYPos(100, 300);	
 
 	DataPackage * dp_collision = DataPackage::Load(new_room.colMapFileName.c_str(), NULL);
-	m_curRoom.EnterRoom(dp_collision, new_room.roomName);	
-
-	delete dp_variables;
+	m_curRoom.EnterRoom(dp_collision, new_room.roomName);
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
