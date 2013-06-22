@@ -1,11 +1,9 @@
-#ifndef _room_h_included_
-#define _room_h_included_
+#pragma once
 #include <list>
 #include "Ego.h"
 #include "Exit.h"
 #include "GameArea.h"
 
-#define MAX_CHOICES 10;
 //class Inventory;
 /// Main area of the game
 /** This adventure game is made up of a series of rooms.  As such, Room is the most important class.
@@ -53,19 +51,18 @@ class Room : public GameArea {
 		bool Update();
 	    
 		// Finds an object within the room.
-		Object* FindObject(std::string objectName);
+		Object* FindObject(const std::string & objectName);
 
 		// Renders the room and everything within.
-		void RenderRoom();
-		
+		void RenderRoom() const;
 
 		// Getters.
 		Inventory* GetInventory();
-		std::string GetName();
-		int GetExitNum();
+		const std::string & GetName() const;
+		int GetExitNum() const;
 		Ego* GetEgo();
-		bool GetExit();
-		bool GetHasEnterScript();
+		bool GetExit() const;
+		bool GetHasEnterScript() const;
 
 		// Setters.
 		void SetExit(bool active, int number = -1);
@@ -73,4 +70,3 @@ class Room : public GameArea {
 		void SetScaling(float zeroScale, float scalingFactor);
 		
 };
-#endif

@@ -1,14 +1,13 @@
-#ifndef _object_h_included_
-#define _object_h_included_
+#pragma once
+
 #include "Framework\Sprite.h"
 #include <list>
-//#include <boost/spirit/iterator/file_iterator.hpp>
-//using namespace boost::spirit;
+
 class Parser;
 enum ActionType {IS_NOACTION, IS_WALK, IS_LOOK, IS_USE, IS_USEITEM, IS_TALK};
 enum FlagType {PER_CONVERSATION, PER_ROOM, PERMANENT};
-//typedef char                    char_t;
-//typedef file_iterator <char_t>  iterator_t;
+
+
 /// Any game object.
 /** An object is any interactive game object that is primarily stationary (that is, does not need pathfinding).
 	As with a Sprite, an Object is fully animatable.  Further, an Object has the ability to parse scripts
@@ -28,7 +27,7 @@ class Object : public Sprite {
 
 	public:
 		std::list<std::string> m_useItemsOn; ///< List of objects that execute a special script when used upon this object.
-		// Constructor/Destructor.
+
 		Object();
 		virtual ~Object();
 		
@@ -36,37 +35,36 @@ class Object : public Sprite {
 		void DoAction(ActionType action, Parser *p);
 
 		// Adds an item that can be used upon this one.
-		void AddUseItem(std::string itemName);
+		void AddUseItem(const std::string & itemName);
 		
 		// Ego has used a held item on this object - process it.
-		void UseItem(std::string item, Parser *p);
+		void UseItem(const std::string & item, Parser *p);
 
 		// Executes the current talking animation of this object.
 		void DoTalkingAnimation();
 		
 		// Getters. 
-		int GetFlag(int index);
-		D3DCOLOR GetTextColor();
-		std::string GetDescriptor();
-		int GetCurTalkingAnimation();
-		bool GetEgoIn();
-		bool HasOnStep();
-		long GetXWalkCoordinate();
-		long GetYWalkCoordinate();
+		int GetFlag(int index) const;
+		D3DCOLOR GetTextColor() const;
+		const std::string & GetDescriptor() const;
+		int GetCurTalkingAnimation() const;
+		bool GetEgoIn() const;
+		bool HasOnStep() const;
+		long GetXWalkCoordinate() const;
+		long GetYWalkCoordinate() const;
 		
 		// Checks if this object has collided with RECT a.
-		bool CheckCollisions(RECT a);
+		bool CheckCollisions(const RECT & a) const;
 
 		// Checks if the mouse is hovering over this object.
-		bool CheckMouseCollision(long MouseX, long MouseY);
+		bool CheckMouseCollision(long MouseX, long MouseY) const;
 
 		// Setters
 		void SetFlag(int index, int d);
-		void SetDescriptor(std::string descriptor);
+		void SetDescriptor(const std::string & descriptor);
 		void SetCurTalkingAnimation(int animationNumber);
 		void SetTextColor(D3DCOLOR color);
 		void SetHasOnStep(bool d);
 		void SetEgoIn(bool d);
 		void SetXYWalkCoordinates(long x, long y);
 };
-#endif

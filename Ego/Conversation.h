@@ -1,5 +1,4 @@
-#ifndef _conversation_h_included_
-#define _conversation_h_included_
+#pragma once
 #include <string>
 /// class to hold a single conversation string.
 /** Conversation is used in the interactive conversations 
@@ -12,15 +11,14 @@ class Conversation {
 	public:
 		// Constructors.
 		Conversation();
-		Conversation(std::string choice, bool show);
+		Conversation(const std::string & choice, bool show);
 
 		// Setters.
-		void SetConversationString(std::string s);
+		void SetConversationString(const std::string & s);
 		void Show();
 		void Hide();
 
 		// Getters.
-		std::string GetConversationString();
-		bool IsVisible();
+		const std::string & GetConversationString() const;
+		bool IsVisible() const;
 };
-#endif

@@ -1,12 +1,8 @@
-#ifndef _gameArea_h_included_
-#define _gameArea_h_included_
+#pragma once
 #include <list>
 #include "ConversationList.h"
 #include "TextBox.h"
 #include "Object.h"
-
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
 
 /// Base class for any areas of the game from which scripts can be processed.
 /** both Room and Inventory are derived from this base class.  It gives functionality
@@ -19,34 +15,35 @@ class Inventory;
 class Parser;
 class GameArea {
 	protected:
+		const Font					*m_font; ///< Pointer to the font used for rendering strings.
+
 		std::list<Object>			m_objectList;	///< List of all interactive objects in the game area.
-		std::list<Object>::iterator	iObject;		///< Standard iterator for m_objectList.
-		ConversationList			m_conversationList; ///< List for rendering conversation trees.  See FillConversationChoices().
-		std::list<TextBox>			m_activeChoices; ///< List for rendering conversation tree choices.
 		Object						*m_curActionObject; ///< Pointer to the current selected object.
-		Font						*m_font; ///< Pointer to the font used for rendering strings.
+		ActionType					m_curAction; ///< The current action.
 		std::string					m_curMouseObject; ///< Name of the object which the mouse is currently hovering over.
+
+		ConversationList			m_conversationList; ///< List for rendering conversation trees.  See FillConversationChoices().
+		std::list<TextBox>			m_activeChoices; ///< List for rendering conversation tree choices.		
 		std::string					m_curConversationString; ///< Current conversation string from script (if any).
 		long						m_curConversationX; ///< X-Coordinate of the current conversation string.
 		long						m_curConversationY; ///< Y-Coordinate of the current conversation string.
 		bool						m_inScript; ///< Bool to determine if a script is currently being processed.
-		Parser *					m_parser; ///< Parser to handle any object scripts.
-		ActionType					m_curAction; ///< The current action.
 		D3DCOLOR					m_curConversationStringColor; ///< Color of the conversation string.
-		int							m_flags[256]; ///< Game area flags, used when processing .ent scripts.
 
+		Parser *					m_parser; ///< Parser to handle any object scripts.		
+		int							m_flags[256]; ///< Game area flags, used when processing .ent scripts.
 	public:
 		GameArea();
 		virtual ~GameArea();
 
 		// Sets the main font used for rendering all game area text (object descriptions, conversations, etc.).
-		void SetFont(Font *font);
+		void SetFont(const Font * font);
 
 		// Adds an object to the main object list.
-		void AddObject(Object o);
+		Object & AddObject(const Object & o);
 		
 		// Removes an object from the main object list.
-		bool RemoveObject(std::string objectName);
+		bool RemoveObject(const std::string & objectName);
 
 		// Sets the current mouse object to null, which forces it to not render.
 		void ClearCurMouseObject();
@@ -55,20 +52,22 @@ class GameArea {
 		void ClearCurActionObject();
 			
 		// Adds a conversation choice to the main conversation list.  Used when first processing a script.
-		void AddConversationChoice(int number, std::string choice, bool show);
+		void AddConversationChoice(int number, const std::string & choice, bool show);
 
 		// Iterates through the main conversation list and finds the active choices for rendering speed.
 		void FillConversationChoices();
 
 		// Prints the active conversation choices to the screen.  Will only be rendered in script mode.
-		void PrintConversationChoices();
+		void PrintConversationChoices() const;
 		
 		// Getters.
 		Object* GetCurActionObject();
-		ActionType GetGlobalAction();
-		bool GetInScript();
-		int GetFlag(int index);
+		const Object* GetCurActionObject() const;
+		ActionType GetGlobalAction() const;
+		bool GetInScript() const;
+		int GetFlag(int index) const;
 		Conversation* GetConversationChoice(int number);
+		const Conversation* GetConversationChoice(int number) const;
 		
 		// Setters.
 		void SetFlag(int index, int d);
@@ -81,8 +80,6 @@ class GameArea {
 		
 		// virtual functions, required of all children.
 		virtual Inventory* GetInventory() = 0;
-		virtual Object* FindObject(std::string objectName) = 0;
+		virtual Object* FindObject(const std::string & objectName) = 0;
 		virtual Ego* GetEgo() = 0;
-
 };
-#endif

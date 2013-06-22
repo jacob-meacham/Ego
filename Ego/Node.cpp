@@ -24,7 +24,7 @@ void Node::SetHVal(int val) {
 }
 
 /// Returns the h-value of the node.
-int Node::GetHVal() {
+int Node::GetHVal() const {
 	return hValue;
 }
 
@@ -45,12 +45,12 @@ void Node::SetGVal() {
 }
 
 /// Returns the g-value of the node.
-int Node::GetGVal() {
+int Node::GetGVal() const {
 	return gValue;
 }
 
 /// Returns the X-Coordinate of the node.
-int Node::GetX() {
+int Node::GetX() const {
 	return loc.x;
 }
 
@@ -60,7 +60,7 @@ void Node::SetX(int x) {
 }
 
 /// Returns the Y-Coordinate of the node.
-int Node::GetY() {
+int Node::GetY() const {
 	return loc.y;
 }
 

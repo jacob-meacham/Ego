@@ -4,7 +4,6 @@
 
 /// Default constructor. Unused.
 Actor::Actor() { }
-	
 
 /// Creates an actor object.
 /** \param TileNum The tilenumber to use from the used tileset (see Sprite for more details).
@@ -12,7 +11,7 @@ Actor::Actor() { }
 	\param XPos The x-coordinate at which the actor will be created.
 	\param YPos the y-coordinate at which the actor will be created.
 */
-void Actor::CreateActor(char TileNum, std::string name, long XPos, long YPos) {
+void Actor::CreateActor(char TileNum, const std::string & name, long XPos, long YPos) {
 	Create(TileNum, name, XPos, YPos);
 	SetSpeed(7);
 	// For most humans, the feet can be placed at the bottom-middle of the sprite.
@@ -30,7 +29,7 @@ void Actor::SetCurAction(ActionType action, Object* actionObject, long actionX, 
 }
 
 /// Returns \enum ActionType current action.
-ActionType Actor::GetCurAction() {
+ActionType Actor::GetCurAction() const {
 	return m_curActionType;
 }
 
@@ -77,12 +76,12 @@ bool Actor::DoCurAction() {
 }
 
 /// Returns the x-coordinate of the current action.
-float Actor::GetCurActionX() {
+float Actor::GetCurActionX() const {
 	return m_curActionX;
 }
 
 /// Returns the y-coordinate of the current action.
-float Actor::GetCurActionY() {
+float Actor::GetCurActionY() const {
 	return m_curActionY;
 }
 
@@ -97,7 +96,7 @@ void Actor::SetAtCurActionCoord(bool d) {
 }
 
 /// returns true if the current coordinates are those of the curAction coordinates.
-bool Actor::AtCurActionCoord() {
+bool Actor::AtCurActionCoord() const {
 	return m_ActionBool;
 }
 
@@ -179,7 +178,6 @@ void Actor::SetFacingDirection() {
 /// Updates the actor.
 void Actor::Update() {
 	Sprite::Update();
-	//DoCurAction();
 }
 
 /// Uses the pathfinder class to find a path from the current position to the destination.
@@ -235,7 +233,7 @@ void Actor::SetSpeed(int speed) {
 }
 
 /// Getter to get an Actor's speed.
-int Actor::GetSpeed() {
+int Actor::GetSpeed() const {
 	return m_moveSpeed;
 }
 
@@ -247,12 +245,12 @@ void Actor::SetFootXYPos(long x, long y) {
 }
 
 /// Getter to get an Actor's foot x-coordinate.
-long Actor::GetFootXPos() {
+long Actor::GetFootXPos() const {
 	return m_Foot.x;
 }
 
 /// Getter to get an Actor's foot y-coordinate.
-long Actor::GetFootYPos() {
+long Actor::GetFootYPos() const {
 	return m_Foot.y;
 }
 	

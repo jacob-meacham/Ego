@@ -1,5 +1,4 @@
-#ifndef _pathfinder_h_included_
-#define _pathfinder_h_included_
+#pragma once
 #include <algorithm>  // Include algorithms
 #include <list>
 #include "Node.h"
@@ -30,34 +29,28 @@ class Pathfinder {
 		POINT FindWalkable(long startingX, long startingY);
 
 		// Function to calculate G-Value of a node.  
-		int CalculateGVal(Node *parent, Node* test);
+		int CalculateGVal(const Node & parent, const Node & test) const;
 
 		// Function calculates the H-Value of a Node.
-		int CalculateHVal(long posX, long posY, long destX, long destY);
+		int CalculateHVal(long posX, long posY, long destX, long destY) const;
 
 		// Function to test whether a node is the destination.
-		bool isDestination(Node *current, long destX, long destY);
+		bool isDestination(const Node & current, long destX, long destY) const;
 
 		// Uses pathMap to deduce whether a node is walkable.  
-		bool isWalkable(Node *current);
+		bool isWalkable(const Node & current) const;
 
 		// Function to query whichList.
-		bool onClosed(Node *current);
-		bool onOpen(Node *current);
+		bool onClosed(const Node & current) const;
+		bool onOpen(const Node & current) const;
 
 		// Function to set the x and y coordinates of Node neighboring current.
-		Node GetNeighbor(int index, Node *current);
+		Node GetNeighbor(int index, const Node & current) const;
 
 		// Returns the coordinates of the next node in a path, or -1, -1 (unreachable) if the path is empty.
 		POINT GetNextNode();
 
 		// Returns true if the path is not empty.
-		bool HasNextNode();
-
-
-
-
-
+		bool HasNextNode() const;
 };
-#endif
 

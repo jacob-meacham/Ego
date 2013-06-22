@@ -4,6 +4,7 @@
 #include "Framework\GraphicsDevice.h"
 #include "Room.h"
 #include "ScriptParser.h"
+#include "Framework\System.h"
 
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
@@ -18,19 +19,23 @@ Inventory::Inventory() {
 void Inventory::SetParent(Ego *p) { m_parent = p; }
 
 /// Sets the tileset of this inventory, so that inventory objects can easily move from room to room.
-void Inventory::SetInventoryTiles(GraphicsDevice *Graphics, long NumTextures) {
+void Inventory::SetInventoryTiles(long NumTextures) {
 	m_inventoryTiles.Create(NumTextures);
 }
 
 /// Adds an object to the main inventory list.
-void Inventory::AddInventoryObject(Object o) {
+void Inventory::AddInventoryObject(const Object & o) {
+	Object & new_object = AddObject(o);
+
 	if(o.GetName().find("Inventory") == string::npos) {
-	stringstream s;
-	s << o.GetName() << "Inventory";
-	o.SetName(s.str());
+		stringstream s;
+		s << o.GetName() << "Inventory";
+		new_object.SetName(s.str());
 	}
-	o.SetHasOnStep(false);
-	o.SetXYPos(m_nextObjectX, m_nextObjectY);
+
+	new_object.SetHasOnStep(false);
+	new_object.SetXYPos(m_nextObjectX, m_nextObjectY);
+
 	float scale;
 	if(o.GetHeight() > o.GetWidth()) {
 		scale = (100.0f / (float)o.GetHeight());
@@ -38,10 +43,10 @@ void Inventory::AddInventoryObject(Object o) {
 	else {
 		scale = (100.0f / (float)o.GetWidth());
 	}
-	o.SetXScale(scale);
-	o.SetYScale(scale);
-	o.SetVisible(true);
-	AddObject(o);
+	
+	new_object.SetXScale(scale);
+	new_object.SetYScale(scale);
+	new_object.SetVisible(true);
 	GetNextObjectCoordinates(); // calculate the next coordinates
 }
 
@@ -57,7 +62,7 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 		UpdateScript(mouseX, mouseY, lClick); 
 		return; 
 	}
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		// Check if the mouse is hovering over an object.
 		if((*iObject).CheckMouseCollision(mouseX, mouseY)) {
 			// if so, we need to render the descriptor.
@@ -116,27 +121,26 @@ void Inventory::UpdateScript(long mouseX, long mouseY, bool lClick) {
 }
 
 /// Renders the inventory, including any objects in the inventory, and any script strings.
-void Inventory::RenderInventory() {
+void Inventory::RenderInventory() const {
 	// First, render the objects.
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::const_iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		(*iObject).Render();
 	}
 	// If we are not in a script, render the descriptor of the current mouse object, if any 
 	if(!GetInScript()) {
-		m_font->render(m_curMouseObject.c_str(), 0, 570, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF, DT_CENTER);
+		m_font->render(m_curMouseObject.c_str(), 0, 570, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF, DT_CENTER);
 	}
 	// If we are in script, render the current conversation string, if any
 	else if(GetInScript() && !m_parser->WaitingForInput()) {
 		m_font->render(m_curConversationString.c_str(), 0, 250,
-		650, SCREEN_HEIGHT, m_curConversationStringColor, DT_WORDBREAK | DT_CENTER);
+			650, gSystem.getHeight(), m_curConversationStringColor, DT_WORDBREAK | DT_CENTER);
 	}
 	// if the parser is waiting for input, then render any conversation choices.
 	else if(GetInScript() && m_parser->WaitingForInput()) {
 		PrintConversationChoices();
 	}
 	if(m_parent->GetCurrentlyHeldItem() != NULL) {
-		m_font->render(m_parent->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
-					  SCREEN_HEIGHT, 0xFFFFFFFF);
+		m_font->render(m_parent->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 	}
 }
 
@@ -145,9 +149,9 @@ void Inventory::RenderInventory() {
 	the inventory must be able to return its ego parent.  If it is not asked for EGO, then it looks
 	through the objectList.  If it is not an inventory item, then it looks through the room's items.
 */
-Object* Inventory::FindObject(std::string objectName) {
+Object* Inventory::FindObject(const std::string & objectName) {
 	if(objectName.compare("EGO") == 0) { return m_parent; }
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) return &(*iObject);
 	}
 	return m_parent->GetRoom()->FindObject(objectName);
@@ -155,10 +159,10 @@ Object* Inventory::FindObject(std::string objectName) {
 }
 
 /// Removes an item from inventory, and retools coordinates.
-void Inventory::LoseObject(std::string objectName) {
+void Inventory::LoseObject(const std::string & objectName) {
 	bool found = false;
 	std::list<Object>::iterator tempI;
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) {
 			if(m_parent->GetCurrentlyHeldItem() != 0 && 
 			  (*iObject).GetName().compare(m_parent->GetCurrentlyHeldItem()->GetName()) == 0) {

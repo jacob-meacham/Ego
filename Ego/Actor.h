@@ -1,10 +1,8 @@
-#ifndef _actor_h_included_
-#define _actor_h_included_
-
+#pragma once
 #include "Object.h"
 #include "Pathfinder.h"
 
-/// Default animations, useful for all objects, and required for all actors.
+/// Default animations
 enum DefaultAnimations {
 	DEFAULT_TALKING = 0,
 	TALKING_RIGHT_DOWN,
@@ -29,7 +27,7 @@ enum DefaultAnimations {
 	PICKING_UP_LEFT_UP,
 	PICKING_UP_BACK,
 	PICKING_UP_FRONT,
- };
+};
 
 /// An actor is any object which may move about the screen.  
 /** An actor is any object which may move about the screen.  
@@ -48,30 +46,28 @@ class Actor : public Object {
 		POINT		m_Foot; 		///< point describing where the actor's feet are. Used to determine collisions.
 		POINT		m_Direction; 	///< eigenvector describing the x,y direction that the actor is facing.
 		bool		m_ActionBool; /// A boolean set when the current action coordinates are reached.
-		
 
-	public:
-		
+	public:	
 		// Default constructor.
 		Actor();
 
 		// Creates an actor object.
-		void CreateActor(char TileNum, std::string name, long XPos, long YPos);
+		void CreateActor(char TileNum, const std::string & name, long XPos, long YPos);
 
 		// Sets all current action parameters (use NULL for no current object).
-		void SetCurAction(ActionType action, Object* actionObject, long actionX, long actionY);
+		void SetCurAction(ActionType action, Object * actionObject, long actionX, long actionY);
 
 		// Returns \enum ActionType current action.
-		ActionType GetCurAction();
+		ActionType GetCurAction() const;
 
 		// Performs current action, stored in m_curActionType.
 		bool DoCurAction();
 
 		// Returns the x-coordinate of the current action.
-		float GetCurActionX();
+		float GetCurActionX() const;
 
 		// Returns the x-coordinate of the current action.
-		float GetCurActionY();
+		float GetCurActionY() const;
 
 		// Returns a pointer to the current object (or NULL if there is no current object).
 		Object* GetCurActionObject();
@@ -80,7 +76,7 @@ class Actor : public Object {
 		void SetAtCurActionCoord(bool d);
 
 		// returns true if the current coordinates are those of the curAction coordinates.
-		bool AtCurActionCoord();
+		bool AtCurActionCoord() const;
 		
 		// Sets the actor to the correct walking animation as she/he walks a path.
 		void UpdateActorWalkingAnimation(long xPos, long yPos);
@@ -107,17 +103,16 @@ class Actor : public Object {
 		void SetSpeed(int speed);
 
 		// Getter to get an Actor's speed.
-		int GetSpeed();
+		int GetSpeed() const;
 
 		// Setter to set an Actor's foot x, y coordinate.
 		void SetFootXYPos(long x, long y);
 		
 		// Getter to get an Actor's foot x-coordinate.
-		long GetFootXPos();
+		long GetFootXPos() const;
 
 		// Getter to get an Actor's foot y-coordinate.
-		long GetFootYPos();
+		long GetFootYPos() const;
 		
 		
 };
-#endif

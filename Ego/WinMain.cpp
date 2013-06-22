@@ -115,7 +115,7 @@ void EgoApp::initEgo() {
 	
 	m_Ego.SetTextColor(0xFFFFFFFF);
 	m_Ego.GetInventory()->SetFont(&mainFont);
-	m_Ego.GetInventory()->SetInventoryTiles(&gGraphics, 40);
+	m_Ego.GetInventory()->SetInventoryTiles(40);
 	m_Ego.SetName("Ego");
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -333,6 +333,9 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
+EgoApp gApp;
+System & gSystem = gApp;
+//////////////////////////////////////////////////////////////////////////////////
 /// Entry point for a Windows application.  Calls SystemCore::Run
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdShow)
 {
@@ -344,14 +347,13 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdSh
 	_crtBreakAlloc = -1; // Sets a user breakpoint at the specified allocation.
 #endif 
 
-	EgoApp app;
-	app.parseCommandLine(::__argc, ::__argv);
+	gApp.parseCommandLine(::__argc, ::__argv);
 
 	int rval = 0;
-	if(app.onInit())
+	if(gApp.onInit())
 	{
 		rval = 1;
-		app.messageLoop();
+		gApp.messageLoop();
 	}
 
 	return rval;

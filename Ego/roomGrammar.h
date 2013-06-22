@@ -1,5 +1,4 @@
-#ifndef _roomGrammar_hpp_included_
-#define _roomGrammar_hpp_included_
+#pragma once
 #include <list>
 #include <boost/spirit.hpp>
 
@@ -35,6 +34,7 @@ struct sObject {
 	/// Default constructor: set visibility to not visible.
 	sObject() { visible = 0; visibleFlag = -1; hasOnStepScript = 0; useItemOnList.clear(); }
 };
+
 /// Structure which defines exits for a room script.
 struct sExit {
 	int roomNumber; ///< Number that this exit point to.
@@ -157,4 +157,3 @@ struct RoomGrammar : public boost::spirit::grammar<RoomGrammar> {
 		};
 		sRoom &room;
 	};
-#endif

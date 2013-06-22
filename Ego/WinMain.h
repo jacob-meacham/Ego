@@ -50,3 +50,5 @@ class EgoApp : public System
 		
 		bool LoadRoom(const std::string & roomName);
 };
+
+extern EgoApp gApp;

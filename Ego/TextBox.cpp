@@ -2,7 +2,7 @@
 
 /// Creates a new text box, setting the parent font.  
 /** This function must be called before SetText(). */
-void TextBox::Create(Font *parent) {
+void TextBox::Create(const Font *parent) {
 	p_Font = parent;
 }
 
@@ -11,7 +11,7 @@ void TextBox::Create(Font *parent) {
 	\param number The ID of this text box.
 	\param Width Fixes width, and allows for a variable height.
 */
-bool TextBox::SetText(int number, std::string text, D3DCOLOR textColor, long xPos, long yPos, long Width) {
+bool TextBox::SetText(int number, const std::string & text, D3DCOLOR textColor, long xPos, long yPos, long Width) {
 	if(p_Font == NULL) { return false; }
 	
 	m_choiceNumber = number;
@@ -37,7 +37,7 @@ bool TextBox::SetText(int number, std::string text, D3DCOLOR textColor, long xPo
 void TextBox::SetColor(D3DCOLOR textColor) { m_TextColor = textColor; }
 
 /// Returns true if the mouse is hovering over this text.
-bool TextBox::CheckMouseCollision(long mouseX, long mouseY) {
+bool TextBox::CheckMouseCollision(long mouseX, long mouseY) const {
 	if(mouseX < m_XPos) return false;
 	if(mouseX >= m_XPos + m_Width) return false;
 	if(mouseY < m_YPos) return false;
@@ -46,16 +46,16 @@ bool TextBox::CheckMouseCollision(long mouseX, long mouseY) {
 }
 
 /// Prints the text box.
-void TextBox::PrintTextBox() {
+void TextBox::PrintTextBox() const {
 	p_Font->render(m_Text.c_str(), m_XPos+6, m_YPos+6, m_Width-12, m_Height-12, m_TextColor, DT_WORDBREAK);
 }
 
 /// Returns the ID number of the text box.
-int TextBox::GetChoiceNumber() {
+int TextBox::GetChoiceNumber() const {
 	return m_choiceNumber;
 }
 
 /// Returns the height (width is fixed).
-long TextBox::GetHeight() {
+long TextBox::GetHeight() const {
 	return m_Height;
 }

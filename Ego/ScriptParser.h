@@ -1,5 +1,4 @@
-#ifndef _parser_h_included_
-#define _parser_h_included_
+#pragma once
 #include "scriptGrammar.h"
 #include <boost/spirit/tree/ast.hpp>
 using namespace std;
@@ -60,7 +59,7 @@ class Parser {
 		bool FinishedLine();
 
 		// True if in conversation and waiting for a choice from the user.
-		bool WaitingForInput();
+		bool WaitingForInput() const;
 
 		// Fills the conversation list.
 		void FillConversationList();
@@ -68,4 +67,3 @@ class Parser {
 		// Jumps to the conversation node.
 		void JumpToConversation(int number);
 };
-#endif

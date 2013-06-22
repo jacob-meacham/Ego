@@ -10,22 +10,14 @@ Exit::Exit(RECT location, int rmNumber) {
 	m_roomNumber = rmNumber;
 }
 
-/// Setter for the exit's location rectangle.
-void Exit::SetRect(RECT r) {
-	m_rect = r;
-}
-
 /// Getter for the exit's location rectangle.
-RECT Exit::GetRect() { return m_rect; }
-
-/// Setter for the exit's room number.
-void Exit::SetRoomNumber(int r) { m_roomNumber = r; }
+RECT Exit::GetRect() const { return m_rect; }
 
 /// Getter for the exit's room number.
-int	Exit::GetRoomNumber() { return m_roomNumber; }
+int	Exit::GetRoomNumber() const { return m_roomNumber; }
 
 /// Check a point collision with the exit's location rectangle
-bool Exit::CheckMouseCollision(long mouseX, long mouseY) { 
+bool Exit::CheckMouseCollision(long mouseX, long mouseY) const {
 	if(mouseX < m_rect.left) return false;
 	if(mouseX >= m_rect.right) return false;
 	if(mouseY < m_rect.top) return false;

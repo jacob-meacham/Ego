@@ -2,8 +2,8 @@
 #include "ScriptParser.h"
 #define Error(x) MessageBox(NULL, x, "Error", MB_OK);
 
-GameArea::GameArea() {
-	m_parser = new Parser();
+GameArea::GameArea() : m_parser(new Parser()) {
+
 }
 
 GameArea::~GameArea() {
@@ -11,19 +11,20 @@ GameArea::~GameArea() {
 }
 
 /// Sets the main font used for rendering all game area text (object descriptions, conversations, etc.).
-void GameArea::SetFont(Font *font) { m_font = font; }
+void GameArea::SetFont(const Font *font) { m_font = font; }
 
 /// Adds an object to the main object list.
-void GameArea::AddObject(Object o) {
+Object & GameArea::AddObject(const Object & o) {
 	m_objectList.push_front(o);
+	return m_objectList.front();
 }
 
 /// Removes an object from the main object list.
 /** \return true if the object is found and removed, false otherwise.
 */
-bool GameArea::RemoveObject(std::string objectName) {
+bool GameArea::RemoveObject(const std::string & objectName) {
 	bool found = false;
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) {
 		m_objectList.erase(iObject);
 		found = true;
@@ -42,7 +43,7 @@ void GameArea::ClearCurMouseObject() {
 void GameArea::ClearCurActionObject() { m_curActionObject = 0; }
 
 /// Adds a conversation choice to the main conversation list.  Used when first processing a script.
-void GameArea::AddConversationChoice(int number, std::string choice, bool show) { 
+void GameArea::AddConversationChoice(int number, const std::string & choice, bool show) { 
 	m_conversationList.AddElement(number, choice, show);
 }
 
@@ -66,11 +67,10 @@ void GameArea::FillConversationChoices() {
 }
 
 /// Prints the active conversation choices to the screen.  Will only be rendered in script mode.
-void GameArea::PrintConversationChoices() {
-	std::list<TextBox>::iterator iText;
-	for(iText = m_activeChoices.begin(); iText != m_activeChoices.end(); iText++) {
+void GameArea::PrintConversationChoices() const {
+	for(std::list<TextBox>::const_iterator iText = m_activeChoices.begin(); iText != m_activeChoices.end(); iText++) {
 		(*iText).PrintTextBox();
-		(*iText).SetColor(0xFFFFFFFF);
+		//(*iText).SetColor(0xFFFFFFFF);
 		}
 }
 
@@ -83,7 +83,7 @@ void GameArea::SetInScript(bool d) { m_inScript = d; }
 
 
 /// Returns the status of the script mode.
-bool GameArea::GetInScript() { return m_inScript; }
+bool GameArea::GetInScript() const { return m_inScript; }
 
 /// Sets the current conversation string.
 /** This string will only be rendered in script mode (see m_inScript).
@@ -119,10 +119,15 @@ void GameArea::SetGlobalAction(ActionType action) {
 }
 
 /// Returns the global action for the game area.
-ActionType GameArea::GetGlobalAction() { return m_curAction; }
+ActionType GameArea::GetGlobalAction() const { return m_curAction; }
 
 /// Returns the current object of attention in the game area.
 Object* GameArea::GetCurActionObject() { 
+	if(m_curActionObject == 0) { Error("Object is NULL!"); }
+	return m_curActionObject; 
+}
+
+const Object* GameArea::GetCurActionObject() const { 
 	if(m_curActionObject == 0) { Error("Object is NULL!"); }
 	return m_curActionObject; 
 }
@@ -134,7 +139,7 @@ void GameArea::SetCurActionObject(Object* o) {
 
 
 /// Returns a room flag at the specified index.
-int GameArea::GetFlag(int index) { return m_flags[index]; }
+int GameArea::GetFlag(int index) const { return m_flags[index]; }
 
 /// Sets a room flag at the specified index.
 void GameArea::SetFlag(int index, int d) { m_flags[index] = d; }

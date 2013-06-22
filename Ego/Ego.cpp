@@ -31,6 +31,7 @@ void Ego::SetCurrentlyHeldItem(Object *o) { m_curHeldItem = o; }
 
 /// Returns the currently held item.
 Object* Ego::GetCurrentlyHeldItem() { return m_curHeldItem; }
+const Object * Ego::GetCurrentlyHeldItem() const { return m_curHeldItem; }
 
 /// Sets the actor facing the correct direction when she/he has stopped.
 void Ego::SetFacingDirection() {
@@ -90,5 +91,3 @@ void Ego::DoPickupAnimation() {
 	SetAnimation(m_curPickupAnimation);
 	SetAutoAnimate(true);
 }
-
-Room* Ego::GetRoom() { return m_curRoom; }

@@ -1,4 +1,5 @@
 #include "Room.h"
+#include "Framework\System.h"
 #include "ScriptParser.h"
 #include "DataPackage.h"
 
@@ -54,7 +55,7 @@ void Room::SetHasEnterScript(bool d) {
 }
 
 /// Returns true if this room has an onEnter script.
-bool Room::GetHasEnterScript() { return m_hasEnterScript; }
+bool Room::GetHasEnterScript() const { return m_hasEnterScript; }
 
 /// Leaves the current room.
 /** This function clears all data, and saves any room/object flags which were changed.
@@ -71,7 +72,7 @@ bool Room::LeaveRoom() {
 	}
 
 	// then, for each object, save the object flags.
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		int k =0;
 		int l = 1;
 		for(int j = 40*l; j<40*(l+1); j++) {
@@ -234,7 +235,7 @@ bool Room::Update() {
 	m_Ego.SetXScale(m_zeroScale - m_scalingFactor*(600 - m_Ego.GetYPos()));
 	m_Ego.SetYScale(m_zeroScale - m_scalingFactor*(600 - m_Ego.GetYPos()));
 	// Update all objects in the scene
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		(*iObject).Update();
 	}
 	// If we are not in script, then Ego is free to move/perform actions.
@@ -272,7 +273,7 @@ bool Room::Update() {
 }
 
 /// Returns true if Ego current action is to exit the room
-bool Room::GetExit() {
+bool Room::GetExit() const {
 	return m_ActiveExit;
 }
 
@@ -283,20 +284,20 @@ void Room::SetExit(bool active, int number) {
 }
 
 /// Returns the room number to which Ego is trying to exit (if any).
-int Room::GetExitNum() {
+int Room::GetExitNum() const {
 	return m_ActiveRoomNumber;
 }
 
 /// Renders the room, and all objects within.
 /** This function also renders conversation choices, conversation strings and object descriptors.
 */
-void Room::RenderRoom() {
+void Room::RenderRoom() const {
 	// because of how room scripts are parsed, we must iterate backwards through the object list
 	// (for clipping reasons).
 	//for(list<Object>::reverse_iterator riObject = m_objectList.rbegin(); riObject != m_objectList.rend(); riObject++) {
 	//	(*riObject).Render();
 	//}
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::const_iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		(*iObject).Render();
 	}
 
@@ -305,11 +306,11 @@ void Room::RenderRoom() {
 	// If we are in script, render the current conversation string, if any.
 	if(GetInScript()) {
 		int textBoxWidth = 650;
-		if(m_curConversationX + textBoxWidth > SCREEN_WIDTH - 30) { 
-			textBoxWidth = SCREEN_WIDTH - m_curConversationX;
+		if(m_curConversationX + textBoxWidth > gSystem.getWidth() - 30) { 
+			textBoxWidth = gSystem.getWidth() - m_curConversationX;
 		}
 		m_font->render(m_curConversationString.c_str(), m_curConversationX, m_curConversationY,
-			textBoxWidth, SCREEN_HEIGHT, m_curConversationStringColor, DT_WORDBREAK);
+			textBoxWidth, gSystem.getHeight(), m_curConversationStringColor, DT_WORDBREAK);
 	}
 
 	// If the parser is waiting for input, render the current conversation choices.
@@ -319,32 +320,31 @@ void Room::RenderRoom() {
 
 	// If we are not in script, render the current object descriptor.
 	if(!GetInScript()) {
-	m_font->render(m_curMouseObject.c_str(), 400, 500, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFFFF);
+		m_font->render(m_curMouseObject.c_str(), 400, 500, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 
-	// render Ego's current action.
-	std::string action;
-	switch(m_curAction) {
-		case IS_USE:
-			action = "Use";
-			break;
-		case IS_WALK:
-			action = "Walk";
-			break;
-		case IS_LOOK:
-			action = "Look";
-			break;
-		case IS_TALK:
-			action = "Talk";
-			break;
-		default:
-			action = "Null";
-			break;
+		// render Ego's current action.
+		std::string action;
+		switch(m_curAction) {
+			case IS_USE:
+				action = "Use";
+				break;
+			case IS_WALK:
+				action = "Walk";
+				break;
+			case IS_LOOK:
+				action = "Look";
+				break;
+			case IS_TALK:
+				action = "Talk";
+				break;
+			default:
+				action = "Null";
+				break;
 	}
-	m_font->render(action.c_str(), 10, 530, SCREEN_WIDTH, SCREEN_HEIGHT, 0xDDDDDDDD);
+	m_font->render(action.c_str(), 10, 530, gSystem.getWidth(), gSystem.getHeight(), 0xDDDDDDDD);
 	}
 	if(m_Ego.GetCurrentlyHeldItem() != NULL) {
-		m_font->render(m_Ego.GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, SCREEN_WIDTH,
-					  SCREEN_HEIGHT, 0xFFFFFFFF);
+		m_font->render(m_Ego.GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 	}
 }
 
@@ -353,10 +353,10 @@ void Room::RenderRoom() {
 /** \param objectName The name of the object to search for.  If "EGO" is passed,
 	FindObject() will return a pointer to Ego.
 */
-Object* Room::FindObject(std::string objectName) {
+Object* Room::FindObject(const std::string & objectName) {
 	if(objectName.compare("EGO") == 0) { return &m_Ego; }
 
-	for(iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
+	for(std::list<Object>::iterator iObject = m_objectList.begin(); iObject != m_objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) { return &(*iObject); }
 	}
 	return 0;

@@ -1,5 +1,4 @@
-#ifndef _textBox_h_included_
-#define _textBox_h_included_
+#pragma once
 #include <string>
 #include "Framework\Font.h"
 
@@ -9,7 +8,7 @@
 */
 class TextBox {
 private:
-	Font			*p_Font; ///< Parent font of this textbox.
+	const Font		*p_Font; ///< Parent font of this textbox.
 	std::string		m_Text; ///< The text contained in this textbox.
 	D3DCOLOR		m_TextColor; ///< The color of the text in this textbox.
 	long			m_XPos, m_YPos; ///< The upper-left coordinates of the text-box.
@@ -18,23 +17,22 @@ private:
 
 public:
 	// Creates a new text box, setting the parent font.  
-	void Create(Font *parent);
+	void Create(const Font *parent);
 
 	// Sets the text in the text box.
-	bool SetText(int number, std::string text, D3DCOLOR textColor, long xPos, long yPos, long Width);
+	bool SetText(int number, const std::string & text, D3DCOLOR textColor, long xPos, long yPos, long Width);
 
 	// Prints the text box.
-	void PrintTextBox();
+	void PrintTextBox() const;
 
 	// Returns true if the mouse is hovering over this text.
-	bool CheckMouseCollision(long mouseX, long mouseY);
+	bool CheckMouseCollision(long mouseX, long mouseY) const;
 
 	// Setter.
 	void SetColor(D3DCOLOR textColor);
 
 	// Getters.
-	int GetChoiceNumber();
-	long GetHeight();
+	int GetChoiceNumber() const;
+	long GetHeight() const;
 
 };
-#endif

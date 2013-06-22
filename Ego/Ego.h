@@ -35,6 +35,7 @@ class Ego : public Actor {
 		// Getters.
 		Inventory* GetInventory();
 		Object* GetCurrentlyHeldItem();
-		Room* GetRoom();
+		const Object* GetCurrentlyHeldItem() const;
+		Room * GetRoom() { return m_curRoom; }
 };
 #endif

@@ -65,7 +65,7 @@ void Font::free()
 	DT_TOP
 	\return TRUE if printing is successful.
 */
-bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color, DWORD format)
+bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color, DWORD format) const
 {
 	if(!pFont)
 		return false;
@@ -83,7 +83,7 @@ bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
-long Font::calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height)
+long Font::calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height) const
 {
 	if(!pFont)
 		return 0;

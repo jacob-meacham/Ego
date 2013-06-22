@@ -44,13 +44,7 @@ void Parser::ParseFile(string fileName) {
 	// fill the AST, using AdventureScript as the grammar, and spaces as the skip parser
 	// (see boost::spirit for more information on spirit).
 	info = ast_parse(first, last, m_script, space_p);
-	//TODO: Error checking needed! if(info.full) { }
 	if(!info.full) { 
-		/* REMOVE REMOVE REMOVE!!!!!
-		stringstream file;
-		file << "Error parsing " << fileName;
-		Error((char*)file.str().c_str());
-		*/
 		int index = fileName.find('_', 0);
 		// keep the action, but change the object name to generic.
 		fileName.replace(0, index, "generic");
@@ -533,7 +527,7 @@ void Parser::FillConversationList() {
 }
 
 /// Returns the waiting status of the iterator.
-bool Parser::WaitingForInput() { return m_Waiting; }
+bool Parser::WaitingForInput() const { return m_Waiting; }
 
 /// Sets the waiting status of the iterator to d.
 void Parser::SetWaiting(bool d) { m_Waiting = d; }

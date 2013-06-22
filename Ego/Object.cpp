@@ -47,28 +47,28 @@ void Object::DoAction(ActionType action, Parser *p) {
 void Object::SetTextColor(D3DCOLOR color) { m_textColor = color; }
 
 /// Returns the text color of this object.
-D3DCOLOR Object::GetTextColor() { return m_textColor; }
+D3DCOLOR Object::GetTextColor() const { return m_textColor; }
 
 /// Returns the status of the flag at index.
-int Object::GetFlag(int index) { return m_flags[index]; }
+int Object::GetFlag(int index) const { return m_flags[index]; }
 
 /// Sets the status of the flag at index to d.
 void Object::SetFlag(int index, int d) { m_flags[index] = d; }
 
 /// Sets the descriptor of this object.
-void Object::SetDescriptor(std::string descriptor) { m_descriptor = descriptor; }
+void Object::SetDescriptor(const std::string & descriptor) { m_descriptor = descriptor; }
 
 /// Returns the descriptor of this object.
-std::string Object::GetDescriptor() { return m_descriptor; }
+const std::string & Object::GetDescriptor() const { return m_descriptor; }
 
 /// Sets if Ego is in this object.
 void Object::SetEgoIn(bool d) { m_isEgoIn = d; }
 
 ///  True if Ego is in this object.
-bool Object::GetEgoIn() { return m_isEgoIn; }
+bool Object::GetEgoIn() const { return m_isEgoIn; }
 
 /// Sets if this object executes a script when stepped upon.
-bool Object::HasOnStep() { return m_hasOnStepScript; }
+bool Object::HasOnStep() const { return m_hasOnStepScript; }
 
 /// True if this object executes a script when stepped upon.
 void Object::SetHasOnStep(bool d) { m_hasOnStepScript = d; }
@@ -77,19 +77,19 @@ void Object::SetHasOnStep(bool d) { m_hasOnStepScript = d; }
 void Object::SetXYWalkCoordinates(long x, long y) { m_walkCoordinates.x = x; m_walkCoordinates.y = y; }
 
 /// Return the x walk-coordinate.
-long Object::GetXWalkCoordinate() { return m_walkCoordinates.x; }
+long Object::GetXWalkCoordinate() const { return m_walkCoordinates.x; }
 
 /// Return the y-walk coordinate.
-long Object::GetYWalkCoordinate() { return m_walkCoordinates.y; }
+long Object::GetYWalkCoordinate() const { return m_walkCoordinates.y; }
 
 /// Adds an object that has a special script when used upon this object.
 /** \param itemName Name of the special item. */
-void Object::AddUseItem(std::string itemName) { 
+void Object::AddUseItem(const std::string & itemName) { 
 	m_useItemsOn.push_back(itemName);
 }
 
 /// Scans through the objects usable on this object and processes the correct script.
-void Object::UseItem(std::string item, Parser *p) {
+void Object::UseItem(const std::string & item, Parser *p) {
 	// If no item, is found, we will process the generic script.
 	std::stringstream scriptFile;
 	scriptFile << "Scripts\\" << item << "Generic_UseItem.sc";
@@ -115,10 +115,10 @@ void Object::DoTalkingAnimation() {
 void Object::SetCurTalkingAnimation(int animationNumber) { m_curTalkAnimation = animationNumber; }
 
 /// Returns the number of the current talking animation.
-int Object::GetCurTalkingAnimation() { return m_curTalkAnimation; }
+int Object::GetCurTalkingAnimation() const { return m_curTalkAnimation; }
 			
 /// Checks if this Sprite's bounding rectangle collides with RECT a.
-bool Object::CheckCollisions(RECT a) {
+bool Object::CheckCollisions(const RECT & a) const {
 	RECT rcIntersect;
 	IntersectRect(&rcIntersect, &(GetRect()), &a);
 	if(IsRectEmpty(&rcIntersect) != 0) {
@@ -130,7 +130,7 @@ bool Object::CheckCollisions(RECT a) {
 }
 
 /// Checks if the coordinates MouseX and MouseY are within the Sprite's bounding rectangle.
-bool Object::CheckMouseCollision(long MouseX, long MouseY) {
+bool Object::CheckMouseCollision(long MouseX, long MouseY) const {
 	if(MouseX < m_Location.x) return false;
 	if(MouseX >= m_Location.x + m_Width) return false;
 	if(MouseY < m_Location.y) return false;

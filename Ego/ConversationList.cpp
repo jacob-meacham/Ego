@@ -7,14 +7,14 @@ ConversationList::ConversationList() { m_numElements = 0; }
 	\param choice The conversation string of the Conversation.
 	\param visible The visibility status of the Conversation.
 */
-void ConversationList::AddElement(int index, std::string choice, bool visible) {
+void ConversationList::AddElement(int index, const std::string & choice, bool visible) {
 	Conversation c(choice, visible);
 	m_array[index] = c;
 	m_numElements++;
 }
 
 /// Getter for the number of valid elements stored in the array.
-int ConversationList::GetNumElements() {
+int ConversationList::GetNumElements() const {
 	return m_numElements;
 }
 
@@ -26,6 +26,10 @@ Conversation* ConversationList::GetConversation(int index) {
 	return &m_array[index];
 }
 
+const Conversation * ConversationList::GetConversation(int index) const {
+	return &m_array[index];
+}
+
 /// Sets a specific element's visibility.
 void ConversationList::SetElementVisibility(int index, bool visible) {
 	if(visible) { m_array[index].Show(); }
@@ -33,4 +37,4 @@ void ConversationList::SetElementVisibility(int index, bool visible) {
 }
 
 /// Getter to determine if the Conversation at index is visible.
-bool ConversationList::IsVisible(int index) { return m_array[index].IsVisible(); }
+bool ConversationList::IsVisible(int index) const { return m_array[index].IsVisible(); }

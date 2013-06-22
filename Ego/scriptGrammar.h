@@ -1,5 +1,3 @@
-#ifndef _scriptGrammar_hpp_included_
-#define _scriptGrammar_hpp_included_
 #include <boost/spirit.hpp>
 #include <boost/spirit/tree/ast.hpp>
 
@@ -97,4 +95,3 @@ struct AdventureScript : public boost::spirit::grammar<AdventureScript> {
 		}
 	};
 };
-#endif

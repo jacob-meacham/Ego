@@ -1,5 +1,4 @@
-#ifndef _conversationList_h_included_
-#define _conversationList_h_included_
+#pragma once
 #include "Conversation.h"
 
 /// Composed of a fixed sized array of conversations.
@@ -12,14 +11,14 @@ class ConversationList {
 		ConversationList();
 
 		// Add an element to the array.
-		void AddElement(int index, std::string choice, bool visible);
+		void AddElement(int index, const std::string & choice, bool visible);
 		
 		// Setters.
 		void SetElementVisibility(int index, bool visible);
 
 		// Getters.
-		int GetNumElements();
+		int GetNumElements() const;
 		Conversation* GetConversation(int index);
-		bool IsVisible(int index);
+		const Conversation * GetConversation(int index) const;
+		bool IsVisible(int index) const;
 };
-#endif

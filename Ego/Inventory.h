@@ -1,5 +1,4 @@
-#ifndef _inventory_h_included_
-#define _inventory_h_included_
+#pragma once
 #include "GameArea.h"
 #include "Framework\Texture.h"
 
@@ -18,7 +17,6 @@ private:
 		Ego						*m_parent; ///< Parent Ego (used for FindObject() ).
 		Tile					m_inventoryTiles; // Tileset for items in inventory.
 		
-
 	public:
 		// Constructor.
 		Inventory();
@@ -27,10 +25,10 @@ private:
 		void SetParent(Ego *p);
 
 		// Sets tileset of this inventory.
-		void SetInventoryTiles(GraphicsDevice *Graphics, long NumTextures);
+		void SetInventoryTiles(long NumTextures);
 
 		// Adds an object to the main inventory list.
-		void AddInventoryObject(Object o);
+		void AddInventoryObject(const Object & o);
 
 		// Relays input to the inventory for processing.
 		void QueryInventory(long mouseX, long mouseY, bool lClick);
@@ -39,17 +37,16 @@ private:
 		void UpdateScript(long mouseX, long mouseY, bool lClick);
 		
 		// Renders the inventory.
-		void RenderInventory();
+		void RenderInventory() const;
 		
 		// Finds an object in the inventory.
-		Object* FindObject(std::string objectName);
+		Object* FindObject(const std::string & objectName);
 
 		// Removes an object from inventory.
-		void LoseObject(std::string objectName);
+		void LoseObject(const std::string & objectName);
 		
 		// Getters.
 		Inventory* GetInventory();
 		Ego* GetEgo();
 		void GetNextObjectCoordinates();
 };
-#endif

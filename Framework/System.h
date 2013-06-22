@@ -46,11 +46,14 @@ class System
 		void messageLoop();
 		Window & getWindow() { return mWindow; }
 
+		long getWidth() const { return width; }
+		long getHeight() const { return height; }
+
 		void parseCommandLine(int argc, char * argv[]);
 		
 		virtual LRESULT CALLBACK MsgProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) { return DefWindowProc(hWnd, Msg, wParam, lParam); }		
 };
 
-extern System gSystem;
+extern System & gSystem;
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

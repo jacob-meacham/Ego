@@ -1,8 +1,6 @@
-#ifndef _exit_h_included_
-#define _exit_h_included_
-#define NOMINMAX
+#pragma once
 #include <windows.h>
-#undef NOMINMAX
+
 /// Encapsulates exits from any room.
 class Exit {
 	private:
@@ -11,15 +9,9 @@ class Exit {
 	public:
 		// Constructor.
 		Exit(RECT location, int rmNumber);
-
-		bool CheckMouseCollision(long mouseX, long mouseY);
-
-		// Setters.
-		void SetRoomNumber(int r);
-		void SetRect(RECT r);
+		bool CheckMouseCollision(long mouseX, long mouseY) const;
 
 		// Getters.
-		int	GetRoomNumber();
-		RECT GetRect();
+		int	GetRoomNumber() const;
+		RECT GetRect() const;
 };
-#endif

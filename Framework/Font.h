@@ -21,8 +21,8 @@ class Font {
 		void free();
 
 		// Prints the text in the font's specifications at the specified coordinates.
-		bool render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color = 0xFFFFFFFF, DWORD Format = 0);
-		long calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height);
+		bool render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color = 0xFFFFFFFF, DWORD Format = 0) const;
+		long calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height) const;
 
 		ID3DXFont* getFontCOM() { return pFont; }
 };
