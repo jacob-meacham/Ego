@@ -2,6 +2,7 @@
 
 #include <string>
 #include <windows.h>
+#include <vector>
 #include "Math.h"
 
 class Tile;
@@ -9,9 +10,32 @@ class Tile;
 /** The Sprite class handles all rendering of any game object.  This includes
 	animations, scale, and position.
 */
-class Sprite {		
+class Sprite {
+	public:
+		/// enum for animation control codes.
+		enum AnimationOption
+		{
+			LOOP_ANIMATION = 200, ///< returns to the first frame of animation.  Loops infinitely.
+			GOTO_NEXT_ANIMATION, ///< Goes to the next animation.  Should not be set as the control code of the last animation.
+			MAINTAIN_LAST_FRAME, ///< Maintains the last frame of animation.
+			KILL_SPRITE, ///< When the last frame is reached, the sprite is destroyed.
+			GOTO_DEFAULT_ANIMATION ///< Goes to the default animation (animation #0)
+		};
+
 	protected:
-		static const int TOTAL_ANIMATIONS = 64; // Max number of animation states per sprite
+		struct AnimationRec {
+			int startingFrame;
+			int endFrame;
+			AnimationOption endOption;
+
+			AnimationRec() : 
+				startingFrame(0), endFrame(0), endOption(MAINTAIN_LAST_FRAME) {
+			}
+
+			AnimationRec(int start, int end, AnimationOption option) : 
+				startingFrame(start), endFrame(end), endOption(option) {
+			}
+		};
 
 		std::string		m_Name; ///< Base name of the entity, through which it is known.
 
@@ -29,26 +53,13 @@ class Sprite {
 		
 		bool			m_visible;
 		int				m_curFrame; ///< Current frame of animation.
-		int				m_curAnimation; ///< Current animation.
-		int				m_numAnimations; ///< Total number of animations.
-		int				m_Animations[TOTAL_ANIMATIONS][3]; ///< Array where all animations are stored.  
-		/**< [][0] = starting Frame, [][1] = number of Frames, [][2] = end control code (see enum AnimationOption) */
+		u32				m_curAnimation; ///< Current animation.
+		std::vector<AnimationRec> m_Animations; ///< Array where all animations are stored.  
 		bool			m_autoAnimate; ///< true if the sprite should animate itself.
 		int				m_defaultAnimation; 
 		///< Animation that the sprite will return to on an AnimationOption code of GOTO_DEFAULT_ANIMATION.
 
 	public:
-		
-		/// enum for animation control codes.
-		enum AnimationOption
-		{
-			LOOP_ANIMATION = 200, ///< returns to the first frame of animation.  Loops infinitely.
-			GOTO_NEXT_ANIMATION, ///< Goes to the next animation.  Should not be set as the control code of the last animation.
-			MAINTAIN_LAST_FRAME, ///< Maintains the last frame of animation.
-			KILL_SPRITE, ///< When the last frame is reached, the sprite is destroyed.
-			GOTO_DEFAULT_ANIMATION ///< Goes to the default animation (animation #0)
-		};
-
 		// Constructor/Destructor.
 		Sprite();
 		virtual ~Sprite();
@@ -66,10 +77,10 @@ class Sprite {
 		void Create(char TileNum, const std::string & name, float Xpos, float Ypos);
 		
 		// Creates a new animation sequence.
-		bool CreateAnimationSequence(int animationNumber, u32 startFrame, u32 numFrames, AnimationOption nOption);
+		bool CreateAnimationSequence(u32 animationNumber, u32 startFrame, u32 numFrames, AnimationOption nOption);
 		
 		// Sets the current animation of the sprite.
-		bool SetAnimation(int animationNumber);
+		bool SetAnimation(u32 animationNumber);
 
 		// Controls animation.
 		bool incFrame();

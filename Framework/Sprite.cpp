@@ -59,7 +59,6 @@ void Sprite::Create(char TileNum, const std::string & name, float XPos, float YP
 	m_Name = name;
 	m_Location.x = XPos;
 	m_Location.y = YPos;
-	m_numAnimations = 0;
 	m_curAnimation = 0;
 	m_curFrame = 0;
 	m_TileNum = TileNum;
@@ -73,13 +72,13 @@ void Sprite::Create(char TileNum, const std::string & name, float XPos, float YP
 //////////////////////////////////////////////////////////////////////////////////
 /// Sets the current animation of the sprite.
 /** \return FALSE if animationNumber is greater than the current number of animations. */
-bool Sprite::SetAnimation(int animationNumber) {
-	if(animationNumber > m_numAnimations) {
+bool Sprite::SetAnimation(u32 animationNumber) {
+	if(animationNumber >= m_Animations.size()) {
 		m_curAnimation = m_defaultAnimation;
 		return true;
 	}
 	m_curAnimation = animationNumber;
-	m_curFrame = m_Animations[m_curAnimation][0];
+	m_curFrame = m_Animations[m_curAnimation].startingFrame;
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -99,14 +98,13 @@ int Sprite::GetDefaultAnimation() const {
 	\param endFrame The ending frame in the Sprite's tileset.
 	\param nOption Animation option (see enum AnimationOption ).
 */
-bool Sprite::CreateAnimationSequence(int animationNumber, u32 startFrame, u32 endFrame, AnimationOption nOption) {
-	m_numAnimations++;
-	// since we have just incremented m_numAnimations, if we have more than the total allowed # of animations,
-	// or our start frame starts further than there are number of tiles, return false.
-	if(m_numAnimations > TOTAL_ANIMATIONS || startFrame > m_Tiles->GetNum(m_TextureNum)) return false;
-	m_Animations[animationNumber][0] = startFrame;
-	m_Animations[animationNumber][1] = endFrame;
-	m_Animations[animationNumber][2] = nOption;
+bool Sprite::CreateAnimationSequence(u32 animationNumber, u32 startFrame, u32 endFrame, AnimationOption nOption) {
+	if(startFrame > m_Tiles->GetNum(m_TextureNum)) return false;
+
+	m_Animations.resize(animationNumber+1);
+	AnimationRec rec(startFrame, endFrame, nOption);
+	m_Animations[animationNumber] = rec;
+
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -135,19 +133,19 @@ bool Sprite::incFrame() {
 	m_curFrame++;
 	// m_Animations[m_curAnimation][1] is number of total frames.  If we are equal to that,
 	// then we should process the control code.
-	if(m_curFrame >= m_Animations[m_curAnimation][1]) {
-		switch(m_Animations[m_curAnimation][2]) {
+	if(m_curFrame >= m_Animations[m_curAnimation].endFrame) {
+		switch(m_Animations[m_curAnimation].endOption) {
 			case LOOP_ANIMATION:
 				// simply set the curFrame back to the start frame.
-				m_curFrame = m_Animations[m_curAnimation][0];
+				m_curFrame = m_Animations[m_curAnimation].startingFrame;
 				break;
 			case GOTO_NEXT_ANIMATION:
 				// increment the current animation
 				m_curAnimation++;
 				// return false if there is no next animation.
-				if(m_curAnimation > m_numAnimations) return FALSE;
+				if(m_curAnimation > m_Animations.size()) return FALSE;
 				// Set the current frame to the start frame of the (now) current animation
-				m_curFrame = m_Animations[m_curAnimation][0];
+				m_curFrame = m_Animations[m_curAnimation].startingFrame;
 				break;
 			case MAINTAIN_LAST_FRAME:
 				// set auto animte to false.
@@ -157,7 +155,7 @@ bool Sprite::incFrame() {
 				SetVisible(false);
 				break;
 			case GOTO_DEFAULT_ANIMATION:
-				m_curFrame = m_Animations[m_defaultAnimation][0];
+				m_curFrame = m_Animations[m_defaultAnimation].startingFrame;
 				break;
 		}
 	}
@@ -169,7 +167,7 @@ bool Sprite::incFrame() {
 bool Sprite::decFrame() {
 	// if decrementing the frame would put the current frame before the starting frame,
 	// return false.
-	if(m_curFrame-1 < m_Animations[m_curAnimation][0]) return false;
+	if(m_curFrame-1 < m_Animations[m_curAnimation].startingFrame) return false;
 	m_curFrame--;
 	return true;
 }
@@ -267,7 +265,7 @@ return dst;
 //////////////////////////////////////////////////////////////////////////////////
 /// Return the number of animation frames in the animation sequence animationNumber.
 int Sprite::GetNumAnimationFrames(int animationNumber) const {
-	return m_Animations[animationNumber][1] - m_Animations[animationNumber][0];
+	return m_Animations[animationNumber].startingFrame - m_Animations[animationNumber].endFrame;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Return the visibility status of the sprite.
