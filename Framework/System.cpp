@@ -2,7 +2,7 @@
 #include "GraphicsDevice.h"
 #include "Define.h"
 
-static System gSystem;
+System gSystem;
 //////////////////////////////////////////////////////////////////////////////////
 Window::Window()
 {
