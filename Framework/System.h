@@ -39,7 +39,7 @@ class System
 
 	public:
 		System();
-		~System() { shutdown(); }
+		virtual ~System() { shutdown(); }
 		
 		virtual bool onInit();
 
