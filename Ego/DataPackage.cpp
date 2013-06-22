@@ -3,22 +3,22 @@
 #include <stdio.h>
 
 //////////////////////////////////////////////////////////////////////////////////
-DataPackage::DataPackage(unsigned long size) : m_Size(size) 
+DataPackage::DataPackage(unsigned long size) : bufferSize(size) 
 {
 	// create a new char array, cast to a void*
-	m_Buf = (void*)new char[m_Size];
+	buffer = (void*)new char[bufferSize];
 }
 //////////////////////////////////////////////////////////////////////////////////
-DataPackage::DataPackage(unsigned long size, void * buffer) : m_Size(size), m_Buf(buffer)
+DataPackage::DataPackage(unsigned long size, void * buffer) : bufferSize(size), buffer(buffer)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////////////
 DataPackage::~DataPackage() 
 { 
-	delete m_Buf;
-	m_Buf = NULL;
-	m_Size = 0;
+	delete buffer;
+	buffer = NULL;
+	bufferSize = 0;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Saves the data package to the specified filename.
@@ -26,13 +26,13 @@ bool DataPackage::Save(const char *Filename) const {
 	// File pointer
 	FILE *fp;
 	// as long as both the buffer and a size exist, we can write.
-	if(m_Buf != NULL && m_Size) {
+	if(buffer != NULL && bufferSize) {
 		fopen_s(&fp, Filename, "wb");
 		if(fp != NULL) {
 			// first write the size of the data.
-			fwrite(&m_Size, 1, 4, fp);
+			fwrite(&bufferSize, 1, 4, fp);
 			// then write the data.
-			fwrite(m_Buf, sizeof(char), m_Size, fp);
+			fwrite(buffer, sizeof(char), bufferSize, fp);
 			fclose(fp);
 			return true;
 		}
@@ -77,12 +77,12 @@ DataPackage * DataPackage::Load(const char *Filename, unsigned long *Size) {
 /// Return the void* to the data buffer.
 void *DataPackage::GetPtr() const
 {
-	return m_Buf;
+	return buffer;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Return the size of the data buffer.
 unsigned long DataPackage::GetSize() const
 {
-	return m_Size;
+	return bufferSize;
 }
 //////////////////////////////////////////////////////////////////////////////////

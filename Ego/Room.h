@@ -4,25 +4,29 @@
 #include "Exit.h"
 #include "GameArea.h"
 
+class DataPackage;
+
 //class Inventory;
 /// Main area of the game
 /** This adventure game is made up of a series of rooms.  As such, Room is the most important class.
 	It handles movement of the main character, scripts, and interation.
 */
-class DataPackage;
 class Room : public GameArea {
 	protected:
-		std::string					m_roomName; ///< Name of the room.
-		std::list<Exit>				m_ExitList; ///< List of all exits from the room.
-		std::list<Exit>::iterator	iExit; ///< standard iterator for the list of exits.
-		Ego							m_Ego; ///< Main character instance.
-		const DataPackage *			m_dpCollision;
-		char *						m_collisionMap; ///< pointer to the collision map data.
-		bool						m_ActiveExit; ///< true if there is an exit that is active.
-		int							m_ActiveRoomNumber; ///< the room number of the active exit (if any).
-		bool						m_hasEnterScript; ///< True if the room has an enter script.
-		float						m_zeroScale; ///< Scale that actors will be if they are at the bottom of the screen.
-		float						m_scalingFactor; ///< Factor to scale back as the actors move away from zero scale.
+		std::string					roomName; ///< Name of the room.		
+		Ego							pEgo; ///< Main character instance.
+
+		bool						hasEnterScript; ///< True if the room has an enter script.
+
+		std::list<Exit>				exitList; ///< List of all exits from the room.
+		bool						activeExit; ///< true if there is an exit that is active.
+		int							activeRoomNumber; ///< the room number of the active exit (if any).
+
+		const DataPackage *			dpCollision;
+		char *						collisionMap; ///< pointer to the collision map data.
+		
+		float						zeroScale; ///< Scale that actors will be if they are at the bottom of the screen.
+		float						scalingFactor; ///< Factor to scale back as the actors move away from zero scale.
 
 	public:
 		// Constructor.
@@ -39,7 +43,7 @@ class Room : public GameArea {
 		bool LeaveRoom();
 
 		// Adds an exit.
-		void AddExit(RECT location, int rmNumber);
+		void AddExit(const RECT & location, int rmNumber);
 
 		// Removes an exit.
 		bool RemoveExit(int number);
@@ -51,20 +55,20 @@ class Room : public GameArea {
 		bool Update();
 	    
 		// Finds an object within the room.
-		Object* FindObject(const std::string & objectName);
+		Object * FindObject(const std::string & objectName);
 
 		// Renders the room and everything within.
 		void RenderRoom() const;
 
-		// Getters.
-		Inventory* GetInventory();
 		const std::string & GetName() const;
-		int GetExitNum() const;
-		Ego* GetEgo();
+
+		Ego * GetEgo();
+		Inventory * GetInventory();
+		
 		bool GetExit() const;
+		int GetExitNum() const;
 		bool GetHasEnterScript() const;
 
-		// Setters.
 		void SetExit(bool active, int number = -1);
 		void SetHasEnterScript(bool d);
 		void SetScaling(float zeroScale, float scalingFactor);

@@ -11,10 +11,10 @@ class Room;
 class Ego : public Actor {
 
 	private:
-		Inventory*		m_inventory; ///< Pointer to the main inventor.
-		Room*			m_curRoom;
-		Object*			m_curHeldItem; ///< Pointer to the currently held item.
-		int				m_curPickupAnimation; ///< number of the current direction for picking up items.
+		Inventory*		inventory; ///< Pointer to the main inventor.
+		Room*			curRoom;
+		Object*			curHeldItem; ///< Pointer to the currently held item.
+		int				curPickupAnimation; ///< number of the current direction for picking up items.
 	public:
 		// Constructor.
 		Ego();
@@ -36,6 +36,6 @@ class Ego : public Actor {
 		Inventory* GetInventory();
 		Object* GetCurrentlyHeldItem();
 		const Object* GetCurrentlyHeldItem() const;
-		Room * GetRoom() { return m_curRoom; }
+		Room * GetRoom() { return curRoom; }
 };
 #endif

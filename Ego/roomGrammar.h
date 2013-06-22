@@ -4,11 +4,10 @@
 
 using namespace boost::spirit;
 using namespace std;
-#define ErrorT(x) MessageBox(NULL, x, "Error", MB_OK);
     
 typedef char                    char_t;
 typedef file_iterator <char_t>  iterator_t;
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Structure which defines an animation sequence for a room script.
 struct sAnimSequence {
 	int animationNumber; ///< The number of the animation.
@@ -16,7 +15,7 @@ struct sAnimSequence {
 	int numFrames; ///< The length of the animation.
 	std::string animationOption; ///< The animation control code (see Sprite::AnimationOption).
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Structure which defines an object for a room script.
 struct sObject {
 	string fileName; ///< The graphic for this object.
@@ -31,16 +30,16 @@ struct sObject {
 	list<sAnimSequence> animList; ///< List of animations.
 	int hasOnStepScript; ///< True if the object has an onStep script.
 	list<string> useItemOnList; ///< List of object that execute a special script when used on this object.
-	/// Default constructor: set visibility to not visible.
+	
 	sObject() { visible = 0; visibleFlag = -1; hasOnStepScript = 0; useItemOnList.clear(); }
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Structure which defines exits for a room script.
 struct sExit {
 	int roomNumber; ///< Number that this exit point to.
 	RECT loc; ///< Location rectangle of this exit.
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Structure which defines a room for a room script.
 struct sRoom {
 	string bgFileName; ///< The background file for this room.
@@ -51,7 +50,7 @@ struct sRoom {
 	list<sExit> exitList; ///< A list of exits in this room.
 	sRoom() { hasOnEnterScript = 0; }
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Functor to add an animation to a room grammar object.
 struct AddAnimation
 {
@@ -66,7 +65,7 @@ struct AddAnimation
     sObject &object;
 	sAnimSequence &anim;
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Functor to add an object to a room grammar object.
 struct AddObject
 {
@@ -84,7 +83,7 @@ struct AddObject
     sObject &object;
 	sRoom &room;
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Functor to add an exit to a room grammar object.
 struct AddExit
 {
@@ -99,7 +98,7 @@ struct AddExit
     sExit &exit;
 	sRoom &room;
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Functor to add an use item string to a room grammar object.
 struct AddUseItem
 {
@@ -111,7 +110,7 @@ struct AddUseItem
 	}
 	sObject &object;
 };
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Grammar to parse room scripts.
 struct RoomGrammar : public boost::spirit::grammar<RoomGrammar> {
 	RoomGrammar(sRoom &room_) :

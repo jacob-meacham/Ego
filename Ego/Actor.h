@@ -37,20 +37,19 @@ enum DefaultAnimations {
 class Actor : public Object {
 
 	protected:
-		int			m_moveSpeed; ///< Movement speed of the actor.
-		Pathfinder  m_pathFinder; 		///< private pathfinder used to navigate around a room.
-		ActionType	m_curActionType; ///< Action which the actor is undertaking.
-		long		m_curActionX; /// x-coordinate of the actor's current action.
-		long		m_curActionY; /// y-coordinate of the actor's current action.
-		Object*		m_curActionObject; ///< object on which the current action focuses (if any).	
-		POINT		m_Foot; 		///< point describing where the actor's feet are. Used to determine collisions.
-		POINT		m_Direction; 	///< eigenvector describing the x,y direction that the actor is facing.
-		bool		m_ActionBool; /// A boolean set when the current action coordinates are reached.
+		POINT		footPt; 		///< point describing where the actor's feet are. Used to determine collisions.
+		POINT		direction; 	///< eigenvector describing the x,y direction that the actor is facing.
+		int			moveSpeed;	///< Movement speed of the actor.
 
-	public:	
-		// Default constructor.
-		Actor();
+		Pathfinder  pathFinder; 	///< private pathfinder used to navigate around a room.		
+		
+		Object*		curActionObject; ///< object on which the current action focuses (if any).	
+		ActionType	curActionType; ///< Action which the actor is undertaking.
+		long		curActionX; /// x-coordinate of the actor's current action.
+		long		curActionY; /// y-coordinate of the actor's current action.
+		bool		ActionBool; /// A boolean set when the current action coordinates are reached.
 
+	public:
 		// Creates an actor object.
 		void CreateActor(char TileNum, const std::string & name, long XPos, long YPos);
 
@@ -112,7 +111,5 @@ class Actor : public Object {
 		long GetFootXPos() const;
 
 		// Getter to get an Actor's foot y-coordinate.
-		long GetFootYPos() const;
-		
-		
+		long GetFootYPos() const;		
 };

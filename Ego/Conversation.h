@@ -6,8 +6,8 @@
 */
 class Conversation {
 	private:
-		std::string		m_conversationString; ///< The converastion string to be displayed.
-		bool			m_visible; ///< boolean which determines the visibility status of m_conversationString.
+		std::string		conversationString; ///< The converastion string to be displayed.
+		bool			visible; ///< boolean which determines the visibility status of m_conversationString.
 	public:
 		// Constructors.
 		Conversation();

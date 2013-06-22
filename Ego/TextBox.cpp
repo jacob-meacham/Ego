@@ -1,61 +1,59 @@
 #include "TextBox.h"
+//////////////////////////////////////////////////////////////////////////////////
+TextBox::TextBox(const Font * pfont) : pFont(pfont) { 
 
-/// Creates a new text box, setting the parent font.  
-/** This function must be called before SetText(). */
-void TextBox::Create(const Font *parent) {
-	p_Font = parent;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Sets the text in the text box.
 /** This function calculates the height of the text box, based on the text contained therein.
 	\param number The ID of this text box.
 	\param Width Fixes width, and allows for a variable height.
 */
-bool TextBox::SetText(int number, const std::string & text, D3DCOLOR textColor, long xPos, long yPos, long Width) {
-	if(p_Font == NULL) { return false; }
+bool TextBox::SetText(int number, const std::string & text, D3DCOLOR textColor, long xPos, long yPos, long width) {
+	if(!pFont) { return false; }
 	
-	m_choiceNumber = number;
-	m_Text = text;
-	m_TextColor = textColor;
-	m_YPos = yPos;
-	m_XPos = xPos;
-	m_Width = Width;
+	choiceNumber = number;
+	strText = text;
+	this->textColor = textColor;
+	this->yPos = yPos;
+	this->xPos = xPos;
+	this->width = width;
 
 	// Create rectangle used to determine textbox height
 	RECT r;
 	r.left = xPos;
 	r.top = 0;
-	r.right = xPos + Width - 12;
+	r.right = xPos + width - 12;
 	r.bottom = 1;
 
 	// Determine height, using the DirectX function DrawText().
-	m_Height = p_Font->calcHeight(text.c_str(), xPos, 0, Width-12, 1) + 12;
+	height = pFont->calcHeight(text.c_str(), xPos, 0, width-12, 1) + 12;
 	return true;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Sets the color of the text.
-void TextBox::SetColor(D3DCOLOR textColor) { m_TextColor = textColor; }
-
+void TextBox::SetColor(D3DCOLOR textColor) { this->textColor = textColor; }
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns true if the mouse is hovering over this text.
 bool TextBox::CheckMouseCollision(long mouseX, long mouseY) const {
-	if(mouseX < m_XPos) return false;
-	if(mouseX >= m_XPos + m_Width) return false;
-	if(mouseY < m_YPos) return false;
-	if(mouseY >= m_YPos + m_Height) return false;
+	if(mouseX < xPos) return false;
+	if(mouseX >= xPos + width) return false;
+	if(mouseY < yPos) return false;
+	if(mouseY >= yPos + height) return false;
 	return true;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Prints the text box.
 void TextBox::PrintTextBox() const {
-	p_Font->render(m_Text.c_str(), m_XPos+6, m_YPos+6, m_Width-12, m_Height-12, m_TextColor, DT_WORDBREAK);
+	pFont->render(strText.c_str(), xPos+6, yPos+6, width-12, height-12, textColor, DT_WORDBREAK);
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns the ID number of the text box.
 int TextBox::GetChoiceNumber() const {
-	return m_choiceNumber;
+	return choiceNumber;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns the height (width is fixed).
 long TextBox::GetHeight() const {
-	return m_Height;
+	return height;
 }

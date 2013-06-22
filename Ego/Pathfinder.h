@@ -18,10 +18,6 @@ class Pathfinder {
 		char *pathMap; ///< a pointer to the collision map used.
 
 	public:
-
-		// Constructor.
-		Pathfinder();
-
 		// Main Pathfinder function.
 		bool FindPath(char *map, long startingX, long startingY, long destX, long destY);
 

@@ -14,29 +14,29 @@ class EgoApp : public System
 {
 	private:
 		// Data
-		Ego				m_Ego; ///< The main Ego instance.
-		Room			m_curRoom; ///< The current room.
-		std::string		m_curAction; ///< String representing Ego's current action.
-		bool			m_inInventory; ///< true if the game is currently in the inventory.
+		Ego				Ego; ///< The main Ego instance.
+		Room			curRoom; ///< The current room.
+		std::string		curAction; ///< String representing Ego's current action.
+		bool			inInventory; ///< true if the game is currently in the inventory.
 
 		// Input
-		Keyboard		m_Keyboard; ///< The keyboard input device.
-		Mouse			m_Mouse; ///< The mouse input device.
+		Keyboard		keyboard; ///< The keyboard input device.
+		Mouse			mouse; ///< The mouse input device.
 		
 		// Rendering
-		Texture			m_Background; ///< The background of the current room.
-		Texture			m_Inventory; ///< The background of the main inventory.
-		Tile			m_Tiles; ///< The tile set to use.
+		Texture			backgroundTexture; ///< The background of the current room.
+		Texture			inventoryTexture; ///< The background of the main inventory.
+		Tile			tiles; ///< The tile set to use.
 		Font			mainFont; ///< The game's main font.
 
-		DWORD			g_dwLastTick; ///< Time of last tick.
-		DWORD			g_dCurTime; ///< Current system time.
-		DWORD			g_dLastTime; ///< Time at the beginning of last tick.
-		float			g_fAnimationTimer; ///< Timer to determine when to update/render the game.
-		float			g_fElpasedTime; ///< Time elapsed since last render.
+		DWORD			dwLastTick; ///< Time of last tick.
+		DWORD			dCurTime; ///< Current system time.
+		DWORD			dLastTime; ///< Time at the beginning of last tick.
+		float			fAnimationTimer; ///< Timer to determine when to update/render the game.
+		float			fElpasedTime; ///< Time elapsed since last render.
 		
-		HCURSOR			m_inactive; ///< Cursor when the cursor is not on a hotspot.
-		HCURSOR			m_active; ///< Cursor when the cursor is on a hotspot.
+		HCURSOR			inactiveCursor; ///< Cursor when the cursor is not on a hotspot.
+		HCURSOR			activeCursor; ///< Cursor when the cursor is on a hotspot.
 
 		void initVars(const sRoom * new_room);
 		void initEgo();

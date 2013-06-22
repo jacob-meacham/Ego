@@ -1,13 +1,10 @@
 #include "Pathfinder.h"
-#define Error(x) MessageBox(NULL, x, "Error", MB_OK);
+#include "Framework\Define.h"z
 using namespace std;
 
 /// Enumeratres the type of node.
 enum { unexplored = -1, closed = 0, open = 1 };
-
-/// Default Concstructor
-Pathfinder::Pathfinder() { }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Main Pathfinder function.
 /** This function finds a path between the two points (or the closest reachable destination),
 	and stores the path in the list path.
@@ -38,22 +35,21 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 		if(FindPath(pathMap, startingX, startingY, newLoc.x*10, (60-newLoc.y)*10)) {
 			return true;
 		}
-		else return false;
+		
+		return false;
 	}
 
 	//add starting node to open List, and set it as open on whichList
 	openList.push_back(start);
 	whichList[start.GetX()][start.GetY()] = open;
 		
-
-	
 	while(1) { // run until we find a solution
 		
 		if(pathFound == true) { break; } // break to end if a path is found
 	
 		// if the open list is ever empty and the path hasn't been found, then there is no path.  return false
 		if(openList.empty()) {
-			Error("No Path");
+			TRACE("No Path");
 			return false;
 		}
 	
@@ -67,8 +63,7 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 
 		// step through each direction sequentially.  This goes clockwise and starts at 1 = top.
 		// There is a slight bias towards up and right, but it should not affect the algorithm overly much.
-		for(int index = 1; index<=8; index++) {
-			
+		for(int index = 1; index <= 8; index++) {
 			Node test = GetNeighbor(index, current);
 			test.SetParent(&closedList.back()); // set our parent as current (ie the last node pushed onto the closed list).
 			
@@ -118,7 +113,7 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 	}
 	return true;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Function calculates the H-Value of a Node.  
 /** the H-value is the heuristic which guesses the distance left between 
 	the current node and the destination.  The heuristic in use is the 
@@ -129,7 +124,7 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 int Pathfinder::CalculateHVal(long posX, long posY, long destX, long destY) const {
 	return 10*(abs(posX - destX) + abs(posY - destY)) + .5*(abs(posX-destX) + abs(posY - destY));
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Function to calculate G-Value of a node.  
 /** G-Value represents the cost of moving from the start to this node. 
 	A diagonal move is 1.4 times longer than a cardinal move, so a diagonal move costs more.
@@ -142,7 +137,7 @@ int Pathfinder::CalculateGVal(const Node & parent, const Node & test) const {
 
 		return (parent.GetGVal() + addedCost);
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Function to test whether a node is the destination, using x and y coordinates.
 bool Pathfinder::isDestination(const Node & current, long destX, long destY) const {
 	if(current.GetX() == destX && current.GetY() == destY) {
@@ -151,7 +146,7 @@ bool Pathfinder::isDestination(const Node & current, long destX, long destY) con
 	
 	return false;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Uses pathMap to deduce whether a node is walkable.  
 /** If the node is off the map, obviously it is not walkable.
     If the value of the pixel which corresponds to the node is 0, then the node is walkable.
@@ -161,21 +156,21 @@ bool Pathfinder::isWalkable(const Node & current) const {
 	if(pathMap[current.GetY() * 80 + current.GetX()] == 0) { return true; }
 	return false;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// queries whichList to determine if current is on the closed list.
 bool Pathfinder::onClosed(const Node & current) const {
 	if(whichList[current.GetX()][current.GetY()] == closed) { return true; }
 
 	return false;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// queries whichList to determine if current is on the open list.
 bool Pathfinder::onOpen(const Node & current) const {
 	if(whichList[current.GetX()][current.GetY()] == open) { return true; }
 
 	return false;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Function to set the x and y coordinates of Node neighboring current.
 /* \param index 1 = top, 2 = top-right, 3 = right, 4 = bottom-right, 5 = bottom, 6 = bottom-left, 7 = left, 8 = top-left.
 */
@@ -217,8 +212,7 @@ Node Pathfinder::GetNeighbor(int index, const Node & current) const {
 	}
 	return neighbor;
 }
-
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns the coordinates of the next node in a path, or -1, -1 (unreachable) if the path is empty.
 POINT Pathfinder::GetNextNode() {
 	POINT newLoc;
@@ -234,12 +228,12 @@ POINT Pathfinder::GetNextNode() {
 		return newLoc;
 	}
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns true if the path is not empty.
 bool Pathfinder::HasNextNode() const {
 	return(!path.empty());
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Finds the closest reachable node to the starting node.
 /** This function searches in a circle, until it finds a node which is walkable.
 */
@@ -255,7 +249,7 @@ POINT Pathfinder::FindWalkable(long startingX, long startingY) {
 	// the neighbor below the start.
 	Node bottom = GetNeighbor(5, start);
 	// continue until a walkable node is found.
-	while(1) {
+	while(true) {
 		// find the neighbors of the starts neighbors
 		Node tempUp = GetNeighbor(1, up);
 		Node tempRight = GetNeighbor(3, right);
@@ -268,16 +262,19 @@ POINT Pathfinder::FindWalkable(long startingX, long startingY) {
 			newLoc.y = tempUp.GetY();
 			return newLoc;
 		}
+
 		if(isWalkable(tempRight)) {
 			newLoc.x = tempRight.GetX();
 			newLoc.y = tempRight.GetY();
 			return newLoc;
 		}
+
 		if(isWalkable(tempLeft)) {
 			newLoc.x = tempLeft.GetX();
 			newLoc.y = tempLeft.GetY();
 			return newLoc;
 		}
+
 		if(isWalkable(tempBottom)) {
 			newLoc.x = tempBottom.GetX();
 			newLoc.y = tempBottom.GetY();

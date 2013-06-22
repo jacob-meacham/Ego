@@ -2,18 +2,18 @@
 
 class DataPackage {
 	protected:
-		void          *m_Buf; ///< buffer for loaded/saved data.
-		unsigned long  m_Size; ///< size of the data buffer.
+		void * buffer; ///< buffer for loaded/saved data.
+		unsigned long  bufferSize; ///< size of the data buffer.
+
 		DataPackage(unsigned long size, void * buffer);
 	public:
+		static DataPackage * Load(const char * filename, unsigned long * size);
+
 		DataPackage(unsigned long size);
 		~DataPackage();
 
-		void *Create(unsigned long Size);
-
-		bool Save(const char *Filename) const;
-		static DataPackage * Load(const char *Filename, unsigned long *Size);
-
+		bool Save(const char * filename) const;
+		
 		void *GetPtr() const;
 		unsigned long GetSize() const;
 };

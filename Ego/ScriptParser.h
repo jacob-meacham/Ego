@@ -13,7 +13,6 @@ typedef tree_match<iterator_t> parse_tree_match_t;
 typedef parse_tree_match_t::tree_iterator iter_t; ///< Abstract Syntax Tree iterator.
 
 class GameArea;
-//class Tiles;
 class Object;
 
 /// Main parsing class, used to parse, interpret, and execute .sc files.
@@ -22,27 +21,38 @@ class Object;
 */
 class Parser {
 	private:
-		AdventureScript				m_script; ///< Main AdventureScript.
-		iter_t						m_iScript; ///< Global Script iterator.
-		iter_t						m_iConversation; ///< Iterator for dealing with conversations.
-		iter_t						m_iIfBlock; ///< Iterator for dealing with if-blocks.
+		GameArea					*pParent; ///< GameArea which owns this parser.
+		Object*						currentObject; ///< Current active object.
+
+		AdventureScript				adventureScript; ///< Main AdventureScript.
+		iter_t						iScript; ///< Global Script iterator.
+		iter_t						iConversation; ///< Iterator for dealing with conversations.
+		iter_t						iIfBlock; ///< Iterator for dealing with if-blocks.
+
 		tree_parse_info<iterator_t> info; ///< Spirit parse structure containing the AST.
-		GameArea					*parent; ///< GameArea which owns this parser.
-		DWORD						m_dwLastTick; ///< Size of the last tick.
-		DWORD						m_dCurTime; ///< Current time.
-		DWORD						m_dLastTime; ///< Time of the beginning of the last tick.
-		float						m_fConversationTimer; ///< Timer for execution.
-		float						m_fElpasedTime; ///< Time elapsed in timer.
-		float						m_ExecutionTime; ///< Amount of time to execute the current line.
-		bool						m_Waiting; ///< true if the parser is waiting for conversation input
-		Object*						m_currentObject; ///< Current active object.
 		
+		DWORD						dwLastTick; ///< Size of the last tick.
+		DWORD						dCurTime; ///< Current time.
+		DWORD						dLastTime; ///< Time of the beginning of the last tick.
+		float						fConversationTimer; ///< Timer for execution.
+		float						fElpasedTime; ///< Time elapsed in timer.
+		float						executionTime; ///< Amount of time to execute the current line.
+		bool						waiting; ///< true if the parser is waiting for conversation input
+				
 		void SetWaiting(bool d);
 
-
+		void handleIdentifier();
+		void handleDoAnimation();
+		void handleGetItem();
+		void handleLoseItem();
+		void handleWait();
+		void handleKillObject();
+		void handleCreateObject();
+		void handleSetVariable();
+		void handleConversation();
+		void handleShowHideBlock();
+		void handleIfElse();
 	public:
-
-		// Constructors.
 		Parser();
 		Parser(GameArea *p);
 

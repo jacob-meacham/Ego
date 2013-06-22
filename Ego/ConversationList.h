@@ -4,8 +4,8 @@
 /// Composed of a fixed sized array of conversations.
 class ConversationList {
 	private:
-		Conversation	m_array[40]; ///< Conversation array.  A conversation tree should never span 40 branches.
-		int				m_numElements; ///< The number of valid elements in m_Array.
+		Conversation	conversationArray[40]; ///< Conversation array.  A conversation tree should never span 40 branches.
+		int				numElements; ///< The number of valid elements in m_Array.
 	public:
 		// Constructor
 		ConversationList();

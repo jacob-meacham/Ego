@@ -32,7 +32,6 @@ struct AdventureScript : public boost::spirit::grammar<AdventureScript> {
 	static const int IfElseBlockID = 23;
 
 	template <typename ScannerT>
-	/// Structure which defines the grammar of an AdventureScript.
 	struct definition {
 		rule<ScannerT, parser_context<>, parser_tag<ActionID> >  Action;
 		rule<ScannerT, parser_context<>, parser_tag<StatementListID> > StatementList;
@@ -57,10 +56,8 @@ struct AdventureScript : public boost::spirit::grammar<AdventureScript> {
 		rule<ScannerT, parser_context<>, parser_tag<IfBlockID> > IfBlock; 
 		rule<ScannerT, parser_context<>, parser_tag<IfBlockID> > ElseBlock; 
 		rule<ScannerT, parser_context<>, parser_tag<IfElseBlockID> > IfElseBlock;
-			
-
+		
 		definition(AdventureScript const& self) {
-
 			Action = root_node_d[StatementList] >> str_p("stop");
 			StatementList = (+Statement >> BeginConversation >> discard_node_d[ch_p('{')] >> *(ShowHide) >> discard_node_d[ch_p('}')] >> *(Choice) >>  EndConversation) |
 			+(Statement);

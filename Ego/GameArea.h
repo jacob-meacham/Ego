@@ -4,34 +4,35 @@
 #include "TextBox.h"
 #include "Object.h"
 
+class Ego;
+class Inventory;
+class Parser;
+
 /// Base class for any areas of the game from which scripts can be processed.
 /** both Room and Inventory are derived from this base class.  It gives functionality
 	for setting conversation strings and rendering conversation trees, as well as handling
 	the flags for script processing.  GameArea contains two pure virtual functions, which all
 	derived classes must define: GameArea::FindObject(), and GameArea::GetInventory()
 */
-class Ego;
-class Inventory;
-class Parser;
 class GameArea {
 	protected:
-		const Font					*m_font; ///< Pointer to the font used for rendering strings.
+		const Font * pFont; ///< Pointer to the font used for rendering strings.
 
-		std::list<Object>			m_objectList;	///< List of all interactive objects in the game area.
-		Object						*m_curActionObject; ///< Pointer to the current selected object.
-		ActionType					m_curAction; ///< The current action.
-		std::string					m_curMouseObject; ///< Name of the object which the mouse is currently hovering over.
+		std::list<Object> objectList;	///< List of all interactive objects in the game area.
+		Object * curActionObject; ///< Pointer to the current selected object.
+		ActionType curAction; ///< The current action.
+		std::string curMouseObject; ///< Name of the object which the mouse is currently hovering over.
 
-		ConversationList			m_conversationList; ///< List for rendering conversation trees.  See FillConversationChoices().
-		std::list<TextBox>			m_activeChoices; ///< List for rendering conversation tree choices.		
-		std::string					m_curConversationString; ///< Current conversation string from script (if any).
-		long						m_curConversationX; ///< X-Coordinate of the current conversation string.
-		long						m_curConversationY; ///< Y-Coordinate of the current conversation string.
-		bool						m_inScript; ///< Bool to determine if a script is currently being processed.
-		D3DCOLOR					m_curConversationStringColor; ///< Color of the conversation string.
+		ConversationList conversationList; ///< List for rendering conversation trees.  See FillConversationChoices().
+		std::list<TextBox> activeChoices; ///< List for rendering conversation tree choices.		
+		std::string	curConversationString; ///< Current conversation string from script (if any).
+		long curConversationX; ///< X-Coordinate of the current conversation string.
+		long curConversationY; ///< Y-Coordinate of the current conversation string.
+		bool inScript; ///< Bool to determine if a script is currently being processed.
+		D3DCOLOR curConversationStringColor; ///< Color of the conversation string.
 
-		Parser *					m_parser; ///< Parser to handle any object scripts.		
-		int							m_flags[256]; ///< Game area flags, used when processing .ent scripts.
+		Parser * pParser; ///< Parser to handle any object scripts.		
+		int	gameFlags[256]; ///< Game area flags, used when processing .ent scripts.
 	public:
 		GameArea();
 		virtual ~GameArea();

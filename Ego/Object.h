@@ -3,11 +3,22 @@
 #include "Framework\Sprite.h"
 #include <list>
 
+enum ActionType {
+	IS_NOACTION, 
+	IS_WALK, 
+	IS_LOOK, 
+	IS_USE, 
+	IS_USEITEM, 
+	IS_TALK
+};
+
+enum FlagType {
+	PER_CONVERSATION, 
+	PER_ROOM, 
+	PERMANENT
+};
+
 class Parser;
-enum ActionType {IS_NOACTION, IS_WALK, IS_LOOK, IS_USE, IS_USEITEM, IS_TALK};
-enum FlagType {PER_CONVERSATION, PER_ROOM, PERMANENT};
-
-
 /// Any game object.
 /** An object is any interactive game object that is primarily stationary (that is, does not need pathfinding).
 	As with a Sprite, an Object is fully animatable.  Further, an Object has the ability to parse scripts
@@ -16,17 +27,18 @@ enum FlagType {PER_CONVERSATION, PER_ROOM, PERMANENT};
 */
 class Object : public Sprite {
 	private:
-		std::string		m_descriptor; ///< A string describing the object.
-		
-		D3DCOLOR		m_textColor; ///< The text color of all conversation strings attached to this object.
-		int				m_flags[40]; ///< Flags for scripting.
-		bool			m_hasOnStepScript; ///< true if the object has a onEnter script.
-		bool			m_isEgoIn; ///< true if Ego is within the bounds of the object.
-		POINT			m_walkCoordinates; ///< Coordinates that an actor should walk to if she/he wants to see this object.
-		int				m_curTalkAnimation; ///< Talking animation for this object, default -1 (no talking animation).
+		std::string		strDescriptor; ///< A string describing the object.
+		int				scriptFlags[40]; ///< Flags for scripting.
 
+		POINT			walkCoordinates; ///< Coordinates that an actor should walk to if she/he wants to see this object.
+		D3DCOLOR		textColor; ///< The text color of all conversation strings attached to this object.
+		int				curTalkAnimation; ///< Talking animation for this object, default -1 (no talking animation).
+
+		bool			hasOnStepScript; ///< true if the object has a onEnter script.
+		bool			isEgoIn; ///< true if Ego is within the bounds of the object.
+		std::list<std::string> useItemsOn; ///< List of objects that execute a special script when used upon this object.
 	public:
-		std::list<std::string> m_useItemsOn; ///< List of objects that execute a special script when used upon this object.
+		
 
 		Object();
 		virtual ~Object();
@@ -43,7 +55,6 @@ class Object : public Sprite {
 		// Executes the current talking animation of this object.
 		void DoTalkingAnimation();
 		
-		// Getters. 
 		int GetFlag(int index) const;
 		D3DCOLOR GetTextColor() const;
 		const std::string & GetDescriptor() const;
@@ -59,7 +70,6 @@ class Object : public Sprite {
 		// Checks if the mouse is hovering over this object.
 		bool CheckMouseCollision(long MouseX, long MouseY) const;
 
-		// Setters
 		void SetFlag(int index, int d);
 		void SetDescriptor(const std::string & descriptor);
 		void SetCurTalkingAnimation(int animationNumber);

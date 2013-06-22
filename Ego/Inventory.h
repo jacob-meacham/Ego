@@ -12,13 +12,12 @@ class GraphicsDevice;
 class Inventory : public GameArea {
 	
 private:	
-		long					m_nextObjectX; ///< X-Coordinate of the next object to be placed in inventory.
-		long					m_nextObjectY; ///< Y-Coordinate of the next object to be placed in inventory.
-		Ego						*m_parent; ///< Parent Ego (used for FindObject() ).
-		Tile					m_inventoryTiles; // Tileset for items in inventory.
+		long nextObjectX; ///< X-Coordinate of the next object to be placed in inventory.
+		long nextObjectY; ///< Y-Coordinate of the next object to be placed in inventory.
+		Ego	* pParent; ///< Parent Ego (used for FindObject() ).
+		Tile inventoryTiles; // Tileset for items in inventory.
 		
 	public:
-		// Constructor.
 		Inventory();
 
 		// Sets the parent of this inventory.
@@ -44,9 +43,9 @@ private:
 
 		// Removes an object from inventory.
 		void LoseObject(const std::string & objectName);
+
+		void GetNextObjectCoordinates();
 		
-		// Getters.
 		Inventory* GetInventory();
 		Ego* GetEgo();
-		void GetNextObjectCoordinates();
 };
