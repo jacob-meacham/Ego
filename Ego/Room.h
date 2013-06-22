@@ -14,7 +14,7 @@ class DataPackage;
 class Room : public GameArea {
 	protected:
 		std::string					roomName; ///< Name of the room.		
-		Ego							pEgo; ///< Main character instance.
+		Ego *						pEgo; ///< Main character instance.
 
 		bool						hasEnterScript; ///< True if the room has an enter script.
 
@@ -34,10 +34,10 @@ class Room : public GameArea {
 		~Room();
 
 		// Sets the rooms Ego and font.
-		void Set(Ego Dude, Font *font);
+		void Init(Ego * pego, const Font *font);
 
 		// Enters the room with the roomName and collision map.
-		void EnterRoom(const DataPackage * dp_collision, std::string roomName);
+		void EnterRoom(const DataPackage * dp_collision, const std::string & roomName);
 		
 		// Leaves this room.	
 		bool LeaveRoom();
@@ -56,15 +56,12 @@ class Room : public GameArea {
 	    
 		// Finds an object within the room.
 		Object * FindObject(const std::string & objectName);
+		Ego * GetEgo();
 
 		// Renders the room and everything within.
 		void RenderRoom() const;
-
-		const std::string & GetName() const;
-
-		Ego * GetEgo();
-		Inventory * GetInventory();
 		
+		const std::string & GetName() const;
 		bool GetExit() const;
 		int GetExitNum() const;
 		bool GetHasEnterScript() const;

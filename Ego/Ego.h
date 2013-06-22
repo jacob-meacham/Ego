@@ -27,9 +27,7 @@ class Ego : public Actor {
 		
 		// Perform pickup animation.
 		void DoPickupAnimation();
-		
-		// Setters.
-		void SetInventoryParent();
+
 		void SetCurrentlyHeldItem(Object *o);
 
 		// Getters.

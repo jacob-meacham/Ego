@@ -12,6 +12,7 @@ typedef rule <scanner_t>        rule_t;
 typedef tree_match<iterator_t> parse_tree_match_t;
 typedef parse_tree_match_t::tree_iterator iter_t; ///< Abstract Syntax Tree iterator.
 
+class Ego;
 class GameArea;
 class Object;
 
@@ -21,7 +22,7 @@ class Object;
 */
 class Parser {
 	private:
-		GameArea					*pParent; ///< GameArea which owns this parser.
+		GameArea					*pGameArea; ///< GameArea which owns this parser.
 		Object*						currentObject; ///< Current active object.
 
 		AdventureScript				adventureScript; ///< Main AdventureScript.
@@ -53,11 +54,7 @@ class Parser {
 		void handleShowHideBlock();
 		void handleIfElse();
 	public:
-		Parser();
 		Parser(GameArea *p);
-
-		// Sets the parent of this parser.
-		void SetParent(GameArea *p);
 
 		// Parses a file.
 		void ParseFile(string fileName);

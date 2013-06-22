@@ -44,28 +44,28 @@ bool EgoApp::onInit() {
 	RoomGrammar roogrammar(new_room);
 	iterator_t first("room0.dat");
 	parse_info <iterator_t> info = parse(first, first.make_end(), roogrammar, space_p);
-	if(!info.full) { TRACE("Parsing Failed"); }
+	if(!info.full) { TRACE("Parsing Failed\n"); }
 
 	// Create tiles.
 	tiles.Create((2*new_room.objectList.size())+1);
-	inventoryTexture.load("Data\\inventoryTexture.png");
+	inventoryTexture.load("Data\\Inventory.png");
 
-	//initVars(&new_room);
+	initVars(&new_room);
 	initEgo();
 	
 	// Set the main room Ego and font.
-	curRoom.Set(Ego, &mainFont);
+	curRoom.Init(&ego, &mainFont);
 	curRoom.SetScaling(1.3334f, 0.0002f);
+	curRoom.SetGlobalAction(IS_WALK);
+
+	ego.GetInventory()->SetGlobalAction(IS_WALK);
 
 	// Load the first room.
 	if(!LoadRoom("room0.dat")) {
 		return false;
 	}
 
-	curRoom.SetGlobalAction(IS_WALK);
-	curRoom.GetInventory()->SetGlobalAction(IS_WALK);
-	dwLastTick = timeGetTime();
-	
+	dwLastTick = timeGetTime();	
 	return true; 
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -88,37 +88,37 @@ void EgoApp::initVars(const sRoom * new_room) {
 void EgoApp::initEgo() {
 	// Load Ego, and his animations.
 	tiles.Load(0, "Data\\Ego.png", 180, 240);
-	Ego.UseTiles(&tiles, 0);
-	Ego.CreateActor(0, "Ego", 100, 300);
-	Ego.CreateAnimationSequence(DEFAULT_TALKING, 60, 106, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_RIGHT_DOWN, 92, 96, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_RIGHT_UP, 48, 48, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_LEFT_DOWN, 97, 101, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_LEFT_UP, 60, 60, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_BACK, 82, 82, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(TALKING_FRONT, 102, 106, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(STANDING_RIGHT_DOWN, 24, 23, Sprite::MAINTAIN_LAST_FRAME);
-    Ego.CreateAnimationSequence(STANDING_RIGHT_UP, 48, 47, Sprite::MAINTAIN_LAST_FRAME);
-	Ego.CreateAnimationSequence(STANDING_LEFT_DOWN, 36, 35, Sprite::MAINTAIN_LAST_FRAME);
-	Ego.CreateAnimationSequence(STANDING_LEFT_UP, 60, 59, Sprite::MAINTAIN_LAST_FRAME);
-	Ego.CreateAnimationSequence(STANDING_BACK, 82, 81, Sprite::MAINTAIN_LAST_FRAME);
-	Ego.CreateAnimationSequence(STANDING_FRONT, 72, 71, Sprite::MAINTAIN_LAST_FRAME);
-	Ego.CreateAnimationSequence(WALKING_RIGHT, 0, 11, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(WALKING_LEFT, 12, 23, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(WALKING_BACK, 0, 11, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(WALKING_FRONT, 0, 11, Sprite::LOOP_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_RIGHT_DOWN, 24, 35, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_RIGHT_UP, 48, 59, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_LEFT_DOWN, 36, 47, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_LEFT_UP, 60, 71, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_BACK, 72, 81, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.CreateAnimationSequence(PICKING_UP_FRONT, 82, 91, Sprite::GOTO_DEFAULT_ANIMATION);
-	Ego.SetAnimation(STANDING_RIGHT_DOWN);
+	ego.UseTiles(&tiles, 0);
+	ego.CreateActor(0, "Ego", 100, 300);
+	ego.CreateAnimationSequence(DEFAULT_TALKING, 60, 106, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_RIGHT_DOWN, 92, 96, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_RIGHT_UP, 48, 48, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_LEFT_DOWN, 97, 101, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_LEFT_UP, 60, 60, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_BACK, 82, 82, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(TALKING_FRONT, 102, 106, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(STANDING_RIGHT_DOWN, 24, 23, Sprite::MAINTAIN_LAST_FRAME);
+    ego.CreateAnimationSequence(STANDING_RIGHT_UP, 48, 47, Sprite::MAINTAIN_LAST_FRAME);
+	ego.CreateAnimationSequence(STANDING_LEFT_DOWN, 36, 35, Sprite::MAINTAIN_LAST_FRAME);
+	ego.CreateAnimationSequence(STANDING_LEFT_UP, 60, 59, Sprite::MAINTAIN_LAST_FRAME);
+	ego.CreateAnimationSequence(STANDING_BACK, 82, 81, Sprite::MAINTAIN_LAST_FRAME);
+	ego.CreateAnimationSequence(STANDING_FRONT, 72, 71, Sprite::MAINTAIN_LAST_FRAME);
+	ego.CreateAnimationSequence(WALKING_RIGHT, 0, 11, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(WALKING_LEFT, 12, 23, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(WALKING_BACK, 0, 11, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(WALKING_FRONT, 0, 11, Sprite::LOOP_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_RIGHT_DOWN, 24, 35, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_RIGHT_UP, 48, 59, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_LEFT_DOWN, 36, 47, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_LEFT_UP, 60, 71, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_BACK, 72, 81, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.CreateAnimationSequence(PICKING_UP_FRONT, 82, 91, Sprite::GOTO_DEFAULT_ANIMATION);
+	ego.SetAnimation(STANDING_RIGHT_DOWN);
 	
-	Ego.SetTextColor(0xFFFFFFFF);
-	Ego.GetInventory()->SetFont(&mainFont);
-	Ego.GetInventory()->SetInventoryTiles(40);
-	Ego.SetName("Ego");
+	ego.SetTextColor(0xFFFFFFFF);
+	ego.GetInventory()->SetFont(&mainFont);
+	ego.GetInventory()->SetInventoryTiles(40);
+	ego.SetName("Ego");
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Called each frame.
@@ -142,7 +142,7 @@ void EgoApp::onProcess() {
 
 	// if we are in the inventory, query.
 	if(inInventory) {
-		curRoom.GetInventory()->QueryInventory(mouse.GetXPos(), mouse.GetYPos(), mouse.GetLock(MOUSE_LBUTTON));
+		ego.GetInventory()->QueryInventory(mouse.GetXPos(), mouse.GetYPos(), mouse.GetLock(MOUSE_LBUTTON));
 	}
 
 	// otherwise, query the room.
@@ -208,7 +208,7 @@ void EgoApp::processInput() {
 
 	// Toggle the inventory on I
 	if(keyboard.GetKeyState(DIK_I) == TRUE) {
-		if(!curRoom.GetInventory()->GetInScript() && !curRoom.GetInScript()) {
+		if(!ego.GetInventory()->GetInScript() && !curRoom.GetInScript()) {
 			keyboard.SetLock(DIK_I);
 			if(inInventory) { inInventory = false; }
 			else { 
@@ -222,28 +222,28 @@ void EgoApp::processInput() {
 	if(keyboard.GetKeyState(DIK_L) == TRUE) {
 		keyboard.SetLock(DIK_L, TRUE);
 		curRoom.SetGlobalAction(IS_LOOK);
-		curRoom.GetInventory()->SetGlobalAction(IS_LOOK);
+		ego.GetInventory()->SetGlobalAction(IS_LOOK);
 	}
 
 	// Change global action to Use on U
 	if(keyboard.GetKeyState(DIK_U) == TRUE) {
 		keyboard.SetLock(DIK_U, TRUE);
 		curRoom.SetGlobalAction(IS_USE);
-		curRoom.GetInventory()->SetGlobalAction(IS_USE);
+		ego.GetInventory()->SetGlobalAction(IS_USE);
 	}
 
 	// Change global action to Walk on W
 	if(keyboard.GetKeyState(DIK_W) == TRUE) {
 		keyboard.SetLock(DIK_W, TRUE);
 		curRoom.SetGlobalAction(IS_WALK);
-		curRoom.GetInventory()->SetGlobalAction(IS_WALK);
+		ego.GetInventory()->SetGlobalAction(IS_WALK);
 	}
 
 	// Change global action to Talk on T
 	if(keyboard.GetKeyState(DIK_T) == TRUE) {
 		keyboard.SetLock(DIK_T, TRUE);
 		curRoom.SetGlobalAction(IS_TALK);
-		curRoom.GetInventory()->SetGlobalAction(IS_TALK);
+		ego.GetInventory()->SetGlobalAction(IS_TALK);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +328,7 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 	}
 	curRoom.SetHasEnterScript(new_room.hasOnEnterScript == 1); 
 
-	Ego.SetXYPos(100, 300);	
+	ego.SetXYPos(100, 300);	
 
 	DataPackage * dp_collision = DataPackage::Load(new_room.colMapFileName.c_str(), NULL);
 	curRoom.EnterRoom(dp_collision, new_room.roomName);

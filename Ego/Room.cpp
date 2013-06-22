@@ -6,7 +6,6 @@
 Room::Room() : dpCollision(NULL) { 	
 	zeroScale = 1.0f;
 	scalingFactor = 0.0f;
-	pParser->SetParent(this); 
 }
 //////////////////////////////////////////////////////////////////////////////////
 Room::~Room() {
@@ -18,24 +17,25 @@ Room::~Room() {
 	Since the pEgo character and font will not change per room,
 	they are set separately from other room data.
 */
-void Room::Set(Ego Dude, Font *font) {
-	pEgo = Dude;
-	pEgo.SetInventoryParent();
-	pEgo.SetParentRoom(this);
-	font = font;
+void Room::Init(Ego * pego, const Font *font) {
+	pEgo = pego;
+	pEgo->SetParentRoom(this);
+	pFont = font;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Enters the room.
 /** \param cm The collision map for this room.
 */
-void Room::EnterRoom(const DataPackage * dp_collision, std::string roomName) { 
-	pEgo.SetCurAction(IS_NOACTION, NULL, -1, -1);
-	pEgo.SetXScale(zeroScale - scalingFactor*(600 - pEgo.GetYPos()));
-	pEgo.SetYScale(zeroScale - scalingFactor*(600 - pEgo.GetYPos()));
+void Room::EnterRoom(const DataPackage * dp_collision, const std::string & roomName) { 
+	this->roomName = roomName;
+	
 	dpCollision = dp_collision;
 	collisionMap = (char *)dpCollision->GetPtr();
-	roomName = roomName;
 	
+	pEgo->SetCurAction(IS_NOACTION, NULL, -1, -1);
+	pEgo->SetXScale(zeroScale - scalingFactor*(600 - pEgo->GetYPos()));
+	pEgo->SetYScale(zeroScale - scalingFactor*(600 - pEgo->GetYPos()));
+		
 	if(GetHasEnterScript()) {
 		string s = roomName + "OnEnter.sc";
 		pParser->ParseFile(s);
@@ -92,7 +92,7 @@ bool Room::LeaveRoom() {
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns a pointer to the pEgo of this room instance.
-Ego* Room::GetEgo() { return &pEgo; }
+Ego* Room::GetEgo() { return pEgo; }
 //////////////////////////////////////////////////////////////////////////////////
 /// Adds an exit to room rmNumber at location.
 void Room::AddExit(const RECT & location, int rmNumber) {
@@ -163,16 +163,16 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 					pathX = checkedObject.GetXWalkCoordinate();
 					pathY = checkedObject.GetYWalkCoordinate();
 
-					if(pEgo.GetCurrentlyHeldItem() != 0) { 
-						pEgo.SetCurAction(IS_USEITEM, &checkedObject, pathX, pathY);
+					if(pEgo->GetCurrentlyHeldItem() != 0) { 
+						pEgo->SetCurAction(IS_USEITEM, &checkedObject, pathX, pathY);
 					} else {
-						pEgo.SetCurAction(curAction, &checkedObject, pathX, pathY);
+						pEgo->SetCurAction(curAction, &checkedObject, pathX, pathY);
 					}
 				}
 			}
 			
 			// also, check if pEgo has stepped on an object that has an onStep script.
-			if(checkedObject.HasOnStep() && !checkedObject.GetEgoIn() && checkedObject.CheckMouseCollision(pEgo.GetFootXPos(), pEgo.GetFootYPos())) {
+			if(checkedObject.HasOnStep() && !checkedObject.GetEgoIn() && checkedObject.CheckMouseCollision(pEgo->GetFootXPos(), pEgo->GetFootYPos())) {
 				checkedObject.SetEgoIn(true);
 				checkedObject.DoAction(IS_WALK, pParser);
 				SetCurActionObject(&checkedObject);
@@ -180,7 +180,7 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 				return;
 			}
 			// Finally, check if pEgo has left an object.
-			if(checkedObject.GetEgoIn() && !checkedObject.CheckMouseCollision(pEgo.GetFootXPos(), pEgo.GetFootYPos())) {
+			if(checkedObject.GetEgoIn() && !checkedObject.CheckMouseCollision(pEgo->GetFootXPos(), pEgo->GetFootYPos())) {
 				checkedObject.SetEgoIn(false);
 			}
 		}
@@ -204,8 +204,8 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 					SetExit(true, (*iExit).GetRoomNumber());
 
 					// Set pEgo moving toward the exit.
-					//pEgo.SetpEgoMoving(mouseX, mouseY);
-					pEgo.SetCurAction(IS_WALK, NULL, mouseX, mouseY);
+					//pEgo->SetpEgoMoving(mouseX, mouseY);
+					pEgo->SetCurAction(IS_WALK, NULL, mouseX, mouseY);
 					// we have found the object/exit.
 					found = true;
 					break;
@@ -215,13 +215,13 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 			
 		// otherwise, if the mouse was clicked and we still haven't found the object/exit...
 		if(lClick) {
-			pEgo.SetCurAction(IS_WALK, NULL, mouseX, mouseY);
+			pEgo->SetCurAction(IS_WALK, NULL, mouseX, mouseY);
 		}
 	}
 	
-	// if the mouse was clicked, find a path for pEgo.
+	// if the mouse was clicked, find a path for pEgo->
 	if(lClick) {
-		pEgo.FindPath(pathX, pathY, collisionMap);
+		pEgo->FindPath(pathX, pathY, collisionMap);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -231,9 +231,9 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 */
 bool Room::Update() {
 	// All object should be updated, regardless if we are in script.
-	pEgo.Update();
-	pEgo.SetXScale(zeroScale - scalingFactor*(600 - pEgo.GetYPos()));
-	pEgo.SetYScale(zeroScale - scalingFactor*(600 - pEgo.GetYPos()));
+	pEgo->Update();
+	pEgo->SetXScale(zeroScale - scalingFactor*(600 - pEgo->GetYPos()));
+	pEgo->SetYScale(zeroScale - scalingFactor*(600 - pEgo->GetYPos()));
 
 	// Update all objects in the scene
 	for(std::list<Object>::iterator iObject = objectList.begin(); iObject != objectList.end(); iObject++) {
@@ -243,24 +243,24 @@ bool Room::Update() {
 	// If we are not in script, then pEgo is free to move/perform actions.
 	if(!GetInScript())  {		
 		// if pEgo is ready to perform his current action...
-		if(pEgo.DoCurAction()) {
+		if(pEgo->DoCurAction()) {
 			// set the current object and action type.
-			SetCurActionObject(pEgo.GetCurActionObject());
-			ActionType action = pEgo.GetCurAction();
-			pEgo.SetCurAction(IS_NOACTION, NULL, -1, -1);
+			SetCurActionObject(pEgo->GetCurActionObject());
+			ActionType action = pEgo->GetCurAction();
+			pEgo->SetCurAction(IS_NOACTION, NULL, -1, -1);
 			
 			// Load script.
 			if(action != IS_USEITEM) {
 				curActionObject->DoAction(action, pParser);
 			} else {
-				curActionObject->UseItem(pEgo.GetCurrentlyHeldItem()->GetName(), pParser);
+				curActionObject->UseItem(pEgo->GetCurrentlyHeldItem()->GetName(), pParser);
 			}
 			// Set script status to true.
 			SetInScript(true);
 		}
 
 		// If pEgo is going to exit, call LeaveRoom() and return false.
-		if(pEgo.AtCurActionCoord() && GetExit()) {
+		if(pEgo->AtCurActionCoord() && GetExit()) {
 			LeaveRoom();
 			return false;
 		}
@@ -305,7 +305,7 @@ void Room::RenderRoom() const {
 		(*iObject).Render();
 	}
 
-	pEgo.Render();
+	pEgo->Render();
 
 	// If we are in script, render the current conversation string, if any.
 	if(GetInScript()) {
@@ -350,28 +350,23 @@ void Room::RenderRoom() const {
 		pFont->render(action.c_str(), 10, 530, gSystem.getWidth(), gSystem.getHeight(), 0xDDDDDDDD);
 	}
 
-	if(pEgo.GetCurrentlyHeldItem() != NULL) {
-		pFont->render(pEgo.GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
+	if(pEgo->GetCurrentlyHeldItem() != NULL) {
+		pFont->render(pEgo->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Return a pointer to an object within the room, null if no object is found.
 /** \param objectName The name of the object to search for.  If "pEgo" is passed,
-	FindObject() will return a pointer to pEgo.
+	FindObject() will return a pointer to pEgo->
 */
 Object* Room::FindObject(const std::string & objectName) {
-	if(objectName.compare("Ego") == 0) { return &pEgo; }
+	if(objectName.compare("Ego") == 0) { return pEgo; }
 
 	for(std::list<Object>::iterator iObject = objectList.begin(); iObject != objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) { return &(*iObject); }
 	}
 
-	return 0;
-}
-//////////////////////////////////////////////////////////////////////////////////
-/// Return the main inventory (necessary for parsing).
-Inventory* Room::GetInventory() {
-	return pEgo.GetInventory();
+	return NULL;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Sets the scaling parameters of this room.

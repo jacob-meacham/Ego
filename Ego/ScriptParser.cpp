@@ -1,13 +1,14 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <sstream>
+#include "WinMain.h"
 #include "ScriptParser.h"
 #include "GameArea.h"
 #include "Inventory.h"
 #include "Ego.h"
 //////////////////////////////////////////////////////////////////////////////////
-/// Standard constructor.  Resets all timer variables.
-Parser::Parser() { 
+/// Constructor which sets the parent of the Parser.
+Parser::Parser(GameArea *p) : pGameArea(p) { 
 	dwLastTick = 0;
     dCurTime = 0;
 	dLastTime = 0;
@@ -16,12 +17,6 @@ Parser::Parser() {
 	executionTime = 0;
 	currentObject = NULL;
 }
-//////////////////////////////////////////////////////////////////////////////////
-/// Constructor which sets the parent of the Parser.
-Parser::Parser(GameArea *p) { pParent = p; }
-//////////////////////////////////////////////////////////////////////////////////
-/// Sets the parent of the Parser to p.
-void Parser::SetParent(GameArea *p) { pParent = p; }
 //////////////////////////////////////////////////////////////////////////////////
 /// Creates an AST of the fileName (must be a .sc file).
 void Parser::ParseFile(string fileName) {
@@ -64,7 +59,7 @@ void Parser::ParseFile(string fileName) {
 // Only conversation strings begin with identifiers.
 void Parser::handleIdentifier() {
 	// Find the object which this identifier points to.
-	Object * object = pParent->FindObject(string(iScript->value.begin(), iScript->value.end()));
+	Object * object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 	if(!object) {
 		std::stringstream s;
 		s << "Couldn't find " << string(iScript->value.begin(), iScript->value.end());
@@ -85,7 +80,7 @@ void Parser::handleIdentifier() {
 	string conv(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end());
 
 	// set the parent's current conversation string
-	pParent->SetConversationString(conv, object->GetTextColor(), x, y);
+	pGameArea->SetConversationString(conv, object->GetTextColor(), x, y);
 	object->DoTalkingAnimation();
 	currentObject = object;
 
@@ -96,7 +91,7 @@ void Parser::handleIdentifier() {
 //////////////////////////////////////////////////////////////////////////////////
 void Parser::handleDoAnimation() {
 	// first, find the object.
-	Object * object = pParent->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
+	Object * object = pGameArea->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
 	if(!object) {
 		TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 		executionTime = 0.0f;
@@ -125,9 +120,9 @@ void Parser::handleGetItem() {
 	std::stringstream inventoryObject;
 	inventoryObject << objectName << "Inventory";
 
-	Object * object = pParent->FindObject(inventoryObject.str());
+	Object * object = pGameArea->FindObject(inventoryObject.str());
 	if(!object) {
-		object = pParent->FindObject(objectName);
+		object = pGameArea->FindObject(objectName);
 	}
 		
 	if(!object) {
@@ -139,13 +134,13 @@ void Parser::handleGetItem() {
 
 	if(iScript->children.size() == 0) {
 		// add that object to the main inventory.
-		pParent->GetInventory()->AddInventoryObject(*object);
+		gApp.getEgo()->GetInventory()->AddInventoryObject(*object);
 
 		// no time is needed to execute this line.
 		executionTime = 0.0f;
 	} else {		
 		// add that object to the main inventory.
-		pParent->GetInventory()->AddInventoryObject(*object);
+		gApp.getEgo()->GetInventory()->AddInventoryObject(*object);
 
 		// Then, find out what the animationString says.
 		string animationString((iScript->children.begin()+1)->value.begin(), (iScript->children.begin()+1)->value.end());
@@ -157,15 +152,15 @@ void Parser::handleGetItem() {
 		}
 		// if the number is one, do default pickup animation.
 		else if(animationNumber = 1) {
-			pParent->GetEgo()->DoPickupAnimation();
+			gApp.getEgo()->DoPickupAnimation();
 			executionTime = 0.8f;
 		}
 
 		// else, do the animation pointed to by animationString.
 		else {
-			pParent->GetEgo()->SetAnimation(animationNumber);
-			pParent->GetEgo()->SetAutoAnimate(true);
-			executionTime = pParent->GetEgo()->GetNumAnimationFrames(animationNumber) * 0.5f;
+			gApp.getEgo()->SetAnimation(animationNumber);
+			gApp.getEgo()->SetAutoAnimate(true);
+			executionTime = gApp.getEgo()->GetNumAnimationFrames(animationNumber) * 0.5f;
 		}
 	}
 
@@ -175,7 +170,7 @@ void Parser::handleGetItem() {
 //////////////////////////////////////////////////////////////////////////////////
 void Parser::handleLoseItem() {
 	// simply remove the object in question.
-	pParent->GetInventory()->LoseObject(string(iScript->value.begin(), iScript->value.end()));
+	gApp.getEgo()->GetInventory()->LoseObject(string(iScript->value.begin(), iScript->value.end()));
 		
 	// no time is needed to execute this line.
 	executionTime = 0.0f;
@@ -192,7 +187,7 @@ void Parser::handleWait() {
 //////////////////////////////////////////////////////////////////////////////////
 void Parser::handleKillObject() {
 	// find the object in question, and set its visibility status to false.
-	Object * object = pParent->FindObject(string(iScript->value.begin(), iScript->value.end()));
+	Object * object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 	if(!object) {
 		TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 		executionTime = 0.0f;
@@ -209,7 +204,7 @@ void Parser::handleKillObject() {
 void Parser::handleCreateObject() {
 	// find the object in question and set its visibilty status to true.
 	if(iScript->children.size() == 0) {
-		Object* object = pParent->FindObject(string(iScript->value.begin(), iScript->value.end()));
+		Object* object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 		if(!object) {
 			TRACE("Couldn't find %s", string(iScript->value.begin(), iScript->value.end()).c_str());
 			executionTime = 0.0f;
@@ -219,7 +214,7 @@ void Parser::handleCreateObject() {
 
 		object->SetVisible(true);
 	} else {
-		Object * object = pParent->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
+		Object * object = pGameArea->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
 		if(!object) {
 			TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 			
@@ -246,10 +241,10 @@ void Parser::handleSetVariable() {
 
 	// if the variable to be set is a room variable, simply set the parent's flag.
 	if(variableType.compare("ROOM") == 0) {
-		pParent->SetFlag(atoi(variableNum.c_str()), atoi(setTo.c_str()));
+		pGameArea->SetFlag(atoi(variableNum.c_str()), atoi(setTo.c_str()));
 	} else {
 		// otherwise, find the object in question, and set the appropriate flag.
-		Object * object = pParent->FindObject(variableType);
+		Object * object = pGameArea->FindObject(variableType);
 		if(!object) {
 			TRACE("Couldn't find %s", variableType.c_str());
 			
@@ -273,13 +268,13 @@ void Parser::handleShowHideBlock() {
 			// find the number to show.
 			string choice((iScript->children.begin()+1)->value.begin(), (iScript->children.begin()+1)->value.end());
 			// show the choice.
-			pParent->ShowConversationChoice(atoi(choice.c_str()));
+			pGameArea->ShowConversationChoice(atoi(choice.c_str()));
 		}
 		else {
 			// find the number to hide.
 			string choice((iScript->children.begin()+1)->value.begin(), (iScript->children.begin()+1)->value.end());
 			// hide the choice.
-			pParent->HideConversationChoice(atoi(choice.c_str()));
+			pGameArea->HideConversationChoice(atoi(choice.c_str()));
 				
 		}
 		// increment the iterator.
@@ -301,13 +296,13 @@ void Parser::handleConversation() {
 		handleShowHideBlock();
 		
 		// fill the parent's conversation choices.
-		pParent->FillConversationChoices();
+		pGameArea->FillConversationChoices();
 		SetWaiting(true);
 	} else if(iScript->value.id() == AdventureScript::ShowHideID) {
 		handleShowHideBlock();
 
 		// refill the parent's conversation choices.
-		pParent->FillConversationChoices();
+		pGameArea->FillConversationChoices();
 		SetWaiting(true);
 	}
 	else if(iScript->value.id() == AdventureScript::ConversationHeaderID) {
@@ -323,7 +318,7 @@ void Parser::handleIfElse() {
 		string conditionString(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end());
 
 		// determine if the condition is false.
-		if(pParent->GetCurActionObject()->GetFlag(atoi(conditionString.c_str())) == 0) {
+		if(pGameArea->GetCurActionObject()->GetFlag(atoi(conditionString.c_str())) == 0) {
 			// if it is, we can iterate past the if block.
 			iScript++;
 			executionTime = 0.0f;
@@ -339,7 +334,7 @@ void Parser::handleIfElse() {
 		iIfBlock = iScript;
 		
 		string conditionString(iScript->children.begin()->children.begin()->value.begin(), iScript->children.begin()->children.begin()->value.end());
-		if(pParent->GetCurActionObject()->GetFlag(atoi(conditionString.c_str())) == 0) {
+		if(pGameArea->GetCurActionObject()->GetFlag(atoi(conditionString.c_str())) == 0) {
 			// set iScript to its else block child.
 			iScript = (iScript->children.begin()+1);
 
@@ -374,7 +369,7 @@ void Parser::handleIfElse() {
 void Parser::ExecuteNextLine() {
 	// reset execution time
 	executionTime = 0.0f;
-	pParent->SetConversationString("", 0x00000000, 0, 0);
+	pGameArea->SetConversationString("", 0x00000000, 0, 0);
 
 	if(iScript->value.id() == AdventureScript::IdentifierID) {
 		handleIdentifier();
@@ -404,8 +399,8 @@ void Parser::ExecuteNextLine() {
 	} else if(string(iScript->value.begin(), iScript->value.end()).compare("stop") == 0) { 
 		// Stop Command -- if we ever see stop, the script is at an end.
 		// clear the current object of attention, and set the parent's script status to false.
-		pParent->ClearCurActionObject();
-		pParent->SetInScript(false);
+		pGameArea->ClearCurActionObject();
+		pGameArea->SetInScript(false);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -453,7 +448,7 @@ void Parser::FillConversationList() {
 		string choiceString(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end());
 
 		// Add the choice, default visibilty is not visible.
-		pParent->AddConversationChoice(atoi(choiceNumber.c_str()), choiceString, false);
+		pGameArea->AddConversationChoice(atoi(choiceNumber.c_str()), choiceString, false);
 
 		// increment the iterator.
 		iScript++;

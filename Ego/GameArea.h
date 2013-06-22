@@ -16,8 +16,6 @@ class Parser;
 */
 class GameArea {
 	protected:
-		const Font * pFont; ///< Pointer to the font used for rendering strings.
-
 		std::list<Object> objectList;	///< List of all interactive objects in the game area.
 		Object * curActionObject; ///< Pointer to the current selected object.
 		ActionType curAction; ///< The current action.
@@ -33,6 +31,8 @@ class GameArea {
 
 		Parser * pParser; ///< Parser to handle any object scripts.		
 		int	gameFlags[256]; ///< Game area flags, used when processing .ent scripts.
+
+		const Font * pFont; ///< Pointer to the font used for rendering strings.
 	public:
 		GameArea();
 		virtual ~GameArea();
@@ -80,7 +80,5 @@ class GameArea {
 		void SetCurActionObject(Object* o);
 		
 		// virtual functions, required of all children.
-		virtual Inventory* GetInventory() = 0;
 		virtual Object* FindObject(const std::string & objectName) = 0;
-		virtual Ego* GetEgo() = 0;
 };

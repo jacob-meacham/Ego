@@ -5,15 +5,10 @@
 #include "ScriptParser.h"
 #include "Framework\System.h"
 //////////////////////////////////////////////////////////////////////////////////
-Inventory::Inventory() { 
+Inventory::Inventory(Ego * pparent) : pParent(pparent) { 
 	SetInScript(false); 
-	pParser->SetParent(this);
 	nextObjectX = 120; 
 	nextObjectY = 30; 
-}
-//////////////////////////////////////////////////////////////////////////////////
-void Inventory::SetParent(Ego *p) { 
-	pParent = p; 
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Sets the tileset of this inventory, so that inventory objects can easily move from room to room.
@@ -202,11 +197,5 @@ void Inventory::GetNextObjectCoordinates() {
 		nextObjectY += 150;
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////
-Inventory* Inventory::GetInventory() {
-	return this;
-}
-//////////////////////////////////////////////////////////////////////////////////
-Ego* Inventory::GetEgo() { return pParent; }
 
 

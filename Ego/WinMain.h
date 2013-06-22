@@ -14,7 +14,7 @@ class EgoApp : public System
 {
 	private:
 		// Data
-		Ego				Ego; ///< The main Ego instance.
+		Ego				ego; ///< The main Ego instance.
 		Room			curRoom; ///< The current room.
 		std::string		curAction; ///< String representing Ego's current action.
 		bool			inInventory; ///< true if the game is currently in the inventory.
@@ -49,6 +49,8 @@ class EgoApp : public System
 		virtual bool onInit();
 		
 		bool LoadRoom(const std::string & roomName);
+
+		Ego * getEgo() { return &ego; }
 };
 
 extern EgoApp gApp;
