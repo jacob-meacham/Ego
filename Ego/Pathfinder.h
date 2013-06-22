@@ -1,7 +1,9 @@
 #pragma once
 #include <algorithm>  // Include algorithms
 #include <list>
+#include <vector>
 #include "Node.h"
+
 /// implements A* pathfinding algorithm.
 /** This is the pathfinder used by the Actor class to find a path from one point to another in a room.
 	If the destination location is unreachable, the pathfinder will find the nearest reachable point, and
@@ -11,7 +13,7 @@
 class Pathfinder {
 	private:
 		bool pathFound; ///< true if a path has been found.
-		std::list<Node> openList; ///< the list of nodes which are, as yet, unexplored
+		std::vector<Node> openList; ///< the list of nodes which are, as yet, unexplored
 		std::list<Node> closedList; ///< the list of already explored nodes
 		std::list<Node*> path; ///< A list of the path found.
 		short whichList[80][60]; ///< a 2-d array to quickly determine if a node is on the open or on the closed list.

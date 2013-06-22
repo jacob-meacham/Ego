@@ -16,6 +16,10 @@ class Node {
 			return (this->gValue + this->hValue) > (other.gValue + other.hValue);
 		}
 
+		bool operator > ( const Node& other) const {
+			return (this->gValue + this->hValue) < (other.gValue + other.hValue);
+		}
+
 		/// Two nodes are equal if their components are equal.
 		bool operator == ( const Node& other) const {
 			return (this->loc.x == other.loc.x) && (this->loc.y == other.loc.y); 
@@ -38,5 +42,6 @@ class Node {
 		int GetY() const;
 		int GetHVal() const;
 		int GetGVal() const;
+		int GetFVal() const { return GetGVal() + GetHVal(); }
 		Node* GetParent();
 };

@@ -1,5 +1,5 @@
 #include "Pathfinder.h"
-#include "Framework\Define.h"z
+#include "Framework\Define.h"
 using namespace std;
 
 /// Enumeratres the type of node.
@@ -12,7 +12,11 @@ enum { unexplored = -1, closed = 0, open = 1 };
 	\return true if a path is found, false otherwise.
 */
 bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX, long destY) {
-	if(startingX == destX && startingY == destY) { return true; }
+	if(startingX == destX && startingY == destY) 
+	{ 
+		return true; 
+	}
+
 	openList.clear();
 	closedList.clear();
 	path.clear();
@@ -49,30 +53,42 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 	
 		// if the open list is ever empty and the path hasn't been found, then there is no path.  return false
 		if(openList.empty()) {
-			TRACE("No Path");
+			TRACE("No Path\n");
 			return false;
 		}
 	
-		openList.sort(); // Sort the open list in ascending order (Lower F cost = greater value node)
-		Node current = openList.back(); // grab the lowest F cost node off of the open list
-		openList.pop_back();
+		// Find the best node
+		std::vector<Node>::iterator ibest;
+		int best_val = INT_MAX;
+		for(std::vector<Node>::iterator i = openList.begin(); i != openList.end(); i++) {
+			Node & node = *i;
+			if (node.GetFVal() < best_val) {
+				ibest = i;
+				best_val = node.GetFVal();
+			}
+		}
+		Node & best = *ibest; // grab the lowest F cost node off of the open list
 		
 		// push the current node onto the closed list and set it to closed on whichList
-		closedList.push_back(current); 
-		whichList[current.GetX()][current.GetY()] = closed;
+		closedList.push_back(best); 
+		Node & current = closedList.back();
+
+		whichList[best.GetX()][best.GetY()] = closed;
+		openList.erase(ibest);		
 
 		// step through each direction sequentially.  This goes clockwise and starts at 1 = top.
 		// There is a slight bias towards up and right, but it should not affect the algorithm overly much.
 		for(int index = 1; index <= 8; index++) {
 			Node test = GetNeighbor(index, current);
-			test.SetParent(&closedList.back()); // set our parent as current (ie the last node pushed onto the closed list).
-			
+			test.SetParent(&current); // set our parent as current (ie the last node pushed onto the closed list).
+			test.SetGVal();
+
 			// if at any time the test node is our destination, then push it onto the open list: we have found a path.
 			// It is important to note that this is not necessarily the most efficient path -- to find that, we must
 			// wait until the destination node is pushed onto the closed list -- but this path is adequate for most
 			// purposes, and more quickly found.
 			if(isDestination(test, destX/10, 60-(destY/10))) {
-				openList.push_back(test);		
+				openList.push_back(test);
 				pathFound = true;
 				break;
 			} else if(!isWalkable(test)) { 
@@ -82,19 +98,19 @@ bool Pathfinder::FindPath(char* map, long startingX, long startingY, long destX,
 			} else if(!onOpen(test)) {
 				// if it is not yet on the open list, we may calculate H and G and add it to the list
 				test.SetHVal(CalculateHVal(test.GetX(), test.GetY(), destX, destY));
-				test.SetGVal();
 				whichList[test.GetX()][test.GetY()] = open;
 				openList.push_back(test);
 			} else if(onOpen(test)) {
 				 // if it is already on the open list, we see if the current path is better
-				for (std::list<Node>::iterator iNode = openList.begin(); iNode != openList.end(); iNode++) {
+				for(std::vector<Node>::iterator i = openList.begin(); i != openList.end(); i++) {
+					Node & node = *i;
 					// the current path is better if the current node's G value is lower.
-					if((*iNode) == test && (*iNode).GetGVal() > test.GetGVal()) { 
+					if(node == test && node.GetGVal() > test.GetGVal()) {
 						// if this is the case, we recalculate the F cost, 
 						// and change the node's parent to the current node.
-						(*iNode).SetParent(&closedList.back());
-						(*iNode).SetGVal();
-						(*iNode).SetHVal(CalculateHVal(test.GetX(), test.GetY(), destX, destY));
+						node.SetParent(&current);
+						node.SetGVal();
+						node.SetHVal(CalculateHVal(test.GetX(), test.GetY(), destX, destY));
 						break;
 					}
 				}
