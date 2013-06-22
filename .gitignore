@@ -10,3 +10,4 @@ ipch/*
 Framework/lib/*
 Debug/*
 fileeditor
+Ego/*.var
