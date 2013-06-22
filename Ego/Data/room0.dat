@@ -1,0 +1,397 @@
+Data\\room2.png 
+Data\\room2.col
+DressingRoom;
+1
+{
+	Data\\Surfboard.png
+	Surfboard;
+	Cool Surfboard;
+	0, 288
+	100, 197
+	125, 513
+	1
+}
+{
+	Data\\broken.png
+	BPortrait;
+	Broken Portrait;
+	22, 145
+	42, 42
+	189, 455
+	1
+}
+{
+	Data\\Plant.png
+	Plant;
+	Potted Plant;
+	157, 0
+	150, 205
+	281, 387
+	1
+	WaterInventory;
+}
+{
+	Data\\Cross.png
+	Cross;
+	Cross;
+	65, 75
+	105, 90
+	227, 415
+	1
+}
+{
+	Data\\RopeBar.png
+	RopeBar;
+	Velvet Rope Bar;
+	96, 215
+	125, 214	
+	231, 408
+	1
+	SoilInventory;
+	KnifeInventory;
+	{0, 0, 0, MAINTAIN_LAST_FRAME}
+	{1, 1, -1, MAINTAIN_LAST_FRAME}
+}
+{
+	Data\\Door.png
+	Door;
+	Door;
+	83, 106
+	101, 144
+	260, 371
+	1
+	BobbyPinInventory;
+}
+{
+	Data\\portraits.png
+	Portraits;
+	Portraits;
+	36, 23
+	147, 92
+	227, 415
+	1
+}
+{
+	Data\\Pile.png
+	Pile;
+	Pile of Cannonballs;
+	0, 497
+	81, 97
+	106, 568
+	1
+}
+{
+	Data\\Cannonball.png
+	Cannonball;
+	Lone Cannonball;
+	131, 539
+	47, 48
+	218, 564
+	1
+}
+{
+	Data\\Glass.png
+	Glass;
+	Fallen Glass;
+	115, 416
+	50, 45
+	183, 451
+	1
+	WhoopeeInventory;
+}
+{
+	Data\\Glass.png
+	GlassInventory;
+	Fallen Glass;
+	115, 416
+	50, 45
+	183, 451
+	0
+	CannonballInventory;
+	
+}
+{
+	Data\\kit.png
+	Kit;
+	Explosives Kit;
+	342, 41
+	35, 33
+	407, 341
+	0
+}
+{
+	Data\\kit.png
+	KitInventory;
+	Explosives Kit;
+	0, 0
+	35, 33
+	0, 0
+	0
+	GlassDustInventory;
+}
+{
+	Data\\Window.png
+	Window;
+	Barred Window;
+	332, 6
+	85, 63
+	407, 341
+	1
+	SurfboardInventory;
+	FloatingOrderInventory;
+	OrderInventory;
+}
+{
+	Data\\Bar.png
+	BraA;
+	Huge White Bra;
+	717, 75
+	34, 112
+	764, 398
+	1
+	
+}
+{
+	Data\\brainventory.png
+	BraB;
+	Huge Lumpy Bra;
+	0, 0
+	100, 55
+	0, 0
+	0
+	KnifeInventory;
+}
+{
+	Data\\note.png
+	Order;
+	Order Form;
+	0, 0
+	30, 36
+	0, 0
+	0
+	ParachuteInventory;
+}
+{
+	Data\\Screen.png
+	Screen;
+	Dressing Screen;
+	470, 51
+	310, 315
+	637, 432
+	1
+}
+{
+	Data\\ClosedScreen.png
+	CScreen;
+	DressingScreen;
+	663, 54
+	107, 315
+	734, 299
+	0
+}
+{
+	Data\\tapeplayer.png
+	Player;
+	Tape Player;
+	530, 216
+	130, 85
+	553, 285
+	1
+}
+{
+	Data\\tapeplayerB.png
+	PlayerB;
+	Tape Player;
+	530, 216
+	75, 53
+	553, 285
+	0
+}
+{
+	Data\\book.png
+	Book;
+	Book;	
+	540, 280
+	50, 50
+	625, 322
+	1
+}
+{
+	Data\\book.png
+	BookInventory;
+	Book;	
+	540, 280
+	50, 50
+	625, 322
+	0
+	PenInventory;
+}
+{
+	Data\\LovePoster.png
+	Poster;
+	Poster o' Love;
+	540, 20
+	172, 171
+	649, 375
+	1
+}
+{
+	Data\\Assorted.png
+	Assorted;
+	Miscellaneous Things;
+	709, 450
+	95, 105
+	667, 502
+	1
+}
+{
+	Data\\Pen.png
+	Pen;
+	Pen;
+	675, 564
+	61, 23
+	527, 537
+	1
+}
+{
+	Data\\Whoopee.png
+	Whoopee;
+	Whoopee Cushion;
+	676, 489
+	30, 46
+	527, 537
+	1
+}
+{
+	Data\\UsedComb.png
+	UsedComb;
+	Giant, Used Comb;
+	436, 266
+	54, 77
+	412, 357
+	1
+}
+{
+	Data\\ClosedSafe.png
+	ClosedSafe;
+	Closed Safe;
+	304, 135
+	78, 66
+	396, 313
+	if(3) 1
+	ExplosiveInventory;
+}
+{
+	Data\\comb.png
+	Comb;
+	New Comb;
+	394, 160
+	23, 50
+	396, 313
+	0
+}
+{
+	Data\\OpenSafe.png
+	OpenSafe;
+	Open Safe;
+	304, 135
+	138, 89
+	396, 313
+	if(5) 1
+}
+{
+	Data\\water.png
+	Water;
+	Bucket of Water;
+	0, 0
+	83, 111
+	0, 0
+	0
+}
+{
+	Data\\glassDust.png
+	GlassDust;
+	Pile of Glass Dust;
+	0, 0
+	100, 89
+	0, 0
+	0
+	KitInventory;
+}
+{
+	Data\\Soil.png
+	Soil;
+	Pile of Soil;
+	0, 0
+	100, 89
+	0, 0
+	0
+}
+{
+	Data\\knife.png
+	Knife;
+	Sharp Knife;
+	0, 0
+	89, 82
+	0, 0
+	0
+}
+{
+	Data\\explosive.png
+	Explosive;
+	Explosive Substance;
+	0, 0
+	58, 63
+	0, 0
+	0
+}
+{
+	Data\\halfbra.png
+	Parachute;
+	Parachute;
+	0, 0
+	55, 55
+	0, 0
+	0
+	OrderInventory;
+}
+{
+	Data\\LooseFloorboard.png
+	LooseFloorboard;
+	Loose FloorBoard;
+	305, 390
+	233, 25
+	382, 357
+	0
+}
+{
+	Data\\button.png
+	Button;
+	Button;
+	326, 390
+	35, 25
+	382, 354
+	0
+	CannonballInventory;
+}
+{
+	Data\\FloatingOrder.png
+	FloatingOrder;
+	Floating Order;
+	0, 0
+	55, 68
+	0, 0
+	0
+}
+{
+	Data\\bobbypin.png
+	BobbyPinInventory;
+	Hair Pin;
+	0, 0
+	30, 79
+	0, 0
+	0
+}
+
+
+{94, 121, 177, 242, 1}
