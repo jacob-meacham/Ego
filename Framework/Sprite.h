@@ -51,7 +51,7 @@ class Sprite {
 
 		// Constructor/Destructor.
 		Sprite();
-		~Sprite();
+		virtual ~Sprite();
 		
 		//Specifies which tileset to use
 		bool UseTiles(Tile *Tiles, char TextureNum); 
