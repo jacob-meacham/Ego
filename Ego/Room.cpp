@@ -11,6 +11,10 @@ Room::Room() {
 	m_parser->SetParent(this); 
 }
 
+Room::~Room() {
+	delete m_dpCollision;
+}
+
 /// Sets the font and Ego of this room instance.
 /** One room instance should be used for multiple rooms.
 	Since the Ego character and font will not change per room,
@@ -26,11 +30,12 @@ void Room::Set(Ego Dude, Font *font) {
 /// Enters the room.
 /** \param cm The collision map for this room.
 */
-void Room::EnterRoom(char *cm, std::string roomName) { 
+void Room::EnterRoom(const DataPackage * dp_collision, std::string roomName) { 
 	m_Ego.SetCurAction(IS_NOACTION, NULL, -1, -1);
 	m_Ego.SetXScale(m_zeroScale - m_scalingFactor*(600 - m_Ego.GetYPos()));
 	m_Ego.SetYScale(m_zeroScale - m_scalingFactor*(600 - m_Ego.GetYPos()));
-	m_collisionMap = cm;
+	m_dpCollision = dp_collision;
+	m_collisionMap = (char *)m_dpCollision->GetPtr();
 	m_roomName = roomName;
 	
 	if(GetHasEnterScript()) {

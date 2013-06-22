@@ -1,9 +1,9 @@
+#include <sstream>
 #include "WinMain.h"
 #include "DataPackage.h"
 #include "Inventory.h"
-#include <sstream>
-#define Error(x) MessageBox(NULL, x, "Error", MB_OK);
-
+#include "roomGrammar.h"
+//////////////////////////////////////////////////////////////////////////////////
 /// Default constructor.  Creates the window.
 EgoApp::EgoApp() {	
 	x = 10;
@@ -20,7 +20,7 @@ EgoApp::EgoApp() {
 	m_active = LoadCursorFromFile("red-cursor.cur");
 	windowed = true;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Called before the game enters the message pump.
 /** This function initializes graphics and input devices, loads the main font,
 	and the main Ego instance, and then loads the first room.
@@ -30,9 +30,6 @@ bool EgoApp::onInit() {
 		return false;
 	}
 
-	// Create room grammar.
-	m_roomGrammar = new RoomGrammar(m_newRoom);
-
 	// Begin the input devices.
 	m_Keyboard.Init(getWindow().getHWnd(), getWindow().getHInst(), windowed);
 	m_Mouse.Init(getWindow().getHWnd(), getWindow().getHInst(), windowed);
@@ -40,33 +37,53 @@ bool EgoApp::onInit() {
 	// Create the main font.
 	mainFont.create("Arial", 19, 1);
 
-	// Load the inventory texture.
-	m_Inventory.load("Data\\Inventory.png");
-
 	// parse the first room, to determine the number of tiles to create.
+	sRoom new_room;
+	RoomGrammar room_grammar(new_room);
 	iterator_t first("room0.dat");
-    if (!first) {
-       return false;
-    }
-
-    iterator_t last = first.make_end();
-	parse_info <iterator_t> info = parse(first, last, *(m_roomGrammar), space_p);
-	if(!info.full) { Error("Parsing Failed"); }
-
-
-	DataPackage variables(sizeof(int)*(256 + 40*m_newRoom.objectList.size()));
-	m_vars = (int *)variables.GetPtr();
-	
-	memset(m_vars, 0, sizeof(int) * 256);
-	for(int i = 256; i<256 + 40*m_newRoom.objectList.size(); i++) {
-		m_vars[i] = 1;
-	}
-
-	variables.Save("Room.var");
+	parse_info <iterator_t> info = parse(first, first.make_end(), room_grammar, space_p);
+	if(!info.full) { TRACE("Parsing Failed"); }
 
 	// Create tiles.
-	m_Tiles.Create((2*m_newRoom.objectList.size())+1);
+	m_Tiles.Create((2*new_room.objectList.size())+1);
+	m_Inventory.load("Data\\Inventory.png");
+
+	initVars(&new_room);
+	initEgo();
 	
+	// Set the main room Ego and font.
+	m_curRoom.Set(m_Ego, &mainFont);
+	m_curRoom.SetScaling(1.3334f, 0.0002f);
+
+	// Load the first room.
+	if(!LoadRoom("room0.dat")) {
+		return false;
+	}
+
+	m_curRoom.SetGlobalAction(IS_WALK);
+	m_curRoom.GetInventory()->SetGlobalAction(IS_WALK);
+	g_dwLastTick = timeGetTime();
+	
+	return true; 
+}
+//////////////////////////////////////////////////////////////////////////////////
+/// Shutdown function, called after the message pump has completed.
+void EgoApp::shutdown() {
+	System::shutdown();
+}
+//////////////////////////////////////////////////////////////////////////////////
+void EgoApp::initVars(const sRoom * new_room) {
+	DataPackage variables(sizeof(int)*(256 + 40*new_room->objectList.size()));
+	int * m_vars = (int *)variables.GetPtr();
+	
+	memset(m_vars, 0, sizeof(int) * 256);
+	for(int i = 256; i<256 + 40*new_room->objectList.size(); i++) {
+		m_vars[i] = 1;
+	}
+	variables.Save("Room.var");
+}
+//////////////////////////////////////////////////////////////////////////////////
+void EgoApp::initEgo() {
 	// Load Ego, and his animations.
 	m_Tiles.Load(0, "Data\\Ego.png", 180, 240);
 	m_Ego.UseTiles(&m_Tiles, 0);
@@ -100,29 +117,8 @@ bool EgoApp::onInit() {
 	m_Ego.GetInventory()->SetFont(&mainFont);
 	m_Ego.GetInventory()->SetInventoryTiles(&gGraphics, 40);
 	m_Ego.SetName("Ego");
-	
-	// Set the main room Ego and font.
-	m_curRoom.Set(m_Ego, &mainFont);
-	m_curRoom.SetScaling(1.3334f, 0.0002f);
-
-	// Load the first room.
-	if(!LoadRoom("room0.dat")) return FALSE;
-	m_curRoom.SetGlobalAction(IS_WALK);
-	m_curRoom.GetInventory()->SetGlobalAction(IS_WALK);
-	g_dwLastTick = timeGetTime();
-	
-	return TRUE; 
 }
-
-
-/// Shutdown function, called after the message pump has completed.
-void EgoApp::shutdown() {
-	System::shutdown();
-
-	delete m_DPCollision;
-	delete m_DPVariables;
-}
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Called each frame.
 /** This function renders at 60FPS.  It reads the input, updates the room/inventory,
 	then renders the room/inventory.
@@ -139,6 +135,49 @@ void EgoApp::onProcess() {
 		return; // It's too early. Return now and render nothing.
 	}
 
+	processInput();
+
+	// if we are in the inventory, query.
+	if(m_inInventory) {
+		m_curRoom.GetInventory()->QueryInventory(m_Mouse.GetXPos(), m_Mouse.GetYPos(), m_Mouse.GetLock(MOUSE_LBUTTON));
+	}
+
+	// otherwise, query the room.
+	else {
+		m_curRoom.QueryRoom(m_Mouse.GetXPos(), m_Mouse.GetYPos(), m_Mouse.GetLock(MOUSE_LBUTTON));
+	}
+
+	// if we are not in the inventory, update the room.
+	if(!m_inInventory) {
+		// Update() only returns false is Ego has exited the room.  
+		if(!m_curRoom.Update()) {
+			// if this is the case, we must Load the next room.
+			std::ostringstream roomScript;
+			roomScript << "room" << m_curRoom.GetExitNum() << ".dat";
+			LoadRoom(roomScript.str());
+		}
+	}
+
+	if(gGraphics.beginScene()) {
+		gGraphics.clear();
+		gGraphics.beginSprite();
+		m_Background.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
+
+		// Render the room.
+		m_curRoom.RenderRoom();
+		if(m_inInventory) {
+			m_Inventory.draw(75, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
+			m_curRoom.GetEgo()->GetInventory()->RenderInventory();
+		}
+
+		gGraphics.endSprite();
+		gGraphics.endScene();
+	}
+	
+	gGraphics.display();
+}
+//////////////////////////////////////////////////////////////////////////////////
+void EgoApp::processInput() {
 	// Read keyboard and mouse state.
 	m_Keyboard.Read();
 	m_Mouse.Read();
@@ -203,139 +242,96 @@ void EgoApp::onProcess() {
 		m_curRoom.SetGlobalAction(IS_TALK);
 		m_curRoom.GetInventory()->SetGlobalAction(IS_TALK);
 	}
-
-	// if we are in the inventory, query.
-	if(m_inInventory) {
-		m_curRoom.GetInventory()->QueryInventory(m_Mouse.GetXPos(), m_Mouse.GetYPos(), m_Mouse.GetLock(MOUSE_LBUTTON));
-	}
-
-	// otherwise, query the room.
-	else {
-		m_curRoom.QueryRoom(m_Mouse.GetXPos(), m_Mouse.GetYPos(), m_Mouse.GetLock(MOUSE_LBUTTON));
-	}
-
-	// if we are not in the inventory, update the room.
-	if(!m_inInventory) {
-		// Update() only returns false is Ego has exited the room.  
-		if(!m_curRoom.Update()) {
-			// Not needed for engine.
-			Error("Thank you for playing this room of Ego: Adventure, and congratulations!");
-			Error("Stay tuned to htpp://uoregon.edu/~jmeacha3/ for more Ego updates.");
-			// if this is the case, we must Load the next room.
-			std::ostringstream roomScript;
-			roomScript << "room" << m_curRoom.GetExitNum() << ".dat";
-			LoadRoom(roomScript.str());
-		}
-	}
-
-	// Begin render state.
-	if(gGraphics.beginScene()) {
-		gGraphics.clear();
-		gGraphics.beginSprite();
-		// Draw the background.
-		m_Background.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
-
-		// Render the room.
-		m_curRoom.RenderRoom();
-		if(m_inInventory) {
-			// If the inventory is visible, draw the inventory.
-			m_Inventory.draw(75, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
-			// And then render the inventory.
-			m_curRoom.GetEgo()->GetInventory()->RenderInventory();
-		}
-		gGraphics.endSprite();
-		gGraphics.endScene();
-	}
-	// Display graphics.
-	gGraphics.display();
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Function to load a room from a room script.  Returns true if the load is successful.
-bool EgoApp::LoadRoom(std::string roomName) {
-	m_newRoom.objectList.clear();
-	m_newRoom.exitList.clear();
+bool EgoApp::LoadRoom(const std::string & roomName) {
 	iterator_t first(roomName.c_str());
     if (!first)
     {
-       Error("Unable to open file!");
+       TRACE("Unable to open file!");
        return false;
     }
 
-	iterator_t last = first.make_end();
+	sRoom new_room;
+	RoomGrammar room_grammar(new_room);
 
-	parse_info <iterator_t> info = parse(first, last, *(m_roomGrammar), space_p);
+	iterator_t last = first.make_end();
+	parse_info <iterator_t> info = parse(first, last, room_grammar, space_p);
 	
 	if(!info.full) { 
-		Error("Parsing Failed"); 
+		TRACE("Parsing Failed"); 
 		return false;
 	}
 	
-	m_Background.load(m_newRoom.bgFileName.c_str());
-
-	m_DPCollision = DataPackage::Load(m_newRoom.colMapFileName.c_str(), &cmSize);
-	collisionData = (char*)m_DPCollision->GetPtr();
+	m_Background.load(new_room.bgFileName.c_str());
 	
-	int size = m_newRoom.objectList.size();
+	int size = new_room.objectList.size();
 	
-	m_DPVariables = DataPackage::Load("Room.var", &m_VariablesSize);
-	test = (int*)m_DPVariables->GetPtr();
+	DataPackage * dp_variables = DataPackage::Load("Room.var", NULL);
+	int * flags = (int*)dp_variables->GetPtr();
 	for(int j = 0; j<256; j++) {
-		m_curRoom.SetFlag(j, test[j]);
+		m_curRoom.SetFlag(j, flags[j]);
 	}
 	for(int i = 0; i<size; i++) {
-		sObject o = m_newRoom.objectList.front();
-		Object tempRoomObject;
-		m_Tiles.Load(i+1, (char*)(o.fileName.c_str()), o.width, o.height);
-		tempRoomObject.UseTiles(&m_Tiles, i+1);
-		tempRoomObject.Create(0, (char*)(o.name.c_str()), o.loc.x, o.loc.y);
-		tempRoomObject.SetTextColor(0xFFFF0000);
+		const sObject & o = new_room.objectList.front();
+		
+		Object newRoomObject;
+		m_Tiles.Load(i+1, o.fileName.c_str(), o.width, o.height);
+		newRoomObject.UseTiles(&m_Tiles, i+1);
+		newRoomObject.Create(0, (char*)(o.name.c_str()), o.loc.x, o.loc.y);
+		newRoomObject.SetTextColor(0xFFFF0000);
 
-		if(m_newRoom.objectList.front().visible != 0 &&
-		  (m_newRoom.objectList.front().visibleFlag == -1 || 
-		   m_curRoom.GetFlag(o.visibleFlag) != 0)) { tempRoomObject.SetVisible(true); }
-		else { tempRoomObject.SetVisible(false); }
-		if(o.hasOnStepScript == 1) { tempRoomObject.SetHasOnStep(true); }
-		else { tempRoomObject.SetHasOnStep(false); }
-		tempRoomObject.SetDescriptor(o.descriptor);
-		tempRoomObject.SetXYWalkCoordinates(o.walkCoord.x, o.walkCoord.y);
+		if(new_room.objectList.front().visible != 0 &&
+		  (new_room.objectList.front().visibleFlag == -1 || 
+		   m_curRoom.GetFlag(o.visibleFlag) != 0)) { newRoomObject.SetVisible(true); }
+		else { newRoomObject.SetVisible(false); }
+		if(o.hasOnStepScript == 1) { newRoomObject.SetHasOnStep(true); }
+		else { newRoomObject.SetHasOnStep(false); }
+		newRoomObject.SetDescriptor(o.descriptor);
+		newRoomObject.SetXYWalkCoordinates(o.walkCoord.x, o.walkCoord.y);
 		int l = 0;
 		for(int k=40*(i+1); k<40*(i+2); k++) {
-			tempRoomObject.SetFlag(l, test[k]);
+			newRoomObject.SetFlag(l, flags[k]);
 			l++;
 		}
 		if(o.useItemOnList.size() != 0) {
-			for(std::list<std::string>::iterator iString = o.useItemOnList.begin(); iString != o.useItemOnList.end(); iString++) {
-				tempRoomObject.AddUseItem((*iString));
+			for(std::list<std::string>::const_iterator iString = o.useItemOnList.begin(); iString != o.useItemOnList.end(); iString++) {
+				newRoomObject.AddUseItem((*iString));
 			}
 		}
 		if(o.animList.size() != 0) {
-			for(std::list<sAnimSequence>::iterator iAnim = o.animList.begin(); iAnim != o.animList.end(); iAnim++) {
+			for(std::list<sAnimSequence>::const_iterator iAnim = o.animList.begin(); iAnim != o.animList.end(); iAnim++) {
 				Sprite::AnimationOption animOp;
 				if((*iAnim).animationOption.compare("GOTO_NEXT_ANIMATION") == 0) { animOp = Sprite::GOTO_NEXT_ANIMATION; }
 				else if((*iAnim).animationOption.compare("GOTO_DEFAULT_ANIMATION") == 0) { animOp = Sprite::GOTO_DEFAULT_ANIMATION; }
 				else if((*iAnim).animationOption.compare("LOOP_ANIMATION") == 0) { animOp = Sprite::LOOP_ANIMATION; }
 				else if((*iAnim).animationOption.compare("KILL_SPRITE") == 0) { animOp = Sprite::KILL_SPRITE; }
 				else if((*iAnim).animationOption.compare("MAINTAIN_LAST_FRAME") == 0) { animOp = Sprite::MAINTAIN_LAST_FRAME; }
-				tempRoomObject.CreateAnimationSequence((*iAnim).animationNumber, (*iAnim).startFrame, (*iAnim).numFrames, animOp);
-				tempRoomObject.SetAnimation(0);
+				newRoomObject.CreateAnimationSequence((*iAnim).animationNumber, (*iAnim).startFrame, (*iAnim).numFrames, animOp);
+				newRoomObject.SetAnimation(0);
 			}
 		}
-		m_curRoom.AddObject(tempRoomObject);
-		m_newRoom.objectList.pop_front();
+		m_curRoom.AddObject(newRoomObject);
+		new_room.objectList.pop_front();
 	}
-	int exitSize = m_newRoom.exitList.size();
+	int exitSize = new_room.exitList.size();
 	for(int i = 0; i<exitSize; i++) {
-		m_curRoom.AddExit(m_newRoom.exitList.front().loc, m_newRoom.exitList.front().roomNumber);
-		m_newRoom.exitList.pop_front();
+		m_curRoom.AddExit(new_room.exitList.front().loc, new_room.exitList.front().roomNumber);
+		new_room.exitList.pop_front();
 	}
 	
 	m_Ego.SetXYPos(100, 300);
-	if(m_newRoom.hasOnEnterScript == 1) { m_curRoom.SetHasEnterScript(true); }
+	if(new_room.hasOnEnterScript == 1) { m_curRoom.SetHasEnterScript(true); }
 	else { m_curRoom.SetHasEnterScript(false); }
-	m_curRoom.EnterRoom(collisionData, m_newRoom.roomName);	
+
+	DataPackage * dp_collision = DataPackage::Load(new_room.colMapFileName.c_str(), NULL);
+	m_curRoom.EnterRoom(dp_collision, new_room.roomName);	
+
+	delete dp_variables;
 	return true;
 }
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Entry point for a Windows application.  Calls SystemCore::Run
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdShow)
 {

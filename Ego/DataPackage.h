@@ -10,11 +10,10 @@ class DataPackage {
 		~DataPackage();
 
 		void *Create(unsigned long Size);
-		void Free();
 
-		bool Save(const char *Filename);
+		bool Save(const char *Filename) const;
 		static DataPackage * Load(const char *Filename, unsigned long *Size);
 
-		void *GetPtr();
+		void *GetPtr() const;
 		unsigned long GetSize() const;
 };

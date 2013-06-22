@@ -22,7 +22,7 @@ DataPackage::~DataPackage()
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Saves the data package to the specified filename.
-bool DataPackage::Save(const char *Filename) {
+bool DataPackage::Save(const char *Filename) const {
 	// File pointer
 	FILE *fp;
 	// as long as both the buffer and a size exist, we can write.
@@ -75,7 +75,7 @@ DataPackage * DataPackage::Load(const char *Filename, unsigned long *Size) {
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Return the void* to the data buffer.
-void *DataPackage::GetPtr()
+void *DataPackage::GetPtr() const
 {
 	return m_Buf;
 }

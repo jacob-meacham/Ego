@@ -11,13 +11,15 @@
 /** This adventure game is made up of a series of rooms.  As such, Room is the most important class.
 	It handles movement of the main character, scripts, and interation.
 */
+class DataPackage;
 class Room : public GameArea {
 	protected:
 		std::string					m_roomName; ///< Name of the room.
 		std::list<Exit>				m_ExitList; ///< List of all exits from the room.
 		std::list<Exit>::iterator	iExit; ///< standard iterator for the list of exits.
 		Ego							m_Ego; ///< Main character instance.
-		char*						m_collisionMap; ///< pointer to the collision map data.
+		const DataPackage *			m_dpCollision;
+		char *						m_collisionMap; ///< pointer to the collision map data.
 		bool						m_ActiveExit; ///< true if there is an exit that is active.
 		int							m_ActiveRoomNumber; ///< the room number of the active exit (if any).
 		bool						m_hasEnterScript; ///< True if the room has an enter script.
@@ -27,12 +29,13 @@ class Room : public GameArea {
 	public:
 		// Constructor.
 		Room();
+		virtual ~Room();
 
 		// Sets the rooms Ego and font.
 		void Set(Ego Dude, Font *font);
 
 		// Enters the room with the roomName and collision map.
-		void EnterRoom(char *cm, std::string roomName);
+		void EnterRoom(const DataPackage * dp_collision, std::string roomName);
 		
 		// Leaves this room.	
 		bool LeaveRoom();
