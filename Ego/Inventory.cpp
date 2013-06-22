@@ -5,7 +5,7 @@
 #include "ScriptParser.h"
 #include "Framework\System.h"
 //////////////////////////////////////////////////////////////////////////////////
-Inventory::Inventory(Ego * pparent) : pParent(pparent) { 
+Inventory::Inventory(Ego * pparent) : pParent(pparent), bActive(false) { 
 	SetInScript(false); 
 	nextObjectX = 120; 
 	nextObjectY = 30; 
@@ -72,15 +72,16 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 				}
 				else if(GetGlobalAction() == IS_USE) { 
 					stringstream cursorFile;
-					cursorFile << (*iObject).GetName() << ".cur";
+					cursorFile << "Data\\" << (*iObject).GetName() << ".cur";
 					SetCursor(LoadCursorFromFile((char*)cursorFile.str().c_str()));
 					pParent->SetCurrentlyHeldItem(&(*iObject));
 				}
 				else {
 					// If the user also clicked on this object, then we need to process a script.
-					(*iObject).DoAction(GetGlobalAction(), pParser);
-					// We are now in script.
-					SetInScript(true);
+					if((*iObject).DoAction(GetGlobalAction(), pParser)) {
+						// We are now in script.
+						SetInScript(true);
+					}
 				}
 				return;
 			}
@@ -120,8 +121,10 @@ void Inventory::RenderInventory() const {
 	}
 
 	if(!GetInScript()) {
-		// If we are not in a script, render the descriptor of the current mouse object, if any 
-		pFont->render(curMouseObject.c_str(), 0, 570, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF, DT_CENTER);
+		if (!pParent->GetCurrentlyHeldItem()) {
+			// If we are not in a script, render the descriptor of the current mouse object, if any
+			pFont->render(curMouseObject.c_str(), 0, 570, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF, DT_CENTER);
+		}
 	} else if(GetInScript() && !pParser->WaitingForInput()) {
 		// If we are in script, render the current conversation string, if any
 		pFont->render(curConversationString.c_str(), 0, 250,
@@ -129,10 +132,6 @@ void Inventory::RenderInventory() const {
 	} else if(GetInScript() && pParser->WaitingForInput()) {
 		// if the parser is waiting for input, then render any conversation choices.
 		PrintConversationChoices();
-	} 
-	
-	if(pParent->GetCurrentlyHeldItem() != NULL) {
-		pFont->render(pParent->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////

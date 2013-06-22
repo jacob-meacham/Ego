@@ -15,6 +15,7 @@ private:
 	long nextObjectY; ///< Y-Coordinate of the next object to be placed in inventory.
 	Ego	* pParent; ///< Parent Ego (used for FindObject() ).
 	Tile inventoryTiles; // Tileset for items in inventory.
+	bool bActive;
 		
 public:
 	Inventory(Ego * pparent);
@@ -41,4 +42,7 @@ public:
 	void LoseObject(const std::string & objectName);
 
 	void GetNextObjectCoordinates();
+
+	void SetActive(bool active) { bActive = active; }
+	bool IsActive() { return bActive; }
 };

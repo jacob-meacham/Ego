@@ -2,7 +2,7 @@
 #include "Framework\Define.h"
 #include "ScriptParser.h"
 //////////////////////////////////////////////////////////////////////////////////
-GameArea::GameArea() {
+GameArea::GameArea() : inScript(false) {
 	pParser = new Parser(this); 
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ bool GameArea::GetInScript() const {
 	\param x The X-Coordinate of the upper left corner of the text box.
 	\param y The Y-Coordinate of the upper left corner of the text box.
 */
-void GameArea::SetConversationString(std::string conv, D3DCOLOR color, long x, long y) { 
+void GameArea::SetConversationString(const std::string & conv, D3DCOLOR color, long x, long y) { 
 	curConversationStringColor = color;
 	curConversationString = conv;
 	curConversationX = x;

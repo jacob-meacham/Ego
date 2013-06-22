@@ -44,13 +44,13 @@ class Object : public Sprite {
 		virtual ~Object();
 		
 		// Executes the specified action with the parser.	
-		void DoAction(ActionType action, Parser *p);
+		bool DoAction(ActionType action, Parser *p);
 
 		// Adds an item that can be used upon this one.
 		void AddUseItem(const std::string & itemName);
 		
 		// Ego has used a held item on this object - process it.
-		void UseItem(const std::string & item, Parser *p);
+		bool UseItem(const std::string & item, Parser *p);
 
 		// Executes the current talking animation of this object.
 		void DoTalkingAnimation();

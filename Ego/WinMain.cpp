@@ -10,8 +10,8 @@
 EgoApp::EgoApp() {
 	x = 10;
 	y = 10;
-	width = 800;
-	height = 600;
+	width = 850;
+	height = 650;
 	dwLastTick = 0;
 	dCurTime = 0;
 	dLastTime = 0;
@@ -165,6 +165,7 @@ void EgoApp::onProcess() {
 	if(gGraphics.beginScene()) {
 		gGraphics.clear();
 		gGraphics.beginSprite();
+
 		backgroundTexture.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
 
 		// Render the room.
@@ -211,40 +212,46 @@ void EgoApp::processInput() {
 	if(keyboard.GetKeyState(DIK_I) == TRUE) {
 		if(!ego.GetInventory()->GetInScript() && !curRoom.GetInScript()) {
 			keyboard.SetLock(DIK_I);
-			if(inInventory) { inInventory = false; }
+			if(inInventory) { 
+				inInventory = false;
+				ego.GetInventory()->SetActive(false);
+			}
 			else { 
+				ego.GetInventory()->SetActive(true);
 				inInventory = true;
 				curRoom.ClearCurMouseObject();
 			}
 		}
 	}
 
-	// Change global action to Look on L
-	if(keyboard.GetKeyState(DIK_L) == TRUE) {
-		keyboard.SetLock(DIK_L, TRUE);
-		curRoom.SetGlobalAction(IS_LOOK);
-		ego.GetInventory()->SetGlobalAction(IS_LOOK);
-	}
+	if (!ego.GetCurrentlyHeldItem()) {
+		// Change global action to Look on L
+		if(keyboard.GetKeyState(DIK_L) == TRUE) {
+			keyboard.SetLock(DIK_L, TRUE);
+			curRoom.SetGlobalAction(IS_LOOK);
+			ego.GetInventory()->SetGlobalAction(IS_LOOK);
+		}
 
-	// Change global action to Use on U
-	if(keyboard.GetKeyState(DIK_U) == TRUE) {
-		keyboard.SetLock(DIK_U, TRUE);
-		curRoom.SetGlobalAction(IS_USE);
-		ego.GetInventory()->SetGlobalAction(IS_USE);
-	}
+		// Change global action to Use on U
+		if(keyboard.GetKeyState(DIK_U) == TRUE) {
+			keyboard.SetLock(DIK_U, TRUE);
+			curRoom.SetGlobalAction(IS_USE);
+			ego.GetInventory()->SetGlobalAction(IS_USE);
+		}
 
-	// Change global action to Walk on W
-	if(keyboard.GetKeyState(DIK_W) == TRUE) {
-		keyboard.SetLock(DIK_W, TRUE);
-		curRoom.SetGlobalAction(IS_WALK);
-		ego.GetInventory()->SetGlobalAction(IS_WALK);
-	}
+		// Change global action to Walk on W
+		if(keyboard.GetKeyState(DIK_W) == TRUE) {
+			keyboard.SetLock(DIK_W, TRUE);
+			curRoom.SetGlobalAction(IS_WALK);
+			ego.GetInventory()->SetGlobalAction(IS_WALK);
+		}
 
-	// Change global action to Talk on T
-	if(keyboard.GetKeyState(DIK_T) == TRUE) {
-		keyboard.SetLock(DIK_T, TRUE);
-		curRoom.SetGlobalAction(IS_TALK);
-		ego.GetInventory()->SetGlobalAction(IS_TALK);
+		// Change global action to Talk on T
+		if(keyboard.GetKeyState(DIK_T) == TRUE) {
+			keyboard.SetLock(DIK_T, TRUE);
+			curRoom.SetGlobalAction(IS_TALK);
+			ego.GetInventory()->SetGlobalAction(IS_TALK);
+		}
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////

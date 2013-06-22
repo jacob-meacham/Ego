@@ -20,9 +20,9 @@ Object::~Object() { }
 	\param action The ActionType performed on this object.
 	\param p The parser which will parse this object's script.
 */
-void Object::DoAction(ActionType action, Parser *p) {
+bool Object::DoAction(ActionType action, Parser *p) {
 	std::ostringstream scriptFile;
-	scriptFile << "Scripts\\";
+	scriptFile << "Data\\Scripts\\";
 	switch(action) {
 		case IS_USE:
 			scriptFile << GetName() << "_Use.sc";
@@ -37,8 +37,8 @@ void Object::DoAction(ActionType action, Parser *p) {
 			scriptFile << GetName() << "_onStep.sc";
 			break;
 	}
-	p->ParseFile(scriptFile.str());
-
+	
+	return p->ParseFile(scriptFile.str());
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Sets the text color of this object.
@@ -87,18 +87,19 @@ void Object::AddUseItem(const std::string & itemName) {
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Scans through the objects usable on this object and processes the correct script.
-void Object::UseItem(const std::string & item, Parser *p) {
+bool Object::UseItem(const std::string & item, Parser *p) {
 	// If no item, is found, we will process the generic script.
 	std::stringstream scriptFile;
-	scriptFile << "Scripts\\" << item << "Generic_UseItem.sc";
+	scriptFile << "Data\\Scripts\\" << item << "Generic_UseItem.sc";
 	for(std::list<std::string>::iterator iString = useItemsOn.begin(); iString != useItemsOn.end(); iString++) {
 		if(item.compare((*iString)) == 0) {
 			// if the item is found, process the correct script.
 			scriptFile.str("");
-			scriptFile << "Scripts\\" << item << "On" << GetName() << "_UseItem.sc";
+			scriptFile << "Data\\Scripts\\" << item << "On" << GetName() << "_UseItem.sc";
 		}
 	}
-	p->ParseFile(scriptFile.str());
+	
+	return p->ParseFile(scriptFile.str());
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Executes the current talking animation of this object (or does nothing if this object has no talking animation).

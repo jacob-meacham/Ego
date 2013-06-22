@@ -19,7 +19,7 @@ Parser::Parser(GameArea *p) : pGameArea(p) {
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Creates an AST of the fileName (must be a .sc file).
-void Parser::ParseFile(string fileName) {
+bool Parser::ParseFile(string & fileName) {
 	// create a file iterator
 	iterator_t first(fileName.c_str());
 	if(!first) {
@@ -27,8 +27,9 @@ void Parser::ParseFile(string fileName) {
 		int index = fileName.find('_', 0);
 		// keep the action, but change the object name to generic.
 		fileName.replace(0, index, "generic");
+		string newFile = ("Data\\" + fileName);
 		
-		iterator_t temp(fileName.c_str());
+		iterator_t temp(newFile.c_str());
 		first = temp;
 	}
 
@@ -39,7 +40,9 @@ void Parser::ParseFile(string fileName) {
 		int index = fileName.find('_', 0);
 		// keep the action, but change the object name to generic.
 		fileName.replace(0, index, "generic");
-		iterator_t temp(fileName.c_str());
+		string newFile = ("Data\\" + fileName);
+		
+		iterator_t temp(newFile.c_str());
 		first = temp;
 
 		// fill the AST, using AdventureScript as the grammar, and spaces as the skip parser
@@ -47,12 +50,16 @@ void Parser::ParseFile(string fileName) {
 		info = ast_parse(first, first.make_end(), adventureScript, space_p);
 
 	}
+
+	if(!info.full)
+		return false;
 	
 	// Set the global iterator to the beginning of the AST.
 	iScript = info.trees.begin()->children.begin();
 	
 	SetWaiting(false);
 	executionTime = 0.0f;
+	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
 // Conversation String 
@@ -113,7 +120,13 @@ void Parser::handleDoAnimation() {
 //////////////////////////////////////////////////////////////////////////////////
 void Parser::handleGetItem() {
 	// find the object in question
-	string objectName(iScript->value.begin(), iScript->value.end());
+	string objectName;
+	if(iScript->children.size() == 0) {
+		objectName.assign(iScript->value.begin(), iScript->value.end());
+	} else {
+		objectName.assign(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end());
+	}
+
 	std::stringstream inventoryObject;
 	inventoryObject << objectName << "Inventory";
 
@@ -186,7 +199,7 @@ void Parser::handleKillObject() {
 	// find the object in question, and set its visibility status to false.
 	Object * object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 	if(!object) {
-		TRACE("Couldn't find %s\n", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
+		TRACE("Couldn'it find %s\n", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 		executionTime = 0.0f;
 		iScript++;
 		return;

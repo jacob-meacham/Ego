@@ -64,6 +64,7 @@ class GameArea {
 		// Getters.
 		Object* GetCurActionObject();
 		const Object* GetCurActionObject() const;
+		const std::string & GetCurMouseObject() const { return curMouseObject; }
 		ActionType GetGlobalAction() const;
 		bool GetInScript() const;
 		int GetFlag(int index) const;
@@ -74,7 +75,7 @@ class GameArea {
 		void SetFlag(int index, int d);
 		void SetGlobalAction(ActionType action);
 		void SetInScript(bool d);
-		void SetConversationString(std::string conv, D3DCOLOR color, long x, long y);
+		void SetConversationString(const std::string & conv, D3DCOLOR color, long x, long y);
 		void ShowConversationChoice(int number);
 		void HideConversationChoice(int number);
 		void SetCurActionObject(Object* o);

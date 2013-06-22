@@ -57,7 +57,7 @@ class Parser {
 		Parser(GameArea *p);
 
 		// Parses a file.
-		void ParseFile(string fileName);
+		bool ParseFile(string & fileName);
 
 		// Executes the next line of the script.
 		void ExecuteNextLine();

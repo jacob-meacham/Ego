@@ -3,6 +3,7 @@
 #include "Framework\System.h"
 #include "ScriptParser.h"
 #include "DataPackage.h"
+#include "Inventory.h"
 //////////////////////////////////////////////////////////////////////////////////
 Room::Room() : dpCollision(NULL) { 	
 	zeroScale = 1.0f;
@@ -39,10 +40,9 @@ void Room::EnterRoom(const DataPackage * dp_collision, const std::string & roomN
 		
 	if(GetHasEnterScript()) {
 		string s = "Data\\" + roomName + "OnEnter.sc";
-		pParser->ParseFile(s);
-		SetInScript(true);
-	} else {
-		SetInScript(false);
+		if (pParser->ParseFile(s)) {
+			SetInScript(true);
+		}
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,8 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 				if((*iText).CheckMouseCollision(mouseX, mouseY)) {
 					(*iText).SetColor(0xFF532FD4);
 					if(lClick) { pParser->JumpToConversation((*iText).GetChoiceNumber()); }
-					return;
+				} else {
+					(*iText).SetColor(0xFFFFFFFF);
 				}
 			}
 		}
@@ -175,9 +176,10 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 			// also, check if pEgo has stepped on an object that has an onStep script.
 			if(checkedObject.HasOnStep() && !checkedObject.GetEgoIn() && checkedObject.CheckMouseCollision(pEgo->GetFootXPos(), pEgo->GetFootYPos())) {
 				checkedObject.SetEgoIn(true);
-				checkedObject.DoAction(IS_WALK, pParser);
-				SetCurActionObject(&checkedObject);
-				SetInScript(true);
+				if(checkedObject.DoAction(IS_WALK, pParser)) {
+					SetCurActionObject(&checkedObject);
+					SetInScript(true);
+				}
 				return;
 			}
 			// Finally, check if pEgo has left an object.
@@ -251,13 +253,15 @@ bool Room::Update() {
 			pEgo->SetCurAction(IS_NOACTION, NULL, -1, -1);
 			
 			// Load script.
+			bool success;
 			if(action != IS_USEITEM) {
-				curActionObject->DoAction(action, pParser);
+				success = curActionObject->DoAction(action, pParser);
 			} else {
-				curActionObject->UseItem(pEgo->GetCurrentlyHeldItem()->GetName(), pParser);
+				success = curActionObject->UseItem(pEgo->GetCurrentlyHeldItem()->GetName(), pParser);
 			}
-			// Set script status to true.
-			SetInScript(true);
+			
+			if (success)
+				SetInScript(true);
 		}
 
 		// If pEgo is going to exit, call LeaveRoom() and return false.
@@ -321,7 +325,8 @@ void Room::RenderRoom() const {
 
 	// If we are not in script, render the current object descriptor.
 	if(!GetInScript()) {
-		pFont->render(curMouseObject.c_str(), 400, 500, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
+		if (!pEgo->GetCurrentlyHeldItem())
+			pFont->render(curMouseObject.c_str(), 400, 500, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
 
 		// render pEgo's current action.
 		std::string action;
@@ -330,24 +335,37 @@ void Room::RenderRoom() const {
 				action = "Use";
 				break;
 			case IS_WALK:
-				action = "Walk";
+				action = "Walk to";
 				break;
 			case IS_LOOK:
-				action = "Look";
+				action = "Look at";
 				break;
 			case IS_TALK:
-				action = "Talk";
+				action = "Talk with";
 				break;
 			default:
 				action = "Null";
 				break;
 		}
-	
-		pFont->render(action.c_str(), 10, 530, gSystem.getWidth(), gSystem.getHeight(), 0xDDDDDDDD);
-	}
 
-	if(pEgo->GetCurrentlyHeldItem() != NULL) {
-		pFont->render(pEgo->GetCurrentlyHeldItem()->GetName().c_str(), 0, 0, gSystem.getWidth(), gSystem.getHeight(), 0xFFFFFFFF);
+		Color action_color = 0xDDDDDDDD;
+		if (pEgo->GetCurrentlyHeldItem()) {
+			std::string objectString;
+			if (pEgo->GetCurActionObject()) {
+				objectString = pEgo->GetCurActionObject()->GetDescriptor();
+				action_color = 0xFFFFFFFF;
+			}
+			else if(pEgo->GetInventory()->IsActive())
+				objectString = pEgo->GetInventory()->GetCurMouseObject();
+			else
+				objectString = curMouseObject;
+			action += " " + pEgo->GetCurrentlyHeldItem()->GetDescriptor() + " On " + objectString;
+		} else if (pEgo->GetCurActionObject()) {
+			action_color = 0xFFFFFFFF;
+			action += " " + pEgo->GetCurActionObject()->GetDescriptor();
+		}
+	
+		pFont->render(action.c_str(), 10, 530, gSystem.getWidth(), gSystem.getHeight(), action_color);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////
