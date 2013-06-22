@@ -23,9 +23,13 @@ bool Texture::load(const char * pfilename)
 
 	if(FAILED(D3DXCreateTextureFromFileEx(
 							gGraphics.getDeviceCOM(), 
-							pfilename, 
+							pfilename,
+							/*
 							D3DX_DEFAULT,
                             D3DX_DEFAULT,
+							*/
+							D3DX_DEFAULT_NONPOW2,
+							D3DX_DEFAULT_NONPOW2,
                             1,
                             0,
                             D3DFMT_UNKNOWN,
@@ -105,6 +109,9 @@ bool Texture::draw(float destx, float desty,
   ID3DXSprite *psprite = gGraphics.getSpriteCOM();
   if(!psprite)
 	  return false;
+
+  if(width == 0) { width = nWidth; }
+  if(height == 0) { height = nHeight; }
 
   // Set the source rectangle.
   RECT Rect;

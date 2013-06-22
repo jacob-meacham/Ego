@@ -61,10 +61,7 @@ void Parser::handleIdentifier() {
 	// Find the object which this identifier points to.
 	Object * object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 	if(!object) {
-		std::stringstream s;
-		s << "Couldn't find " << string(iScript->value.begin(), iScript->value.end());
-
-		TRACE((char*)s.str().c_str());
+		TRACE("Couldn't find %s\n", string(iScript->value.begin(), iScript->value.end()).c_str());
 		executionTime = 0.0f;
 		iScript++;
 		return;
@@ -93,7 +90,7 @@ void Parser::handleDoAnimation() {
 	// first, find the object.
 	Object * object = pGameArea->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
 	if(!object) {
-		TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
+		TRACE("Couldn't find %s\n", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 		executionTime = 0.0f;
 		iScript++;
 		return;
@@ -126,7 +123,7 @@ void Parser::handleGetItem() {
 	}
 		
 	if(!object) {
-		TRACE("Couldn't find %s", objectName.c_str());
+		TRACE("Couldn't find %s\n", objectName.c_str());
 		executionTime = 0.0f;
 		iScript++;
 		return;
@@ -189,7 +186,7 @@ void Parser::handleKillObject() {
 	// find the object in question, and set its visibility status to false.
 	Object * object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 	if(!object) {
-		TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
+		TRACE("Couldn't find %s\n", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 		executionTime = 0.0f;
 		iScript++;
 		return;
@@ -206,7 +203,7 @@ void Parser::handleCreateObject() {
 	if(iScript->children.size() == 0) {
 		Object* object = pGameArea->FindObject(string(iScript->value.begin(), iScript->value.end()));
 		if(!object) {
-			TRACE("Couldn't find %s", string(iScript->value.begin(), iScript->value.end()).c_str());
+			TRACE("Couldn't find %s\n", string(iScript->value.begin(), iScript->value.end()).c_str());
 			executionTime = 0.0f;
 			iScript++;
 			return;
@@ -216,7 +213,7 @@ void Parser::handleCreateObject() {
 	} else {
 		Object * object = pGameArea->FindObject(string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()));
 		if(!object) {
-			TRACE("Couldn't find %s", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
+			TRACE("Couldn't find %s\n", string(iScript->children.begin()->value.begin(), iScript->children.begin()->value.end()).c_str());
 			
 			executionTime = 0.0f;
 			iScript++;
@@ -246,7 +243,7 @@ void Parser::handleSetVariable() {
 		// otherwise, find the object in question, and set the appropriate flag.
 		Object * object = pGameArea->FindObject(variableType);
 		if(!object) {
-			TRACE("Couldn't find %s", variableType.c_str());
+			TRACE("Couldn't find %s\n", variableType.c_str());
 			
 			executionTime = 0.0f;
 			iScript++;

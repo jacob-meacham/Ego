@@ -1,4 +1,5 @@
 #include "Room.h"
+#include "Framework\Define.h"
 #include "Framework\System.h"
 #include "ScriptParser.h"
 #include "DataPackage.h"
@@ -37,7 +38,7 @@ void Room::EnterRoom(const DataPackage * dp_collision, const std::string & roomN
 	pEgo->SetYScale(zeroScale - scalingFactor*(600 - pEgo->GetYPos()));
 		
 	if(GetHasEnterScript()) {
-		string s = roomName + "OnEnter.sc";
+		string s = "Data\\" + roomName + "OnEnter.sc";
 		pParser->ParseFile(s);
 		SetInScript(true);
 	} else {
@@ -155,7 +156,7 @@ void Room::QueryRoom(long mouseX, long mouseY, bool lClick) {
 				// set the current mouse object to the object's descriptor.
 				curMouseObject = (*riObject).GetDescriptor();
 				if(GetEgo()->GetCurrentlyHeldItem() == 0) {
-					SetCursor(LoadCursorFromFile("red-cursor.cur"));
+					SetCursor(LoadCursorFromFile("Data\\red-cursor.cur"));
 				}
 
 				// if the mouse was clicked...
@@ -241,7 +242,7 @@ bool Room::Update() {
 	}
 
 	// If we are not in script, then pEgo is free to move/perform actions.
-	if(!GetInScript())  {		
+	if(!GetInScript())  {
 		// if pEgo is ready to perform his current action...
 		if(pEgo->DoCurAction()) {
 			// set the current object and action type.
@@ -296,11 +297,6 @@ int Room::GetExitNum() const {
 /** This function also renders conversation choices, conversation strings and object descriptors.
 */
 void Room::RenderRoom() const {
-	// because of how room scripts are parsed, we must iterate backwards through the object list
-	// (for clipping reasons).
-	//for(list<Object>::reverse_iterator riObject = objectList.rbegin(); riObject != objectList.rend(); riObject++) {
-	//	(*riObject).Render();
-	//}
 	for(std::list<Object>::const_iterator iObject = objectList.begin(); iObject != objectList.end(); iObject++) {
 		(*iObject).Render();
 	}
@@ -360,7 +356,7 @@ void Room::RenderRoom() const {
 	FindObject() will return a pointer to pEgo->
 */
 Object* Room::FindObject(const std::string & objectName) {
-	if(objectName.compare("Ego") == 0) { return pEgo; }
+	if(objectName.compare("EGO") == 0) { return pEgo; }
 
 	for(std::list<Object>::iterator iObject = objectList.begin(); iObject != objectList.end(); iObject++) {
 		if((*iObject).GetName().compare(objectName) == 0) { return &(*iObject); }

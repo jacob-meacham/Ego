@@ -60,7 +60,7 @@ void Inventory::QueryInventory(long mouseX, long mouseY, bool lClick) {
 		if((*iObject).CheckMouseCollision(mouseX, mouseY)) {
 			// if so, we need to render the descriptor.
 			if(pParent->GetCurrentlyHeldItem() == 0) {
-				SetCursor(LoadCursorFromFile("red-cursor.cur"));
+				SetCursor(LoadCursorFromFile("Data\\red-cursor.cur"));
 			}
 
 			curMouseObject = (*iObject).GetDescriptor();

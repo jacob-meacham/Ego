@@ -18,8 +18,8 @@ EgoApp::EgoApp() {
 	fAnimationTimer = 0;
 	fElpasedTime = 0;
 	inInventory = false;
-	inactiveCursor = LoadCursorFromFile("white-cursor.cur");
-	activeCursor = LoadCursorFromFile("red-cursor.cur");
+	inactiveCursor = LoadCursorFromFile("Data\\white-cursor.cur");
+	activeCursor = LoadCursorFromFile("Data\\Red-cursor.cur");
 	windowed = true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,10 +41,12 @@ bool EgoApp::onInit() {
 
 	// parse the first room, to determine the number of tiles to create.
 	sRoom new_room;
-	RoomGrammar roogrammar(new_room);
-	iterator_t first("room0.dat");
-	parse_info <iterator_t> info = parse(first, first.make_end(), roogrammar, space_p);
-	if(!info.full) { TRACE("Parsing Failed\n"); }
+	RoomGrammar room_grammar(new_room);
+	iterator_t first("Data\\room0.dat");
+	parse_info <iterator_t> info = parse(first, first.make_end(), room_grammar, space_p);
+	if(!info.full) { 
+		TRACE("Parsing Failed\n"); 
+	}
 
 	// Create tiles.
 	tiles.Create((2*new_room.objectList.size())+1);
@@ -61,7 +63,7 @@ bool EgoApp::onInit() {
 	ego.GetInventory()->SetGlobalAction(IS_WALK);
 
 	// Load the first room.
-	if(!LoadRoom("room0.dat")) {
+	if(!LoadRoom("Data\\room0.dat")) {
 		return false;
 	}
 
@@ -126,7 +128,6 @@ void EgoApp::initEgo() {
 	then renders the room/inventoryTexture.
 */
 void EgoApp::onProcess() {
-	return;
 	// Update timer.
 	dCurTime     = timeGetTime();
 	fElpasedTime = (float)((dCurTime - dLastTime) * 0.001);
@@ -170,7 +171,7 @@ void EgoApp::onProcess() {
 		curRoom.RenderRoom();
 		if(inInventory) {
 			inventoryTexture.draw(75, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
-			curRoom.GetEgo()->GetInventory()->RenderInventory();
+			ego.GetInventory()->RenderInventory();
 		}
 
 		gGraphics.endSprite();
@@ -257,8 +258,8 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
     }
 
 	sRoom new_room;
-	RoomGrammar roogrammar(new_room);
-	parse_info <iterator_t> info = parse(first, first.make_end(), roogrammar, space_p);
+	RoomGrammar room_grammar(new_room);
+	parse_info <iterator_t> info = parse(first, first.make_end(), room_grammar, space_p);
 	
 	if(!info.full) { 
 		TRACE("Parsing Failed"); 
