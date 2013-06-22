@@ -75,6 +75,10 @@ bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color
 	rect.top    = y;
 	rect.right  = rect.left + width;
 	rect.bottom = rect.top + height;
+
+	D3DXMATRIX transform;
+	pSprite->SetTransform(D3DXMatrixIdentity(&transform)); 
+
 	if(FAILED(pFont->DrawText(pSprite, ptext, -1, &rect, format, color))) 
 	{
 		return false;
