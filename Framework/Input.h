@@ -35,7 +35,7 @@ protected:
 	
 public:
 	Input();
-	~Input();
+	virtual ~Input();
 
 	// Initializes the input device.
 	bool Init(HWND hWnd, HINSTANCE hInst, bool Windowed = true);
