@@ -3,7 +3,11 @@
 *.user
 *.ncb
 *.opensdf
-Prototype/Debug/*
-Prototype/Release/*
+Ego/Debug/*
+Ego/Release/*
 **/obj/*
 ipch/*
+Framework/lib/*
+Debug/*
+fileeditor
+Ego/*.var

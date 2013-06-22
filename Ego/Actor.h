@@ -1,8 +1,33 @@
-#ifndef _actor_h_included_
-#define _actor_h_included_
-
+#pragma once
 #include "Object.h"
 #include "Pathfinder.h"
+
+/// Default animations
+enum DefaultAnimations {
+	DEFAULT_TALKING = 0,
+	TALKING_RIGHT_DOWN,
+	TALKING_RIGHT_UP,
+	TALKING_LEFT_DOWN,
+	TALKING_LEFT_UP,
+	TALKING_BACK,
+	TALKING_FRONT,
+	STANDING_RIGHT_DOWN,
+	STANDING_RIGHT_UP,
+	STANDING_LEFT_DOWN,
+	STANDING_LEFT_UP,	
+	STANDING_BACK,
+	STANDING_FRONT,
+	WALKING_RIGHT,
+	WALKING_LEFT,
+	WALKING_BACK,
+	WALKING_FRONT,
+	PICKING_UP_RIGHT_DOWN,
+	PICKING_UP_RIGHT_UP,
+	PICKING_UP_LEFT_DOWN,
+	PICKING_UP_LEFT_UP,
+	PICKING_UP_BACK,
+	PICKING_UP_FRONT,
+};
 
 /// An actor is any object which may move about the screen.  
 /** An actor is any object which may move about the screen.  
@@ -12,39 +37,36 @@
 class Actor : public Object {
 
 	protected:
-		int			m_moveSpeed; ///< Movement speed of the actor.
-		Pathfinder  m_pathFinder; 		///< private pathfinder used to navigate around a room.
-		ActionType	m_curActionType; ///< Action which the actor is undertaking.
-		long		m_curActionX; /// x-coordinate of the actor's current action.
-		long		m_curActionY; /// y-coordinate of the actor's current action.
-		Object*		m_curActionObject; ///< object on which the current action focuses (if any).	
-		POINT		m_Foot; 		///< point describing where the actor's feet are. Used to determine collisions.
-		POINT		m_Direction; 	///< eigenvector describing the x,y direction that the actor is facing.
-		bool		m_ActionBool; /// A boolean set when the current action coordinates are reached.
+		POINT		footPt; 		///< point describing where the actor's feet are. Used to determine collisions.
+		POINT		direction; 	///< eigenvector describing the x,y direction that the actor is facing.
+		int			moveSpeed;	///< Movement speed of the actor.
+
+		Pathfinder  pathFinder; 	///< private pathfinder used to navigate around a room.		
 		
+		Object*		curActionObject; ///< object on which the current action focuses (if any).	
+		ActionType	curActionType; ///< Action which the actor is undertaking.
+		long		curActionX; /// x-coordinate of the actor's current action.
+		long		curActionY; /// y-coordinate of the actor's current action.
+		bool		ActionBool; /// A boolean set when the current action coordinates are reached.
 
 	public:
-		
-		// Default constructor.
-		Actor();
-
 		// Creates an actor object.
-		void CreateActor(char TileNum, std::string name, long XPos, long YPos);
+		void CreateActor(char TileNum, const std::string & name, long XPos, long YPos);
 
 		// Sets all current action parameters (use NULL for no current object).
-		void SetCurAction(ActionType action, Object* actionObject, long actionX, long actionY);
+		void SetCurAction(ActionType action, Object * actionObject, long actionX, long actionY);
 
 		// Returns \enum ActionType current action.
-		ActionType GetCurAction();
+		ActionType GetCurAction() const;
 
 		// Performs current action, stored in m_curActionType.
 		bool DoCurAction();
 
 		// Returns the x-coordinate of the current action.
-		float GetCurActionX();
+		float GetCurActionX() const;
 
 		// Returns the x-coordinate of the current action.
-		float GetCurActionY();
+		float GetCurActionY() const;
 
 		// Returns a pointer to the current object (or NULL if there is no current object).
 		Object* GetCurActionObject();
@@ -53,7 +75,7 @@ class Actor : public Object {
 		void SetAtCurActionCoord(bool d);
 
 		// returns true if the current coordinates are those of the curAction coordinates.
-		bool AtCurActionCoord();
+		bool AtCurActionCoord() const;
 		
 		// Sets the actor to the correct walking animation as she/he walks a path.
 		void UpdateActorWalkingAnimation(long xPos, long yPos);
@@ -80,17 +102,14 @@ class Actor : public Object {
 		void SetSpeed(int speed);
 
 		// Getter to get an Actor's speed.
-		int GetSpeed();
+		int GetSpeed() const;
 
 		// Setter to set an Actor's foot x, y coordinate.
 		void SetFootXYPos(long x, long y);
 		
 		// Getter to get an Actor's foot x-coordinate.
-		long GetFootXPos();
+		long GetFootXPos() const;
 
 		// Getter to get an Actor's foot y-coordinate.
-		long GetFootYPos();
-		
-		
+		long GetFootYPos() const;		
 };
-#endif

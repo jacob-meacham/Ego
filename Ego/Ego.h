@@ -11,13 +11,14 @@ class Room;
 class Ego : public Actor {
 
 	private:
-		Inventory*		m_inventory; ///< Pointer to the main inventor.
-		Room*			m_curRoom;
-		Object*			m_curHeldItem; ///< Pointer to the currently held item.
-		int				m_curPickupAnimation; ///< number of the current direction for picking up items.
+		Inventory*		inventory; ///< Pointer to the main inventor.
+		Room*			curRoom;
+		Object*			curHeldItem; ///< Pointer to the currently held item.
+		int				curPickupAnimation; ///< number of the current direction for picking up items.
 	public:
 		// Constructor.
 		Ego();
+		~Ego();
 
 		void SetParentRoom(Room* room);
 		
@@ -26,14 +27,13 @@ class Ego : public Actor {
 		
 		// Perform pickup animation.
 		void DoPickupAnimation();
-		
-		// Setters.
-		void SetInventoryParent();
+
 		void SetCurrentlyHeldItem(Object *o);
 
 		// Getters.
 		Inventory* GetInventory();
 		Object* GetCurrentlyHeldItem();
-		Room* GetRoom();
+		const Object* GetCurrentlyHeldItem() const;
+		Room * GetRoom() { return curRoom; }
 };
 #endif

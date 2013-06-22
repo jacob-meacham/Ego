@@ -1,14 +1,11 @@
-#ifndef _room_h_included_
-#define _room_h_included_
+#pragma once
 #include <list>
-#include "ConversationList.h"
 #include "Ego.h"
 #include "Exit.h"
-#include "TextBox.h"
 #include "GameArea.h"
 
+class DataPackage;
 
-#define MAX_CHOICES 10;
 //class Inventory;
 /// Main area of the game
 /** This adventure game is made up of a series of rooms.  As such, Room is the most important class.
@@ -16,34 +13,37 @@
 */
 class Room : public GameArea {
 	protected:
-		std::string					m_roomName; ///< Name of the room.
-		std::list<Exit>				m_ExitList; ///< List of all exits from the room.
-		std::list<Exit>::iterator	iExit; ///< standard iterator for the list of exits.
-		Ego							m_Ego; ///< Main character instance.
-		char*						m_collisionMap; ///< pointer to the collision map data.
-		bool						m_ActiveExit; ///< true if there is an exit that is active.
-		int							m_ActiveRoomNumber; ///< the room number of the active exit (if any).
-		DataPackage					m_DPVariables; ///< DataPackage to load/save all object and room flags.
-		int*						m_vars; ///< int* for use with m_DPVariables.
-		bool						m_hasEnterScript; ///< True if the room has an enter script.
-		float						m_zeroScale; ///< Scale that actors will be if they are at the bottom of the screen.
-		float						m_scalingFactor; ///< Factor to scale back as the actors move away from zero scale.
+		std::string					roomName; ///< Name of the room.		
+		Ego *						pEgo; ///< Main character instance.
+
+		bool						hasEnterScript; ///< True if the room has an enter script.
+
+		std::list<Exit>				exitList; ///< List of all exits from the room.
+		bool						activeExit; ///< true if there is an exit that is active.
+		int							activeRoomNumber; ///< the room number of the active exit (if any).
+
+		const DataPackage *			dpCollision;
+		char *						collisionMap; ///< pointer to the collision map data.
+		
+		float						zeroScale; ///< Scale that actors will be if they are at the bottom of the screen.
+		float						scalingFactor; ///< Factor to scale back as the actors move away from zero scale.
 
 	public:
 		// Constructor.
 		Room();
+		~Room();
 
 		// Sets the rooms Ego and font.
-		void Set(Ego Dude, Font *font);
+		void Init(Ego * pego, const Font *font);
 
 		// Enters the room with the roomName and collision map.
-		void EnterRoom(char *cm, std::string roomName);
+		void EnterRoom(const DataPackage * dp_collision, const std::string & roomName);
 		
 		// Leaves this room.	
 		bool LeaveRoom();
 
 		// Adds an exit.
-		void AddExit(RECT location, int rmNumber);
+		void AddExit(const RECT & location, int rmNumber);
 
 		// Removes an exit.
 		bool RemoveExit(int number);
@@ -55,24 +55,19 @@ class Room : public GameArea {
 		bool Update();
 	    
 		// Finds an object within the room.
-		Object* FindObject(std::string objectName);
+		Object * FindObject(const std::string & objectName);
+		Ego * GetEgo();
 
 		// Renders the room and everything within.
-		void RenderRoom();
+		void RenderRoom() const;
 		
+		const std::string & GetName() const;
+		bool GetExit() const;
+		int GetExitNum() const;
+		bool GetHasEnterScript() const;
 
-		// Getters.
-		Inventory* GetInventory();
-		std::string GetName();
-		int GetExitNum();
-		Ego* GetEgo();
-		bool GetExit();
-		bool GetHasEnterScript();
-
-		// Setters.
 		void SetExit(bool active, int number = -1);
 		void SetHasEnterScript(bool d);
 		void SetScaling(float zeroScale, float scalingFactor);
 		
 };
-#endif

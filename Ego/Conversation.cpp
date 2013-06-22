@@ -1,22 +1,24 @@
 #include "Conversation.h"
-
+//////////////////////////////////////////////////////////////////////////////////
 /// Defualt constructor.
-Conversation::Conversation() { SetConversationString("NULL!!"); m_visible = false; }
-
+Conversation::Conversation() : visible(false) { }
+//////////////////////////////////////////////////////////////////////////////////
 /// Constructor which sets the conversation string and visibility status.
-Conversation::Conversation(std::string choice, bool show) { SetConversationString(choice); m_visible = show; }
-
+Conversation::Conversation(const std::string & choice, bool show) : visible(show) { 
+	SetConversationString(choice); 
+}
+//////////////////////////////////////////////////////////////////////////////////
 /// Setter for the conversation string
-void Conversation::SetConversationString(std::string s) { m_conversationString = s; }
-
+void Conversation::SetConversationString(const std::string & s) { conversationString = s; }
+//////////////////////////////////////////////////////////////////////////////////
 /// Getter for the conversation string.
-std::string Conversation::GetConversationString() { return m_conversationString; }
-
+const std::string & Conversation::GetConversationString() const { return conversationString; }
+//////////////////////////////////////////////////////////////////////////////////
 /// Makes the conversation string visible.
-void Conversation::Show() { m_visible = true; }
-
+void Conversation::Show() { visible = true; }
+//////////////////////////////////////////////////////////////////////////////////
 /// Makes the conversation string invisible.
-void Conversation::Hide() { m_visible = false; }
-
+void Conversation::Hide() { visible = false; }
+//////////////////////////////////////////////////////////////////////////////////
 /// Returns the visibility status of the conversation string.
-bool Conversation::IsVisible() { return m_visible; }
+bool Conversation::IsVisible() const { return visible; }

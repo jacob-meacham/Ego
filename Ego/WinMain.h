@@ -1,68 +1,56 @@
-#ifndef _winMain_h_included_
-#define _winMain_h_included_
-#include <iostream>
-#include <sstream>
-#include <string>
-#include "DXUtil.h"
-#include "Graphics_Core.h"
-#include "System_Core.h"
-#include "Input_Core.h"
+#pragma once
+#include "Framework\Texture.h"
+#include "Framework\System.h"
+#include "Framework\Input.h"
 #include "Room.h"
-#include "roomGrammar.hpp"
-#include "Inventory.h"
-#define LEAN_AND_MEAN
-#define MAX_ITEMS 15
-using namespace boost::spirit;
-
- typedef char                    char_t;
- typedef file_iterator <char_t>  iterator_t;
 
 /// Entry point for this game.
  /** EgoApp extends from SystemCore, and, as such, handles Windows messages,
 	 input devices, rendering, and updating of the room which Ego is in.
  */
-
-
-class EgoApp : public SystemCore
+class DataPackage;
+struct sRoom;
+class EgoApp : public System
 {
 	private:
-		GraphicsCore    m_Graphics; ///< The graphics device.
-		Texture			m_Background; ///< The background of the current room.
-		Texture			m_Inventory; ///< The background of the main inventory.
-		Tile			m_Tiles; ///< The tile set to use.
-		Ego				m_Ego; ///< The main Ego instance.
-		Room			m_curRoom; ///< The current room.
-		Input			m_Keyboard; ///< The keyboard input device.
-		Input			m_Mouse; ///< The mouse input device.
-		DataPackage     m_DPCollision; ///< Data package to load collision maps into rooms.
-		DWORD			cmSize; ///< DWORD to store size of the collision map data package.
+		// Data
+		Ego				ego; ///< The main Ego instance.
+		Room			curRoom; ///< The current room.
+		std::string		curAction; ///< String representing Ego's current action.
+		bool			inInventory; ///< true if the game is currently in the inventory.
+
+		// Input
+		Keyboard		keyboard; ///< The keyboard input device.
+		Mouse			mouse; ///< The mouse input device.
+		
+		// Rendering
+		Texture			backgroundTexture; ///< The background of the current room.
+		Texture			inventoryTexture; ///< The background of the main inventory.
+		Tile			tiles; ///< The tile set to use.
 		Font			mainFont; ///< The game's main font.
-		char			*collisionData; ///< a pointer to the current collision map.
-		//char			*m_Name; ///< Name of this game.
-		DWORD			g_dwLastTick; ///< Time of last tick.
-		DWORD			g_dCurTime; ///< Current system time.
-		DWORD			g_dLastTime; ///< Time at the beginning of last tick.
-		float			g_fAnimationTimer; ///< Timer to determine when to update/render the game.
-		float			g_fElpasedTime; ///< Time elapsed since last render.
-		sRoom			m_newRoom; ///< Structure filled when a new room script is parsed.
-		RoomGrammar		*m_roomGrammar; ///< Grammar to parse a room script.
-		string			m_curAction; ///< String representing Ego's current action.
-		bool			m_inInventory; ///< true if the game is currently in the inventory.
-		DataPackage		m_DPVariables; ///< Data package to load room/object variables.
-		int*			m_vars; ///< integer pointer for m_DPVariables.
-		int*			test; ///< integer pointer for m_DPVariables.
-		DWORD			m_VariablesSize; ///< DWORD to store the size of the variables data package.
-		HCURSOR			m_inactive; ///< Cursor when the cursor is not on a hotspot.
-		HCURSOR			m_active; ///< Cursor when the cursor is on a hotspot.
 
+		DWORD			dwLastTick; ///< Time of last tick.
+		DWORD			dCurTime; ///< Current system time.
+		DWORD			dLastTime; ///< Time at the beginning of last tick.
+		float			fAnimationTimer; ///< Timer to determine when to update/render the game.
+		float			fElpasedTime; ///< Time elapsed since last render.
+		
+		HCURSOR			inactiveCursor; ///< Cursor when the cursor is not on a hotspot.
+		HCURSOR			activeCursor; ///< Cursor when the cursor is on a hotspot.
 
+		void initVars(const sRoom * new_room);
+		void initEgo();
+
+		void processInput();
+		virtual void onProcess();
+		virtual void shutdown();
 	public:
 		EgoApp();
-		BOOL Init();
-		BOOL PerFrame();
-		BOOL Shutdown();
-		bool LoadRoom(std::string roomName);
+		virtual bool onInit();
+		
+		bool LoadRoom(const std::string & roomName);
 
+		Ego * getEgo() { return &ego; }
 };
 
-#endif
+extern EgoApp gApp;
