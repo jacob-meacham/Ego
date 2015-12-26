@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 Texture::Texture() {
 	nWidth = nHeight = 0;
-	pTexture = NULL;
+	//pTexture = NULL;
 }
 //////////////////////////////////////////////////////////////////////////////////
 bool Texture::free() 
 {
-	DX_RELEASE(pTexture);
+	//DX_RELEASE(pTexture);
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,31 +21,31 @@ bool Texture::load(const char * pfilename)
 	if(!pfilename)
 		return false;
 
-	if(FAILED(D3DXCreateTextureFromFileEx(
-							gGraphics.getDeviceCOM(), 
-							pfilename,
-							/*
-							D3DX_DEFAULT,
-                            D3DX_DEFAULT,
-							*/
-							D3DX_DEFAULT_NONPOW2,
-							D3DX_DEFAULT_NONPOW2,
-                            1,
-                            0,
-                            D3DFMT_UNKNOWN,
-                            D3DPOOL_DEFAULT,
-                            D3DX_FILTER_LINEAR,
-			                D3DX_FILTER_LINEAR,
-			                0xFF00FF30,
-                            NULL,
-                            NULL,
-							&pTexture))) 
-	{
-		TRACE("Could not create texture, %s\n", pfilename);
-		ASSERT_FAILED;
+	//if(FAILED(D3DXCreateTextureFromFileEx(
+	//						gGraphics.getDeviceCOM(), 
+	//						pfilename,
+	//						/*
+	//						D3DX_DEFAULT,
+ //                           D3DX_DEFAULT,
+	//						*/
+	//						D3DX_DEFAULT_NONPOW2,
+	//						D3DX_DEFAULT_NONPOW2,
+ //                           1,
+ //                           0,
+ //                           D3DFMT_UNKNOWN,
+ //                           D3DPOOL_DEFAULT,
+ //                           D3DX_FILTER_LINEAR,
+	//		                D3DX_FILTER_LINEAR,
+	//		                0xFF00FF30,
+ //                           NULL,
+ //                           NULL,
+	//						&pTexture))) 
+	//{
+	//	TRACE("Could not create texture, %s\n", pfilename);
+	//	ASSERT_FAILED;
 
-		return false; 
-	}
+	//	return false; 
+	//}
 	
 	nWidth = width();	
 	nHeight = height();
@@ -56,7 +56,7 @@ bool Texture::load(const char * pfilename)
 /// Getter which calculates the width of the texture, using D3DSURFACE_DESC.
 u32 Texture::width() const
 {
-  D3DSURFACE_DESC d3dsd;
+  /*D3DSURFACE_DESC d3dsd;
 
   if(!pTexture)   
      return 0;
@@ -64,13 +64,14 @@ u32 Texture::width() const
   if(FAILED(pTexture->GetLevelDesc(0, &d3dsd))) 
     return 0;
 
-  return d3dsd.Width;
+  return d3dsd.Width;*/
+	return 200;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Getter which calculates the height of the texture, using D3DSURFACE_DESC.
 u32 Texture::height() const
 {
-  D3DSURFACE_DESC d3dsd;
+  /*D3DSURFACE_DESC d3dsd;
 
   if(!pTexture) {
     return 0;
@@ -80,7 +81,8 @@ u32 Texture::height() const
     return 0;
   }
 
-  return d3dsd.Height;
+  return d3dsd.Height;*/
+	return 200;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Blits a sprite to the screen.
@@ -103,30 +105,30 @@ bool Texture::draw(float destx, float desty,
 				  Color color, const Vector2 * pcenter,
 				  float angle) const
 {
-  if(!pTexture) 
-	return false;
+ // if(!pTexture) 
+	//return false;
 
-  ID3DXSprite *psprite = gGraphics.getSpriteCOM();
-  if(!psprite)
-	  return false;
+ // ID3DXSprite *psprite = gGraphics.getSpriteCOM();
+ // if(!psprite)
+	//  return false;
 
-  if(width == 0) { width = nWidth; }
-  if(height == 0) { height = nHeight; }
+ // if(width == 0) { width = nWidth; }
+ // if(height == 0) { height = nHeight; }
 
-  // Set the source rectangle.
-  RECT Rect;
-  Rect.left = srcx;
-  Rect.top  = srcy;
-  Rect.right = Rect.left + width;
-  Rect.bottom = Rect.top + height;
-  
-  D3DXMATRIX transform;
-  D3DXMatrixTransformation2D(&transform, &D3DXVECTOR2(0, 0), NULL,
-						&D3DXVECTOR2(scalex, scaley), pcenter, angle, &D3DXVECTOR2(destx, desty));
-  
-  psprite->SetTransform(&transform); 
-  if(FAILED(psprite->Draw(pTexture, &Rect, NULL, NULL, color)))
-			return false;
+ // // Set the source rectangle.
+ // RECT Rect;
+ // Rect.left = srcx;
+ // Rect.top  = srcy;
+ // Rect.right = Rect.left + width;
+ // Rect.bottom = Rect.top + height;
+ // 
+ // D3DXMATRIX transform;
+ // D3DXMatrixTransformation2D(&transform, &D3DXVECTOR2(0, 0), NULL,
+	//					&D3DXVECTOR2(scalex, scaley), pcenter, angle, &D3DXVECTOR2(destx, desty));
+ // 
+ // psprite->SetTransform(&transform); 
+ // if(FAILED(psprite->Draw(pTexture, &Rect, NULL, NULL, color)))
+	//		return false;
 
   return true;
 }
@@ -252,7 +254,7 @@ u32 Tile::GetNum(u32 TextureNum) const {
 	\param YScale Scale to draw the tile.
 */
 bool Tile::Draw(u32 TextureNum, u32 TileNum, float ScreenX,
-				  float ScreenY, D3DCOLOR Color,
+				  float ScreenY, Color color,
 				  float XScale, float YScale,
 				  float rotationCenterX, float rotationCenterY,
 				  float angle) const {
@@ -266,8 +268,13 @@ bool Tile::Draw(u32 TextureNum, u32 TileNum, float ScreenX,
 
 	// The source coordinates in the texture file is calculated by moving to
 	// the correct column and then multiplying by either the width or the height.
-	SrcX = (TileNum % aColumns[TextureNum]) * aWidths[TextureNum];
-	SrcY = (TileNum / aColumns[TextureNum]) * aHeights[TextureNum];
+	if (aColumns[TextureNum] == 0) {
+		SrcX = 0;
+		SrcY = 0;
+	} else {
+		SrcX = (TileNum % aColumns[TextureNum]) * aWidths[TextureNum];
+		SrcY = (TileNum / aColumns[TextureNum]) * aHeights[TextureNum];
+	}
 
 	Vector2 rotationCenter;
 	rotationCenter.x = rotationCenterX;
@@ -276,7 +283,7 @@ bool Tile::Draw(u32 TextureNum, u32 TileNum, float ScreenX,
 	// Then, we can just use Texture::Blit().
 	if(!pTextures[TextureNum].draw(ScreenX, ScreenY, SrcX, SrcY,
 								   aWidths[TextureNum], aHeights[TextureNum],
-								   XScale, YScale, Color, &rotationCenter, angle)) 
+								   XScale, YScale, color, &rotationCenter, angle)) 
 	{
 		return false; 
 	}

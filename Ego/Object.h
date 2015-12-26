@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Framework\Sprite.h"
+#include "Framework\DXUtil.h"
 #include <list>
 
 enum ActionType {
@@ -31,7 +32,7 @@ class Object : public Sprite {
 		int				scriptFlags[40]; ///< Flags for scripting.
 
 		POINT			walkCoordinates; ///< Coordinates that an actor should walk to if she/he wants to see this object.
-		D3DCOLOR		textColor; ///< The text color of all conversation strings attached to this object.
+		Color			textColor; ///< The text color of all conversation strings attached to this object.
 		int				curTalkAnimation; ///< Talking animation for this object, default -1 (no talking animation).
 
 		bool			hasOnStepScript; ///< true if the object has a onEnter script.
@@ -56,7 +57,7 @@ class Object : public Sprite {
 		void DoTalkingAnimation();
 		
 		int GetFlag(int index) const;
-		D3DCOLOR GetTextColor() const;
+		Color GetTextColor() const;
 		const std::string & GetDescriptor() const;
 		int GetCurTalkingAnimation() const;
 		bool GetEgoIn() const;

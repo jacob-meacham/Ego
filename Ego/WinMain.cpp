@@ -357,7 +357,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdSh
 	_crtBreakAlloc = -1; // Sets a user breakpoint at the specified allocation.
 #endif 
 
-	gApp.parseCommandLine(::__argc, ::__argv);
+	gApp.parseCommandLine(__argc, __argv);
 
 	int rval = 0;
 	if(gApp.onInit())

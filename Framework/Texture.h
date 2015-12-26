@@ -6,7 +6,7 @@
 /** Texture is used to draw a single texture onto the screen, via the GraphicsDevice.   */
 class Texture {
 	protected:
-		IDirect3DTexture9 *  pTexture; ///< Pointer to the DirectX texture object.
+		//IDirect3DTexture9 *  pTexture; ///< Pointer to the DirectX texture object.
         u32 nWidth, nHeight; ///< Width and Height of the texture.
 
 	public:
@@ -63,12 +63,9 @@ class Tile {
 		u32 GetHeight(u32 TextureNum) const;
 		u32 GetNum(u32 TextureNum) const;
 
-		// Setters.
-		bool SetTransparent(bool Enabled);
-
 		// Draws the specified texture number at the specified screen coordinates.
 		bool Draw(u32 TextureNum, u32 TileNum, float ScreenX,
-				  float ScreenY, D3DCOLOR Color = 0xFFFFFFFF,
+				  float ScreenY, Color color = 0xFFFFFFFF,
 				  float XScale = 1.0f, float YScale = 1.0f,
 				  float rotationCenterX = 0.0f, float rotationCenterY = 0.0f,
 				  float angle = 0.0f) const;

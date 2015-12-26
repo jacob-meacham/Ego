@@ -11,3 +11,4 @@ Framework/lib/*
 Debug/*
 fileeditor
 Ego/*.var
+.DS_Store

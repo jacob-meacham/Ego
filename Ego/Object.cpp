@@ -45,7 +45,7 @@ bool Object::DoAction(ActionType action, Parser *p) {
 void Object::SetTextColor(D3DCOLOR color) { textColor = color; }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the text color of this object.
-D3DCOLOR Object::GetTextColor() const { return textColor; }
+Color Object::GetTextColor() const { return textColor; }
 //////////////////////////////////////////////////////////////////////////////////
 /// Returns the status of the flag at index.
 int Object::GetFlag(int index) const { return scriptFlags[index]; }
