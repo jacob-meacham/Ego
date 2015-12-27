@@ -12,40 +12,38 @@
 */
 bool Font::create(const char * pname, u32 size, bool bold, bool italic)
 {
-	//D3DXFONT_DESC desc;
+	D3DXFONT_DESC desc;
 
-	//// Error Checking.
-	//if(!pname)
-	//	return false;
+	// Error Checking.
+	if(!pname)
+		return false;
 
-	//if(!gGraphics.getDeviceCOM())
-	//	return false;
+	if(!gGraphics.getDevice())
+		return false;
 
-	//// Clear out the font structure
-	//ZeroMemory(&desc, sizeof(D3DXFONT_DESC));
+	// Clear out the font structure
+	ZeroMemory(&desc, sizeof(D3DXFONT_DESC));
 
-	//// Set the font name and height
-	//strcpy_s(desc.FaceName, pname);
-	//desc.Height = -((int)size);
-	//desc.Weight = (bold == TRUE) ? 700 : 0;
-	//desc.Italic = italic;
-	//desc.CharSet = DEFAULT_CHARSET;
-	//desc.Quality = 0;
-	//desc.PitchAndFamily = 0;
+	// Set the font name and height
+	strcpy_s(desc.FaceName, pname);
+	desc.Height = -((int)size);
+	desc.Weight = (bold == TRUE) ? 700 : 0;
+	desc.Italic = italic;
+	desc.CharSet = DEFAULT_CHARSET;
+	desc.Quality = 0;
+	desc.PitchAndFamily = 0;
 
-	//pSprite = gGraphics.getSpriteCOM();
-
- // // Create the font object
-	//if(FAILED(D3DXCreateFontIndirect(gGraphics.getDeviceCOM(), &desc, &pFont))) {
-	//	return false;
-	//}
+  // Create the font object
+	if(FAILED(D3DXCreateFontIndirect(gGraphics.getDevice(), &desc, &pFont))) {
+		return false;
+	}
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Frees the Font object.
-void Font::free()
+void Font::freeFont()
 {
-	//DX_RELEASE(pFont);
+	DX_RELEASE(pFont);
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Prints Text to the screen in a textbox (not the class Textbox), using the font's properties.
@@ -67,7 +65,7 @@ void Font::free()
 */
 bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color color, DWORD format) const
 {
-	/*if(!pFont)
+	if(!pFont)
 		return false;
 
 	RECT rect;
@@ -77,19 +75,19 @@ bool Font::render(const char * ptext, u32 x, u32 y, u32 width, u32 height, Color
 	rect.bottom = rect.top + height;
 
 	D3DXMATRIX transform;
-	pSprite->SetTransform(D3DXMatrixIdentity(&transform)); 
+	gGraphics.getSpriteRenderer()->SetTransform(D3DXMatrixIdentity(&transform));
 
-	if(FAILED(pFont->DrawText(pSprite, ptext, -1, &rect, format, color))) 
+	if(FAILED(pFont->DrawText(gGraphics.getSpriteRenderer(), ptext, -1, &rect, format, color)))
 	{
 		return false;
-	}*/
+	}
 
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
 long Font::calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height) const
 {
-	/*if(!pFont)
+	if(!pFont)
 		return 0;
 
 	RECT rect;
@@ -97,7 +95,6 @@ long Font::calcHeight(const char * ptext, u32 x, u32 y, u32 width, u32 height) c
 	rect.top    = y;
 	rect.right  = rect.left + width;
 	rect.bottom = rect.top + height;
-	long calculated_height = pFont->DrawText(pSprite, ptext, -1, &rect,  DT_CALCRECT | DT_WORDBREAK, 0xFFFFFFFF);
-	return calculated_height;*/
-	return 0;
+	long calculated_height = pFont->DrawText(gGraphics.getSpriteRenderer(), ptext, -1, &rect,  DT_CALCRECT | DT_WORDBREAK, 0xFFFFFFFF);
+	return calculated_height;
 }

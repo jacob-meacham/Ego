@@ -6,18 +6,17 @@
 /** Texture is used to draw a single texture onto the screen, via the GraphicsDevice.   */
 class Texture {
 	protected:
-		//IDirect3DTexture9 *  pTexture; ///< Pointer to the DirectX texture object.
+		IDirect3DTexture9 *  pTexture; ///< Pointer to the DirectX texture object.
         u32 nWidth, nHeight; ///< Width and Height of the texture.
 
 	public:
 		Texture();
-		~Texture() { free(); }
+		~Texture() { clearTexture(); }
+
+		bool clearTexture();
 
 		// Loads a texture from a file.
 		bool load(const char * pfilename);
-
-		// Frees the Texture object.
-		bool free();
 
 		// Draws the texture to the screen.
 		bool draw(float destx, float desty, 

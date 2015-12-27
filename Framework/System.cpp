@@ -131,7 +131,7 @@ bool System::onInit()
 	if(!mWindow.setupWindow(x, y, width, height))
 		return false;
 
-	if(!gGraphics.setGraphics(mWindow.getHWnd(), windowed, x, y))
+	if(!gGraphics.setGraphics(mWindow.getHWnd(), windowed, width, height))
 		return false;
 
 	return true;

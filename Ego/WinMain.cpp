@@ -1,3 +1,8 @@
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
 #include <sstream>
 #include "WinMain.h"
 #include "Framework\Texture.h"
@@ -5,6 +10,7 @@
 #include "Inventory.h"
 #include "DataPackage.h"
 #include "roomGrammar.h"
+
 //////////////////////////////////////////////////////////////////////////////////
 /// Default constructor.  Creates the window.
 EgoApp::EgoApp() {
@@ -163,9 +169,6 @@ void EgoApp::onProcess() {
 	}
 
 	if(gGraphics.beginScene()) {
-		gGraphics.clear();
-		gGraphics.beginSprite();
-
 		backgroundTexture.draw(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 0xFFFFFFFF);
 
 		// Render the room.
@@ -175,11 +178,8 @@ void EgoApp::onProcess() {
 			ego.GetInventory()->RenderInventory();
 		}
 
-		gGraphics.endSprite();
 		gGraphics.endScene();
 	}
-	
-	gGraphics.display();
 }
 //////////////////////////////////////////////////////////////////////////////////
 void EgoApp::processInput() {
@@ -281,7 +281,6 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 	for(int j = 0; j<256; j++) {
 		curRoom.SetFlag(j, flags[j]);
 	}
-	delete dp_variables;
 
 	int size = new_room.objectList.size();
 	for(int i = 0; i<size; i++) {
@@ -340,6 +339,7 @@ bool EgoApp::LoadRoom(const std::string & roomName) {
 
 	DataPackage * dp_collision = DataPackage::Load(new_room.colMapFileName.c_str(), NULL);
 	curRoom.EnterRoom(dp_collision, new_room.roomName);
+	delete dp_variables;
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -350,13 +350,13 @@ System & gSystem = gApp;
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdShow)
 {
 #ifdef _DEBUG
-	int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG); // Get current flag
-	flag |= _CRTDBG_LEAK_CHECK_DF; // Turn on leak-checking bit
-	_CrtSetDbgFlag(flag); // Set flag to the new value
+	// Sentinel leak:
+	int * sentinel = new int[1];
+	*sentinel = 0xEFBEADDE;
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Set flag to the new value
 
 	_crtBreakAlloc = -1; // Sets a user breakpoint at the specified allocation.
 #endif 
-
 	gApp.parseCommandLine(__argc, __argv);
 
 	int rval = 0;

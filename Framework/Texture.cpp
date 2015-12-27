@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 Texture::Texture() {
 	nWidth = nHeight = 0;
-	//pTexture = NULL;
+	pTexture = NULL;
 }
 //////////////////////////////////////////////////////////////////////////////////
-bool Texture::free() 
+bool Texture::clearTexture() 
 {
-	//DX_RELEASE(pTexture);
+	DX_RELEASE(pTexture);
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,31 +21,31 @@ bool Texture::load(const char * pfilename)
 	if(!pfilename)
 		return false;
 
-	//if(FAILED(D3DXCreateTextureFromFileEx(
-	//						gGraphics.getDeviceCOM(), 
-	//						pfilename,
-	//						/*
-	//						D3DX_DEFAULT,
- //                           D3DX_DEFAULT,
-	//						*/
-	//						D3DX_DEFAULT_NONPOW2,
-	//						D3DX_DEFAULT_NONPOW2,
- //                           1,
- //                           0,
- //                           D3DFMT_UNKNOWN,
- //                           D3DPOOL_DEFAULT,
- //                           D3DX_FILTER_LINEAR,
-	//		                D3DX_FILTER_LINEAR,
-	//		                0xFF00FF30,
- //                           NULL,
- //                           NULL,
-	//						&pTexture))) 
-	//{
-	//	TRACE("Could not create texture, %s\n", pfilename);
-	//	ASSERT_FAILED;
+	if(FAILED(D3DXCreateTextureFromFileEx(
+							gGraphics.getDevice(), 
+							pfilename,
+							/*
+							D3DX_DEFAULT,
+                            D3DX_DEFAULT,
+							*/
+							D3DX_DEFAULT_NONPOW2,
+							D3DX_DEFAULT_NONPOW2,
+                            1,
+                            0,
+                            D3DFMT_UNKNOWN,
+                            D3DPOOL_DEFAULT,
+                            D3DX_FILTER_LINEAR,
+			                D3DX_FILTER_LINEAR,
+			                0xFF00FF30,
+                            NULL,
+                            NULL,
+							&pTexture))) 
+	{
+		TRACE("Could not create texture, %s\n", pfilename);
+		ASSERT_FAILED;
 
-	//	return false; 
-	//}
+		return false; 
+	}
 	
 	nWidth = width();	
 	nHeight = height();
@@ -56,7 +56,7 @@ bool Texture::load(const char * pfilename)
 /// Getter which calculates the width of the texture, using D3DSURFACE_DESC.
 u32 Texture::width() const
 {
-  /*D3DSURFACE_DESC d3dsd;
+  D3DSURFACE_DESC d3dsd;
 
   if(!pTexture)   
      return 0;
@@ -64,14 +64,13 @@ u32 Texture::width() const
   if(FAILED(pTexture->GetLevelDesc(0, &d3dsd))) 
     return 0;
 
-  return d3dsd.Width;*/
-	return 200;
+  return d3dsd.Width;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Getter which calculates the height of the texture, using D3DSURFACE_DESC.
 u32 Texture::height() const
 {
-  /*D3DSURFACE_DESC d3dsd;
+  D3DSURFACE_DESC d3dsd;
 
   if(!pTexture) {
     return 0;
@@ -81,8 +80,7 @@ u32 Texture::height() const
     return 0;
   }
 
-  return d3dsd.Height;*/
-	return 200;
+  return d3dsd.Height;
 }
 //////////////////////////////////////////////////////////////////////////////////
 /// Blits a sprite to the screen.
@@ -105,30 +103,27 @@ bool Texture::draw(float destx, float desty,
 				  Color color, const Vector2 * pcenter,
 				  float angle) const
 {
- // if(!pTexture) 
-	//return false;
+  if(!pTexture) 
+	return false;
 
- // ID3DXSprite *psprite = gGraphics.getSpriteCOM();
- // if(!psprite)
-	//  return false;
+  if(width == 0) { width = nWidth; }
+  if(height == 0) { height = nHeight; }
 
- // if(width == 0) { width = nWidth; }
- // if(height == 0) { height = nHeight; }
-
- // // Set the source rectangle.
- // RECT Rect;
- // Rect.left = srcx;
- // Rect.top  = srcy;
- // Rect.right = Rect.left + width;
- // Rect.bottom = Rect.top + height;
- // 
- // D3DXMATRIX transform;
- // D3DXMatrixTransformation2D(&transform, &D3DXVECTOR2(0, 0), NULL,
-	//					&D3DXVECTOR2(scalex, scaley), pcenter, angle, &D3DXVECTOR2(destx, desty));
- // 
- // psprite->SetTransform(&transform); 
- // if(FAILED(psprite->Draw(pTexture, &Rect, NULL, NULL, color)))
-	//		return false;
+  // Set the source rectangle.
+  RECT Rect;
+  Rect.left = srcx;
+  Rect.top  = srcy;
+  Rect.right = Rect.left + width;
+  Rect.bottom = Rect.top + height;
+  
+  D3DXMATRIX transform;
+  D3DXMatrixTransformation2D(&transform, &D3DXVECTOR2(0, 0), NULL,
+	  &D3DXVECTOR2(scalex, scaley), pcenter ? &D3DXVECTOR2(pcenter->x, pcenter->y) : NULL, 
+	  angle, &D3DXVECTOR2(destx, desty));
+  
+  gGraphics.getSpriteRenderer()->SetTransform(&transform); 
+  if(FAILED(gGraphics.getSpriteRenderer()->Draw(pTexture, &Rect, NULL, NULL, color)))
+			return false;
 
   return true;
 }
@@ -168,10 +163,6 @@ bool Tile::Create(u32 NumTextures)
 //////////////////////////////////////////////////////////////////////////////////
 /// Frees a tileset.
 void Tile::Free() {
-	// Simply need to call Texture Free() for each texture.
-	for(u32 i = 0; i < nTextures; i++)
-		pTextures[i].free();
-
 	// Delete pointers
 	delete [] pTextures;
 	delete [] aWidths;
@@ -218,7 +209,7 @@ bool Tile::Load(u32 TextureNum, const char *Filename, short TileWidth, short Til
 bool Tile::FreeTexture(u32 TextureNum) {
 	if(TextureNum >= nTextures || !pTextures) return false;
 
-	pTextures[TextureNum].free();
+	pTextures[TextureNum].clearTexture();
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////
